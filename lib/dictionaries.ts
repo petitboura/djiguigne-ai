@@ -8,7 +8,7 @@ export const dictionaries = {
       services: "Produit",
       blog: "Articles",
       contact: "Contact",
-      cta: "Créer un agent",
+      cta: "Explorer les IA",
     },
     footer: {
       rights: "Tous droits réservés.",
@@ -19,24 +19,28 @@ export const dictionaries = {
       location: "Basé à Tunis, Tunisie",
     },
     home: {
-      heroKicker: "Plateforme de création d'agents IA",
-      heroTitle: "Crée ton agent IA, à ton image.",
+      heroKicker: "Le laboratoire d'IA spécialisées",
+      heroTitle: "Des IA spécialisées, prêtes à l'emploi.",
       heroSubtitle:
-        "Djiguignè AI te permet de créer des agents ou des IA spécialisées dans un domaine précis, avec ton style et ton goût — sans écrire une ligne de code.",
-      heroCta: "Créer mon agent",
-      heroCtaSecondary: "Découvrir la plateforme",
-      sectionWhatTitle: "Une IA, taillée pour un domaine précis",
+        "Djiguignè AI réunit des IA spécialisées dans un domaine précis, publiées par des créateurs sélectionnés. Choisis la tienne et utilise-la immédiatement — aucune compétence technique requise.",
+      heroCta: "Explorer les IA",
+      heroCtaSecondary: "Devenir créateur",
+      sectionWhatTitle: "Des IA prêtes à l'emploi, publiées par des créateurs sélectionnés",
       sectionWhatBody:
-        "Que ce soit pour du tutorat, du support client, du coaching ou tout autre domaine, Djiguignè AI t'aide à définir l'identité, le comportement, les outils et la base de connaissance de ton agent — puis le rend accessible en quelques minutes.",
+        "Que ce soit pour du tutorat, du support client, du coaching ou tout autre domaine, chaque IA publiée sur Djiguignè AI est conçue par un créateur sélectionné, avec une identité, un comportement et une base de connaissance dédiés. Tu n'as qu'à choisir celle qui te correspond.",
       faqTitle: "Questions fréquentes",
       faq: [
         {
-          q: "Faut-il savoir coder pour créer un agent ?",
-          a: "Non. La création se fait entièrement via un formulaire guidé : identité, comportement, outils, base de connaissance et interface.",
+          q: "Qui crée les IA publiées sur Djiguignè AI ?",
+          a: "Des créateurs sélectionnés par l'équipe Djiguignè AI, chacun spécialisé dans un domaine précis.",
         },
         {
-          q: "Quelles sources de connaissance mon agent peut-il utiliser ?",
-          a: "Un document PDF, une page Notion, ou un texte libre que tu peux modifier à tout moment — cumulables et indépendants.",
+          q: "Comment utiliser une IA ?",
+          a: "Choisis une IA dans le catalogue, crée un compte utilisateur, et commence à discuter avec elle immédiatement.",
+        },
+        {
+          q: "Puis-je devenir créateur sur Djiguignè AI ?",
+          a: "Oui, en le précisant lors de l'inscription. Chaque candidature est examinée avant validation.",
         },
         {
           q: "Djiguignè AI est-il payant ?",
@@ -56,16 +60,16 @@ export const dictionaries = {
     services: {
       title: "Le produit",
       intro:
-        "Djiguignè AI est une plateforme qui permet à n'importe qui de créer un agent IA spécialisé dans un domaine précis, sans compétence technique.",
-      faqTitle: "Tarifs et délais",
+        "Djiguignè AI est un laboratoire d'IA spécialisées : des créateurs sélectionnés y publient des agents dédiés à un domaine précis, que n'importe qui peut utiliser immédiatement, sans compétence technique.",
+      faqTitle: "Tarifs et accès",
       faq: [
         {
-          q: "Combien coûte la création d'un agent ?",
+          q: "L'utilisation d'une IA est-elle payante ?",
           a: "Le modèle tarifaire n'est pas encore fixé — la plateforme est en phase de lancement.",
         },
         {
-          q: "Combien de temps faut-il pour créer un agent ?",
-          a: "Quelques minutes suffisent pour un premier agent fonctionnel via le formulaire guidé.",
+          q: "Comment devenir créateur sur Djiguignè AI ?",
+          a: "En le précisant lors de l'inscription. Chaque candidature est examinée par l'équipe avant validation.",
         },
       ],
     },
@@ -114,7 +118,8 @@ export const dictionaries = {
       accountTypeUser: "Utilisateur",
       accountTypeUserDesc: "J'utilise des agents créés par d'autres",
       accountTypeCreator: "Créateur",
-      accountTypeCreatorDesc: "Je crée et partage mes propres agents",
+      accountTypeCreatorDesc: "Je candidate pour publier mes propres IA",
+      creatorNote: "La création est sur sélection. Ta candidature sera examinée par l'équipe avant validation.",
     },
   },
   en: {
@@ -124,7 +129,7 @@ export const dictionaries = {
       services: "Product",
       blog: "Blog",
       contact: "Contact",
-      cta: "Create an agent",
+      cta: "Explore the AIs",
     },
     footer: {
       rights: "All rights reserved.",
@@ -135,24 +140,28 @@ export const dictionaries = {
       location: "Based in Tunis, Tunisia",
     },
     home: {
-      heroKicker: "AI agent creation platform",
-      heroTitle: "Build your AI agent, your way.",
+      heroKicker: "The specialized AI laboratory",
+      heroTitle: "Specialized AIs, ready to use.",
       heroSubtitle:
-        "Djiguignè AI lets you create agents or specialized AIs for any precise domain, in your own style — no code required.",
-      heroCta: "Create my agent",
-      heroCtaSecondary: "Explore the platform",
-      sectionWhatTitle: "An AI, tailored to one precise domain",
+        "Djiguignè AI brings together specialized AIs for precise domains, published by selected creators. Pick the one you need and start using it right away — no technical skills required.",
+      heroCta: "Explore the AIs",
+      heroCtaSecondary: "Become a creator",
+      sectionWhatTitle: "Ready-to-use AIs, published by selected creators",
       sectionWhatBody:
-        "Whether for tutoring, customer support, coaching, or any other domain, Djiguignè AI helps you define your agent's identity, behavior, tools, and knowledge base — then makes it accessible in minutes.",
+        "Whether for tutoring, customer support, coaching, or any other domain, every AI published on Djiguignè AI is built by a selected creator, with its own identity, behavior, and knowledge base. All you have to do is pick the one that fits.",
       faqTitle: "Frequently asked questions",
       faq: [
         {
-          q: "Do I need to know how to code to create an agent?",
-          a: "No. Creation happens entirely through a guided form: identity, behavior, tools, knowledge base, and interface.",
+          q: "Who creates the AIs published on Djiguignè AI?",
+          a: "Creators selected by the Djiguignè AI team, each specialized in a precise domain.",
         },
         {
-          q: "What knowledge sources can my agent use?",
-          a: "A PDF document, a Notion page, or free-form text you can edit anytime — all combinable and independent.",
+          q: "How do I use an AI?",
+          a: "Pick an AI from the catalog, create a user account, and start chatting with it right away.",
+        },
+        {
+          q: "Can I become a creator on Djiguignè AI?",
+          a: "Yes, by indicating so during sign-up. Every application is reviewed before approval.",
         },
         {
           q: "Is Djiguignè AI paid?",
@@ -172,16 +181,16 @@ export const dictionaries = {
     services: {
       title: "The product",
       intro:
-        "Djiguignè AI is a platform that lets anyone create an AI agent specialized in a precise domain, with no technical skills required.",
-      faqTitle: "Pricing and timelines",
+        "Djiguignè AI is a specialized AI laboratory: selected creators publish agents dedicated to a precise domain, which anyone can use right away, with no technical skills required.",
+      faqTitle: "Pricing and access",
       faq: [
         {
-          q: "How much does it cost to create an agent?",
+          q: "Is using an AI paid?",
           a: "The pricing model isn't finalized yet — the platform is in its launch phase.",
         },
         {
-          q: "How long does it take to create an agent?",
-          a: "A few minutes are enough for a first working agent via the guided form.",
+          q: "How do I become a creator on Djiguignè AI?",
+          a: "By indicating so during sign-up. Every application is reviewed by the team before approval.",
         },
       ],
     },
@@ -230,7 +239,8 @@ export const dictionaries = {
       accountTypeUser: "User",
       accountTypeUserDesc: "I use agents created by others",
       accountTypeCreator: "Creator",
-      accountTypeCreatorDesc: "I create and share my own agents",
+      accountTypeCreatorDesc: "I apply to publish my own AIs",
+      creatorNote: "Creator access is selective. Your application will be reviewed by the team before approval.",
     },
   },
 } as const;

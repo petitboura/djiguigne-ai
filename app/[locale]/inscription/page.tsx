@@ -99,6 +99,12 @@ export default function PageInscription({ params }: { params: { locale: Locale }
             </div>
           </div>
 
+          {typeCompte === "createur" && (
+            <p className="mt-3 rounded-lg bg-dj-surface-haute px-3 py-2 text-xs text-dj-texte-muet">
+              {dict.auth.creatorNote}
+            </p>
+          )}
+
           <div className="mt-4 grid grid-cols-2 gap-2 rounded-full border border-dj-bordure bg-dj-surface-haute p-1">
             <button
               type="button"

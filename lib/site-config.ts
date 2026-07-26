@@ -19,12 +19,12 @@ export const siteConfig = {
   foundingDate: "2026-07-10",
   legalStatus: "Auto-entrepreneur",
   mission: {
-    fr: "Changer à jamais la création d'agents IA et d'IA spécialisées.",
-    en: "Forever changing how specialized AI agents are created.",
+    fr: "Rendre les IA spécialisées accessibles à tous, créées par des créateurs sélectionnés.",
+    en: "Making specialized AI accessible to everyone, built by selected creators.",
   },
   tagline: {
-    fr: "Crée des agents ou des IA spécialisées dans un domaine précis, avec ton style et ton goût.",
-    en: "Build agents or specialized AIs for any precise domain, in your own style.",
+    fr: "Découvre des IA spécialisées, créées par des créateurs sélectionnés, prêtes à l'emploi.",
+    en: "Discover specialized AIs, built by selected creators, ready to use.",
   },
   location: {
     city: "Tunis",
