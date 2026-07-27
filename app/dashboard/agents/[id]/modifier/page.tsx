@@ -82,6 +82,49 @@ function categorieFichierBiblio(mime: string): "image" | "video" | "audio" | "do
   return "document";
 }
 
+// Icônes de la sidebar (Bourama, 27/07 : "enlève tes emojis et ajoute des
+// icônes dignes de ma plateforme") -- même style que BoutonAccueil.tsx et
+// le chevron de la sidebar : traits (stroke), pas de remplissage, currentColor.
+function IconeNav({ nom }: { nom: "bibliotheque" | "moi" | "article" }) {
+  const commun = {
+    width: 16,
+    height: 16,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 2,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
+
+  if (nom === "bibliotheque") {
+    return (
+      <svg {...commun}>
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+      </svg>
+    );
+  }
+
+  if (nom === "moi") {
+    return (
+      <svg {...commun}>
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg {...commun}>
+      <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+      <path d="M14 3v6h6" />
+      <line x1="8" y1="13" x2="16" y2="13" />
+      <line x1="8" y1="17" x2="16" y2="17" />
+    </svg>
+  );
+}
+
 export default function PageModifierAgent() {
   const router = useRouter();
   const params = useParams();
@@ -394,7 +437,7 @@ export default function PageModifierAgent() {
                   : "border-dj-bordure text-dj-texte-muet hover:border-dj-bordure-forte hover:text-dj-texte"
               }`}
             >
-              <span className="text-lg leading-none">📚</span>
+              <IconeNav nom="bibliotheque" />
               <span className={sidebarReduite ? "truncate md:hidden" : "truncate"}>Bibliothèque</span>
             </button>
 
@@ -404,10 +447,10 @@ export default function PageModifierAgent() {
                 placeholder, comme Bibliothèque au moment de sa création. */}
             {(
               [
-                ["moi", "👤", "Moi"],
-                ["article", "📰", "Article"],
+                ["moi", "Moi"],
+                ["article", "Article"],
               ] as const
-            ).map(([id, icone, label]) => (
+            ).map(([id, label]) => (
               <button
                 key={id}
                 type="button"
@@ -421,7 +464,7 @@ export default function PageModifierAgent() {
                     : "border-dj-bordure text-dj-texte-muet hover:border-dj-bordure-forte hover:text-dj-texte"
                 }`}
               >
-                <span className="text-lg leading-none">{icone}</span>
+                <IconeNav nom={id} />
                 <span className={sidebarReduite ? "truncate md:hidden" : "truncate"}>{label}</span>
               </button>
             ))}
