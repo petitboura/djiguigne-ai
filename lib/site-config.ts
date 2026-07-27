@@ -41,3 +41,4 @@ export const siteConfig = {
 };
 
 export type Locale = (typeof siteConfig.locales)[number];
+
