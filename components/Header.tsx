@@ -68,6 +68,14 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
               {dict.auth.loginTitle}
             </Link>
           )}
+          {connecte === true && (
+            <Link
+              href="/dashboard"
+              className="text-sm text-dj-texte-muet transition-colors hover:text-dj-texte"
+            >
+              Mon espace
+            </Link>
+          )}
           <Link
             href={siteConfig.appUrl}
             target="_blank"
@@ -109,6 +117,15 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
               className="rounded-lg px-2 py-2.5 text-sm text-dj-texte-muet hover:bg-dj-surface hover:text-dj-texte"
             >
               {dict.auth.loginTitle}
+            </Link>
+          )}
+          {connecte === true && (
+            <Link
+              href="/dashboard"
+              onClick={() => setOpen(false)}
+              className="rounded-lg px-2 py-2.5 text-sm text-dj-texte-muet hover:bg-dj-surface hover:text-dj-texte"
+            >
+              Mon espace
             </Link>
           )}
           <div className="mt-2 flex items-center justify-between px-2">
