@@ -99,6 +99,8 @@ export default function HomePage({ params }: { params: { locale: Locale } }) {
           {dict.home.heroSubtitle}
         </p>
 
+        <RubanAgents />
+
         <div
           className="mt-8 flex flex-col gap-3 animate-dj-fade-up sm:flex-row"
           style={{ animationDelay: "0.3s" }}
@@ -119,8 +121,6 @@ export default function HomePage({ params }: { params: { locale: Locale } }) {
             annulerLabel={dict.home.heroCtaExplicationAnnuler}
           />
         </div>
-
-        <RubanAgents />
       </section>
 
       {/* --- Ce que fait la plateforme --- */}
