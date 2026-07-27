@@ -15,7 +15,7 @@ export const siteConfig = {
   // changer d'hébergement (ex: Streamlit Cloud -> Railway) sans toucher
   // au code ni redéployer manuellement. Le repli ci-dessous n'est utilisé
   // que si la variable n'est pas définie (ex: en développement local).
-  appUrl: process.env.NEXT_PUBLIC_APP_URL || "https://djiguigne.up.railway.app",
+  appUrl: process.env.NEXT_PUBLIC_APP_URL || "https://djiguigne.vercel.app",
   foundingDate: "2026-07-10",
   legalStatus: "Auto-entrepreneur",
   mission: {
@@ -41,4 +41,3 @@ export const siteConfig = {
 };
 
 export type Locale = (typeof siteConfig.locales)[number];
-
