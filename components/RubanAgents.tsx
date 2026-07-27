@@ -63,21 +63,21 @@ export function RubanAgents() {
             rel="noopener noreferrer"
             className="flex w-max min-w-[96px] max-w-[220px] shrink-0 flex-col items-start gap-1.5"
           >
-            <span className="flex items-center gap-2 whitespace-nowrap">
-              <span className="text-sm font-semibold text-dj-texte">{agent.nom}</span>
-              <span className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-dj-surface-haute">
+            <span className="flex items-center gap-2 whitespace-nowrap rounded-full border border-dj-bordure bg-dj-surface-haute py-1.5 pl-1.5 pr-3">
+              <span className="relative flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-dj-surface">
                 {agent.image_vitrine_url ? (
                   <Image
                     src={agent.image_vitrine_url}
                     alt=""
                     fill
                     className="object-cover"
-                    sizes="32px"
+                    sizes="28px"
                   />
                 ) : (
-                  <span className="text-base leading-none">{agent.icone_page || "🤖"}</span>
+                  <span className="text-sm leading-none">{agent.icone_page || "🤖"}</span>
                 )}
               </span>
+              <span className="text-sm font-semibold text-dj-texte">{agent.nom}</span>
             </span>
             {agent.description && (
               <p className="w-full overflow-hidden text-xs leading-snug text-dj-texte-muet [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
