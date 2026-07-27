@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getDictionary } from "@/lib/dictionaries";
 import { siteConfig, type Locale } from "@/lib/site-config";
 import { JsonLd } from "@/components/JsonLd";
+import { BoutonDevenirCreateur } from "@/components/BoutonDevenirCreateur";
 
 export function generateMetadata({ params }: { params: { locale: Locale } }): Metadata {
   const dict = getDictionary(params.locale);
@@ -111,12 +112,13 @@ export default function HomePage({ params }: { params: { locale: Locale } }) {
           >
             {dict.home.heroCta}
           </Link>
-          <Link
-            href={`/${locale}/about`}
-            className="rounded-full border border-dj-bordure px-6 py-3 text-sm font-semibold text-dj-texte transition-colors hover:border-dj-bordure-forte"
-          >
-            {dict.home.heroCtaSecondary}
-          </Link>
+          <BoutonDevenirCreateur
+            label={dict.home.heroCtaSecondary}
+            explicationTitre={dict.home.heroCtaExplicationTitre}
+            explicationCorps={dict.home.heroCtaExplicationCorps}
+            continuerLabel={dict.home.heroCtaExplicationContinuer}
+            annulerLabel={dict.home.heroCtaExplicationAnnuler}
+          />
         </div>
       </section>
 

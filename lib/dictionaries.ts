@@ -25,6 +25,11 @@ export const dictionaries = {
         "Djiguignè AI réunit des IA spécialisées dans un domaine précis, publiées par des créateurs sélectionnés. Choisis la tienne et utilise-la immédiatement — aucune compétence technique requise.",
       heroCta: "Explorer les IA",
       heroCtaSecondary: "Devenir créateur",
+      heroCtaExplicationTitre: "Comment ça marche",
+      heroCtaExplicationCorps:
+        "Choisis d'abord la matière de ton IA, puis remplis le formulaire de création (identité, comportement, base de connaissance...). Ton IA est publiée dès que tu la crées.",
+      heroCtaExplicationContinuer: "Continuer",
+      heroCtaExplicationAnnuler: "Annuler",
       sectionWhatTitle: "Des IA prêtes à l'emploi, publiées par des créateurs sélectionnés",
       sectionWhatBody:
         "Que ce soit pour du tutorat, du support client, du coaching ou tout autre domaine, chaque IA publiée sur Djiguignè AI est conçue par un créateur sélectionné, avec une identité, un comportement et une base de connaissance dédiés. Tu n'as qu'à choisir celle qui te correspond.",
@@ -146,6 +151,11 @@ export const dictionaries = {
         "Djiguignè AI brings together specialized AIs for precise domains, published by selected creators. Pick the one you need and start using it right away — no technical skills required.",
       heroCta: "Explore the AIs",
       heroCtaSecondary: "Become a creator",
+      heroCtaExplicationTitre: "How it works",
+      heroCtaExplicationCorps:
+        "First pick the subject of your AI, then fill in the creation form (identity, behavior, knowledge base...). Your AI is published as soon as you create it.",
+      heroCtaExplicationContinuer: "Continue",
+      heroCtaExplicationAnnuler: "Cancel",
       sectionWhatTitle: "Ready-to-use AIs, published by selected creators",
       sectionWhatBody:
         "Whether for tutoring, customer support, coaching, or any other domain, every AI published on Djiguignè AI is built by a selected creator, with its own identity, behavior, and knowledge base. All you have to do is pick the one that fits.",

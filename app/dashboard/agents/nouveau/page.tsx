@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { appelerApi, appelerApiFichier } from "@/lib/api";
 import { proposerNotificationsPushUneFois, useNotificationsPush } from "@/lib/useNotificationsPush";
@@ -10,7 +10,7 @@ import { BoutonRetour } from "@/components/BoutonRetour";
 import { BoutonAccueil } from "@/components/BoutonAccueil";
 import { ChampImage } from "@/components/ChampImage";
 import { BoutonPartager } from "@/components/BoutonPartager";
-import { PopupCategories, type Categorie } from "@/components/PopupCategories";
+import { PopupCategories, chargerCategories, type Categorie } from "@/components/PopupCategories";
 import { DroitsAgentCreation } from "@/components/DroitsAgentCreation";
 
 // Étape D.6 (pivot social) : formulaire de création d'agent, nouveau flow
@@ -41,8 +41,9 @@ const NB_LIGNES_COMPORTEMENT = 4;
 
 type LigneComportement = { type_requete: string; comportement: string };
 
-export default function PageCreerAgent() {
+function FormulaireCreerAgent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [session, setSession] = useState<
     Awaited<ReturnType<typeof supabase.auth.getSession>>["data"]["session"] | null | undefined
   >(undefined);
@@ -136,6 +137,21 @@ export default function PageCreerAgent() {
       setSession(session);
     });
   }, [router]);
+
+  // Présélection de la catégorie transmise en query param (Bourama,
+  // 2026-07-27) : quand on arrive ici via "Devenir créateur" -> choix de
+  // la matière sur l'accueil, la catégorie est déjà connue -- pas besoin
+  // de la re-choisir dans le formulaire.
+  useEffect(() => {
+    const categorieId = searchParams.get("categorie");
+    if (!categorieId) return;
+    chargerCategories()
+      .then((categories) => {
+        const trouvee = categories.find((c) => c.id === categorieId);
+        if (trouvee) setCategorie(trouvee);
+      })
+      .catch(() => {});
+  }, [searchParams]);
 
   function majComportement(i: number, champ: keyof LigneComportement, valeur: string) {
     setComportements((prev) =>
@@ -647,5 +663,18 @@ export default function PageCreerAgent() {
         </form>
       </main>
     </div>
+  );
+}
+
+// useSearchParams() exige un Suspense autour de la page en app router
+// Next.js -- sinon échec au build (voir présélection de catégorie
+// ci-dessus). Pas de fallback visible : le formulaire est déjà
+// quasi-instantané, un flash de "Chargement..." serait plus gênant
+// qu'utile.
+export default function PageCreerAgent() {
+  return (
+    <Suspense fallback={null}>
+      <FormulaireCreerAgent />
+    </Suspense>
   );
 }
