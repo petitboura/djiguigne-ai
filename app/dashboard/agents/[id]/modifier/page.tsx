@@ -68,7 +68,7 @@ const SECTIONS = [
   { id: "documents", label: "Documents PDF" },
   { id: "maj", label: "Mise à jour" },
 ] as const;
-type SectionId = (typeof SECTIONS)[number]["id"] | "bibliotheque";
+type SectionId = (typeof SECTIONS)[number]["id"] | "bibliotheque" | "moi" | "article";
 
 // Liste des IA du créateur, affichée en permanence dans la colonne de
 // gauche (Bourama, 27/07 : "comme des pubs", plus de puce/popup) --
@@ -143,7 +143,7 @@ export default function PageModifierAgent() {
   // vidéos etc") -- catégorie déduite du type_mime déjà stocké côté
   // backend (core/bibliotheque_fichiers.py), pas de nouveau champ.
   const [biblioFiltre, setBiblioFiltre] = useState<
-    "tous" | "image" | "video" | "audio" | "document"
+    "tous" | "image" | "video" | "audio" | "document" | "lien"
   >("tous");
 
   const [enregistrement, setEnregistrement] = useState(false);
@@ -398,6 +398,34 @@ export default function PageModifierAgent() {
               <span className={sidebarReduite ? "truncate md:hidden" : "truncate"}>Bibliothèque</span>
             </button>
 
+            {/* Moi / Article : ajoutés le 27/07 à la demande de Bourama,
+                contenu pas encore défini ("je te dirais quoi mettre
+                après") -- pour l'instant juste la navigation + un
+                placeholder, comme Bibliothèque au moment de sa création. */}
+            {(
+              [
+                ["moi", "👤", "Moi"],
+                ["article", "📰", "Article"],
+              ] as const
+            ).map(([id, icone, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setSectionActive(id)}
+                title={label}
+                className={`flex flex-shrink-0 items-center gap-2 whitespace-nowrap rounded-2xl border px-4 py-3 text-sm transition-colors md:justify-start ${
+                  sidebarReduite ? "md:w-10 md:justify-center md:px-0" : ""
+                } ${
+                  sectionActive === id
+                    ? "border-dj-accent-1 bg-dj-surface-haute text-dj-texte"
+                    : "border-dj-bordure text-dj-texte-muet hover:border-dj-bordure-forte hover:text-dj-texte"
+                }`}
+              >
+                <span className="text-lg leading-none">{icone}</span>
+                <span className={sidebarReduite ? "truncate md:hidden" : "truncate"}>{label}</span>
+              </button>
+            ))}
+
             <div className="my-1 hidden h-px w-full bg-dj-bordure md:block" />
 
             {mesAgents === null && (
@@ -429,7 +457,7 @@ export default function PageModifierAgent() {
         </div>
         <h1 className="font-display text-2xl font-bold text-dj-texte">Modifier {nom}</h1>
 
-        {sectionActive !== "bibliotheque" && (
+        {sectionActive !== "bibliotheque" && sectionActive !== "moi" && sectionActive !== "article" && (
         <div className="mb-2 mt-6 flex flex-wrap gap-x-6 gap-y-3 border-b border-dj-bordure pb-0">
             {SECTIONS.map((s) => (
               <Onglet key={s.id} actif={sectionActive === s.id} onClick={() => setSectionActive(s.id)}>
@@ -806,6 +834,7 @@ export default function PageModifierAgent() {
                 ["video", "Vidéos"],
                 ["audio", "Audio"],
                 ["document", "Documents"],
+                ["lien", "Lien"],
               ] as const
             ).map(([valeur, label]) => (
               <Onglet key={valeur} actif={biblioFiltre === valeur} onClick={() => setBiblioFiltre(valeur)}>
@@ -884,6 +913,24 @@ export default function PageModifierAgent() {
         )}
 
         {sectionActive === "maj" && <SectionMiseAJour agentId={agentId} />}
+
+        {(sectionActive === "moi" || sectionActive === "article") && (
+          <section className="mt-6 flex flex-col gap-4">
+            <button
+              type="button"
+              onClick={() => setSectionActive("vitrine")}
+              className="flex items-center gap-1.5 self-start text-sm text-dj-texte-muet transition-colors hover:text-dj-texte"
+            >
+              ← Retour aux sections
+            </button>
+            <h2 className="font-display text-lg font-bold text-dj-texte">
+              {sectionActive === "moi" ? "Moi" : "Article"}
+            </h2>
+            <p className="text-sm text-dj-texte-muet">
+              Contenu à venir — dis-moi ce que tu veux mettre ici.
+            </p>
+          </section>
+        )}
           </div>
         </div>
       </main>
