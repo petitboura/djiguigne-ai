@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { inscrireOuConnecter, type TypeCompte } from "@/lib/authFallback";
+import { inscrireOuConnecter } from "@/lib/authFallback";
 import { ChampMotDePasse } from "@/components/ChampMotDePasse";
 import { ChampTelephone } from "@/components/ChampTelephone";
 import { getDictionary } from "@/lib/dictionaries";
@@ -16,7 +16,6 @@ export default function PageInscription({ params }: { params: { locale: Locale }
   const { locale } = params;
   const router = useRouter();
   const dict = getDictionary(locale);
-  const [typeCompte, setTypeCompte] = useState<TypeCompte>("utilisateur");
   const [methode, setMethode] = useState<MethodeInscription>("email");
   const [email, setEmail] = useState("");
   const [telephone, setTelephone] = useState("");
@@ -29,15 +28,15 @@ export default function PageInscription({ params }: { params: { locale: Locale }
     setErreur(null);
     setEnCours(true);
 
-    // Le type de compte choisi est stocké dans les métadonnées Supabase
-    // Auth (user_metadata.type_compte) — voir lib/authFallback.ts. Aucune
-    // différence de droits pour l'instant, juste l'info stockée.
+    // djiguigne-ai est le côté créateur : tout compte créé ici est de type
+    // "createur" (stocké dans user_metadata.type_compte, voir
+    // lib/authFallback.ts). Plus de sélecteur de type à l'écran.
     const { error } =
       methode === "email"
-        ? await inscrireOuConnecter({ email, password: motDePasse }, typeCompte)
+        ? await inscrireOuConnecter({ email, password: motDePasse }, "createur")
         : await inscrireOuConnecter(
             { phone: telephone.replace(/\s+/g, ""), password: motDePasse },
-            typeCompte
+            "createur"
           );
 
     setEnCours(false);
@@ -62,50 +61,6 @@ export default function PageInscription({ params }: { params: { locale: Locale }
 
         <div className="rounded-2xl border border-dj-bordure bg-dj-surface p-6 shadow-[0_2px_24px_rgba(0,0,0,0.35)]">
           <h1 className="font-display text-xl font-bold text-dj-texte">{dict.auth.signupTitle}</h1>
-
-          <div className="mt-4">
-            <p className="text-sm font-medium text-dj-texte-muet">{dict.auth.accountTypeLabel}</p>
-            <div className="mt-2 grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => setTypeCompte("utilisateur")}
-                className={`rounded-xl border p-3 text-left transition-colors ${
-                  typeCompte === "utilisateur"
-                    ? "border-dj-bordure-forte bg-dj-surface-haute"
-                    : "border-dj-bordure hover:border-dj-bordure-forte"
-                }`}
-              >
-                <span className="block text-sm font-semibold text-dj-texte">
-                  {dict.auth.accountTypeUser}
-                </span>
-                <span className="mt-0.5 block text-xs text-dj-texte-muet">
-                  {dict.auth.accountTypeUserDesc}
-                </span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setTypeCompte("createur")}
-                className={`rounded-xl border p-3 text-left transition-colors ${
-                  typeCompte === "createur"
-                    ? "border-dj-bordure-forte bg-dj-surface-haute"
-                    : "border-dj-bordure hover:border-dj-bordure-forte"
-                }`}
-              >
-                <span className="block text-sm font-semibold text-dj-texte">
-                  {dict.auth.accountTypeCreator}
-                </span>
-                <span className="mt-0.5 block text-xs text-dj-texte-muet">
-                  {dict.auth.accountTypeCreatorDesc}
-                </span>
-              </button>
-            </div>
-          </div>
-
-          {typeCompte === "createur" && (
-            <p className="mt-3 rounded-lg bg-dj-surface-haute px-3 py-2 text-xs text-dj-texte-muet">
-              {dict.auth.creatorNote}
-            </p>
-          )}
 
           <div className="mt-4 grid grid-cols-2 gap-2 rounded-full border border-dj-bordure bg-dj-surface-haute p-1">
             <button

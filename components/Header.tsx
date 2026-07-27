@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { siteConfig, type Locale } from "@/lib/site-config";
 import type { getDictionary } from "@/lib/dictionaries";
+import { supabase } from "@/lib/supabase";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 
 type Dictionary = ReturnType<typeof getDictionary>;
@@ -19,7 +20,21 @@ const LINKS = (locale: Locale, nav: Dictionary["nav"]) => [
 
 export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const [open, setOpen] = useState(false);
+  // undefined = session pas encore vérifiée (voir TopBar.tsx, même
+  // logique) : on n'affiche "Se connecter" que si on est sûr qu'il n'y a
+  // pas de session, pour ne pas l'afficher à quelqu'un déjà connecté.
+  const [connecte, setConnecte] = useState<boolean | undefined>(undefined);
   const links = LINKS(locale, dict.nav);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setConnecte(!!session);
+    });
+    const { data: ecoute } = supabase.auth.onAuthStateChange((_evenement, session) => {
+      setConnecte(!!session);
+    });
+    return () => ecoute.subscription.unsubscribe();
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 border-b border-dj-bordure bg-dj-fond/85 backdrop-blur">
@@ -45,12 +60,14 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
 
         <div className="hidden items-center gap-4 md:flex">
           <LanguageSwitcher locale={locale} />
-          <Link
-            href={`/${locale}/connexion`}
-            className="text-sm text-dj-texte-muet transition-colors hover:text-dj-texte"
-          >
-            {dict.auth.loginTitle}
-          </Link>
+          {connecte === false && (
+            <Link
+              href={`/${locale}/connexion`}
+              className="text-sm text-dj-texte-muet transition-colors hover:text-dj-texte"
+            >
+              {dict.auth.loginTitle}
+            </Link>
+          )}
           <Link
             href={siteConfig.appUrl}
             target="_blank"
@@ -85,13 +102,15 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
               {l.label}
             </Link>
           ))}
-          <Link
-            href={`/${locale}/connexion`}
-            onClick={() => setOpen(false)}
-            className="rounded-lg px-2 py-2.5 text-sm text-dj-texte-muet hover:bg-dj-surface hover:text-dj-texte"
-          >
-            {dict.auth.loginTitle}
-          </Link>
+          {connecte === false && (
+            <Link
+              href={`/${locale}/connexion`}
+              onClick={() => setOpen(false)}
+              className="rounded-lg px-2 py-2.5 text-sm text-dj-texte-muet hover:bg-dj-surface hover:text-dj-texte"
+            >
+              {dict.auth.loginTitle}
+            </Link>
+          )}
           <div className="mt-2 flex items-center justify-between px-2">
             <LanguageSwitcher locale={locale} />
             <Link
