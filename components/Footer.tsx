@@ -31,6 +31,9 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           <Link href={`/${locale}/contact`} className="text-dj-texte-muet hover:text-dj-texte">
             {dict.footer.contact}
           </Link>
+          <Link href={`/${locale}/connexion`} className="text-dj-texte-muet hover:text-dj-texte">
+            {dict.auth.loginTitle}
+          </Link>
         </div>
       </div>
 
