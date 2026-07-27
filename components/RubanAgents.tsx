@@ -77,7 +77,7 @@ export function RubanAgents() {
                   <span className="text-sm leading-none">{agent.icone_page || "🤖"}</span>
                 )}
               </span>
-              <span className="text-sm font-semibold text-dj-texte">{agent.nom}</span>
+              <span className="font-display text-sm font-bold text-dj-texte">{agent.nom}</span>
             </span>
             {agent.description && (
               <p className="w-full overflow-hidden text-xs leading-snug text-dj-texte-muet [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
