@@ -429,6 +429,7 @@ export default function PageModifierAgent() {
         </div>
         <h1 className="font-display text-2xl font-bold text-dj-texte">Modifier {nom}</h1>
 
+        {sectionActive !== "bibliotheque" && (
         <div className="mb-2 mt-6 flex flex-wrap gap-x-6 gap-y-3 border-b border-dj-bordure pb-0">
             {SECTIONS.map((s) => (
               <Onglet key={s.id} actif={sectionActive === s.id} onClick={() => setSectionActive(s.id)}>
@@ -436,6 +437,7 @@ export default function PageModifierAgent() {
               </Onglet>
             ))}
         </div>
+        )}
 
         <form onSubmit={enregistrer} className="mt-6 flex flex-col gap-8">
           {sectionActive === "vitrine" && (
