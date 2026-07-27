@@ -778,6 +778,17 @@ export default function PageModifierAgent() {
 
         {sectionActive === "bibliotheque" && (
         <section className="mt-6 flex flex-col gap-4">
+          {/* Sans ça, aucun moyen de repasser aux autres onglets une fois
+              ici (Bourama, 27/07) : leur barre du haut est masquée sur
+              cette section (demande précédente). */}
+          <button
+            type="button"
+            onClick={() => setSectionActive("vitrine")}
+            className="flex items-center gap-1.5 self-start text-sm text-dj-texte-muet transition-colors hover:text-dj-texte"
+          >
+            ← Retour aux sections
+          </button>
+
           <h2 className="font-display text-lg font-bold text-dj-texte">
             Bibliothèque (images, audio, vidéo, PDF...)
           </h2>
