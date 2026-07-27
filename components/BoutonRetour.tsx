@@ -18,6 +18,9 @@ import { useRouter } from "next/navigation";
 // juste une bordure à 8% d'opacité (--dj-bordure) sur un cercle de 36px,
 // quasi invisible sur le fond presque noir de l'app. Fond plein
 // (bg-dj-surface) + icône en couleur de texte principale ajoutés.
+// Puce (pas un cercle) depuis le 27/07 (Bourama) : largeur libre avec
+// padding horizontal plutôt que h-9 w-9 fixe, même esprit que les autres
+// puces de l'app (ex: "Mes IA" sur la page modifier).
 export function BoutonRetour() {
   const router = useRouter();
 
@@ -25,7 +28,7 @@ export function BoutonRetour() {
     <button
       onClick={() => router.back()}
       aria-label="Retour"
-      className="flex h-9 w-9 items-center justify-center rounded-full border border-dj-bordure bg-dj-surface text-base text-dj-texte transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute"
+      className="flex h-9 items-center justify-center rounded-full border border-dj-bordure bg-dj-surface px-4 text-base text-dj-texte transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute"
     >
       ←
     </button>

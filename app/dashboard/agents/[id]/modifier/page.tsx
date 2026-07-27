@@ -140,6 +140,10 @@ export default function PageModifierAgent() {
   const [sectionActive, setSectionActive] = useState<SectionId>("vitrine");
 
   const [mesAgents, setMesAgents] = useState<AgentMini[] | null>(null);
+  // Repliable "comme un tableau de bord" (Bourama, 27/07) : par défaut
+  // ouverte, un bouton replie vers la gauche (largeur réduite, icônes
+  // seules, plus de nom ni de bouton créer).
+  const [sidebarReduite, setSidebarReduite] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -329,14 +333,36 @@ export default function PageModifierAgent() {
               puce/popup "Mes IA" -- la liste reste affichée en
               permanence à gauche, cette page EST le dashboard. L'ancien
               /dashboard (grille "IA créées (N)" + bouton créer)
-              disparaît, son contenu est ici. */}
-          <aside className="flex flex-shrink-0 flex-row gap-3 overflow-x-auto pb-2 md:w-64 md:flex-col md:overflow-visible md:pb-0">
-            <Link
-              href="/dashboard/agents/nouveau"
-              className="flex flex-shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-2xl border border-dashed border-dj-bordure px-4 py-3 text-sm font-medium text-dj-texte-muet transition-colors hover:border-dj-accent-1 hover:text-dj-texte md:justify-start"
+              disparaît, son contenu est ici. Repliable comme un vrai
+              tableau de bord (même jour) : bouton chevron en haut, se
+              réduit à une bande d'icônes ; "+ Créer une IA" retiré (la
+              création passe maintenant par "Devenir créateur"/
+              /dashboard/agents/nouveau directement). */}
+          <aside
+            className={`flex flex-shrink-0 flex-row gap-3 overflow-x-auto pb-2 transition-[width] md:flex-col md:overflow-visible md:pb-0 ${
+              sidebarReduite ? "md:w-14" : "md:w-64"
+            }`}
+          >
+            <button
+              type="button"
+              onClick={() => setSidebarReduite((v) => !v)}
+              aria-label={sidebarReduite ? "Déplier la liste" : "Replier la liste"}
+              className="hidden h-9 w-9 flex-shrink-0 items-center justify-center self-end rounded-full border border-dj-bordure text-dj-texte-muet transition-colors hover:border-dj-bordure-forte hover:text-dj-texte md:flex"
             >
-              + Créer une IA
-            </Link>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`transition-transform ${sidebarReduite ? "rotate-180" : ""}`}
+              >
+                <path d="M15 6l-6 6 6 6" />
+              </svg>
+            </button>
 
             {mesAgents === null && (
               <p className="px-3 py-3 text-sm text-dj-texte-muet">Chargement...</p>
@@ -345,20 +371,23 @@ export default function PageModifierAgent() {
               <Link
                 key={a.id}
                 href={`/dashboard/agents/${a.id}/modifier`}
-                className={`flex flex-shrink-0 items-center gap-2 whitespace-nowrap rounded-2xl border px-4 py-3 text-sm transition-colors ${
+                title={a.nom}
+                className={`flex flex-shrink-0 items-center gap-2 whitespace-nowrap rounded-2xl border px-4 py-3 text-sm transition-colors md:justify-start ${
+                  sidebarReduite ? "md:w-10 md:justify-center md:px-0" : ""
+                } ${
                   a.id === agentId
                     ? "border-dj-accent-1 bg-dj-surface-haute text-dj-texte"
                     : "border-dj-bordure text-dj-texte-muet hover:border-dj-bordure-forte hover:text-dj-texte"
                 }`}
               >
                 <span className="text-lg leading-none">{a.icone_page ?? "🤖"}</span>
-                <span className="truncate">{a.nom}</span>
+                <span className={sidebarReduite ? "truncate md:hidden" : "truncate"}>{a.nom}</span>
               </Link>
             ))}
           </aside>
 
           <div className="min-w-0 flex-1">
-        <div className="mb-5 flex gap-2">
+        <div className="sticky top-3 z-20 mb-5 flex gap-2">
           <BoutonRetour />
           <BoutonAccueil />
         </div>
