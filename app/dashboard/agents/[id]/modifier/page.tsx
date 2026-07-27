@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { appelerApi, appelerApiFichier, ajouterFichierBibliotheque } from "@/lib/api";
 import { TopBar } from "@/components/TopBar";
@@ -48,6 +49,33 @@ type FichierBiblio = {
   url_publique: string;
   created_at: string;
 };
+
+// Onglets ajoutés le 27/07 (Bourama : "je veux que le dashboard ressemble
+// à ça pour les sections" -- même pattern que les onglets du feed
+// (app/page.tsx:Onglet), une seule section affichée à la fois plutôt
+// qu'un long scroll. Les 4 premiers restent dans le <form> principal
+// (un seul PATCH /api/agents/{id} pour les 4, l'état de chacun survit
+// même quand sa section n'est pas affichée) ; les 5 suivants gèrent déjà
+// leur propre sauvegarde indépendamment (DroitsAgent, ProactiviteAgent,
+// Documents, Bibliothèque, Mise à jour).
+const SECTIONS = [
+  { id: "vitrine", label: "Vitrine publique" },
+  { id: "comportement", label: "Comportement" },
+  { id: "connaissance", label: "Base de connaissance" },
+  { id: "profil", label: "Profil utilisateur" },
+  { id: "droits", label: "Droits" },
+  { id: "proactivite", label: "Proactivité" },
+  { id: "documents", label: "Documents PDF" },
+  { id: "bibliotheque", label: "Bibliothèque" },
+  { id: "maj", label: "Mise à jour" },
+] as const;
+type SectionId = (typeof SECTIONS)[number]["id"];
+
+// Puce "Mes IA" (à côté des onglets, même esprit que le bouton
+// "Catégories" du feed : un filtre/raccourci à part, pas une 6e section)
+// -- ouvre la liste des IA du créateur, cliquer sur l'une d'elles change
+// d'agent en cours d'édition (voir docstring du bouton plus bas).
+type AgentMini = { id: string; nom: string; icone_page?: string };
 
 export default function PageModifierAgent() {
   const router = useRouter();
@@ -110,6 +138,11 @@ export default function PageModifierAgent() {
   const [message, setMessage] = useState<string | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
 
+  const [sectionActive, setSectionActive] = useState<SectionId>("vitrine");
+
+  const [mesAgents, setMesAgents] = useState<AgentMini[] | null>(null);
+  const [puceAgentsOuverte, setPuceAgentsOuverte] = useState(false);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
@@ -153,6 +186,16 @@ export default function PageModifierAgent() {
     chargerBibliotheque();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, agentId]);
+
+  useEffect(() => {
+    if (!session) return;
+    // Même endpoint que /dashboard (GET /api/profiles/{user_id}) : on
+    // n'a besoin ici que de id/nom/icone_page, mais la route ne renvoie
+    // pas moins -- champs superflus ignorés côté AgentMini.
+    appelerApi(`/api/profiles/${session.user.id}`)
+      .then((r: { agents: AgentMini[] }) => setMesAgents(r.agents))
+      .catch(() => setMesAgents([]));
+  }, [session]);
 
   function chargerDocuments() {
     appelerApi(`/api/agents/${agentId}/documents`)
@@ -289,7 +332,67 @@ export default function PageModifierAgent() {
         </div>
         <h1 className="font-display text-2xl font-bold text-dj-texte">Modifier {nom}</h1>
 
+        <div className="mb-2 mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b border-dj-bordure pb-0">
+          <div className="flex flex-wrap gap-x-6">
+            {SECTIONS.map((s) => (
+              <Onglet key={s.id} actif={sectionActive === s.id} onClick={() => setSectionActive(s.id)}>
+                {s.label}
+              </Onglet>
+            ))}
+          </div>
+
+          {/* Puce "Mes IA" : à part des onglets (même esprit que le
+              bouton "Catégories" du feed) -- ouvre la liste de tes IA,
+              cliquer sur l'une d'elles change d'agent en cours
+              d'édition. */}
+          <div className="relative mb-3">
+            <button
+              type="button"
+              onClick={() => setPuceAgentsOuverte((v) => !v)}
+              className="flex items-center gap-1.5 rounded-lg border border-dj-bordure px-3 py-1.5 text-sm text-dj-texte-muet transition-colors hover:border-dj-accent-1 hover:text-dj-texte"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                <rect x="14" y="14" width="7" height="7" rx="1.5" />
+              </svg>
+              Mes IA
+            </button>
+
+            {puceAgentsOuverte && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setPuceAgentsOuverte(false)} />
+                <div className="absolute right-0 top-full z-50 mt-2 w-64 rounded-2xl border border-dj-bordure bg-dj-surface p-2 shadow-xl">
+                  {!mesAgents || mesAgents.length === 0 ? (
+                    <p className="px-3 py-2 text-sm text-dj-texte-muet">
+                      {mesAgents === null ? "Chargement..." : "Aucune autre IA."}
+                    </p>
+                  ) : (
+                    <div className="flex max-h-64 flex-col gap-1 overflow-y-auto">
+                      {mesAgents.map((a) => (
+                        <Link
+                          key={a.id}
+                          href={`/dashboard/agents/${a.id}/modifier`}
+                          onClick={() => setPuceAgentsOuverte(false)}
+                          className={`flex items-center gap-2 rounded-full px-3 py-2 text-left text-sm transition-colors hover:bg-dj-surface-haute ${
+                            a.id === agentId ? "text-dj-accent-1" : "text-dj-texte"
+                          }`}
+                        >
+                          <span className="text-lg leading-none">{a.icone_page ?? "🤖"}</span>
+                          <span className="truncate">{a.nom}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
         <form onSubmit={enregistrer} className="mt-6 flex flex-col gap-8">
+          {sectionActive === "vitrine" && (
           <section className="flex flex-col gap-4 rounded-2xl border border-dj-bordure bg-dj-surface p-6">
             <h2 className="font-display text-base font-bold text-dj-texte">Vitrine publique</h2>
 
@@ -389,7 +492,9 @@ export default function PageModifierAgent() {
               Agent actif (visible et utilisable publiquement)
             </label>
           </section>
+          )}
 
+          {sectionActive === "comportement" && (
           <section className="flex flex-col gap-4 rounded-2xl border border-dj-bordure bg-dj-surface p-6">
             <h2 className="font-display text-base font-bold text-dj-texte">Comportement</h2>
             <div>
@@ -406,7 +511,9 @@ export default function PageModifierAgent() {
               </p>
             </div>
           </section>
+          )}
 
+          {sectionActive === "connaissance" && (
           <section className="flex flex-col gap-4 rounded-2xl border border-dj-bordure bg-dj-surface p-6">
             <h2 className="font-display text-base font-bold text-dj-texte">
               Base de connaissance
@@ -475,7 +582,9 @@ export default function PageModifierAgent() {
               </div>
             )}
           </section>
+          )}
 
+          {sectionActive === "profil" && (
           <section className="flex flex-col gap-4 rounded-2xl border border-dj-bordure bg-dj-surface p-6">
             <h2 className="font-display text-base font-bold text-dj-texte">
               Profil utilisateur
@@ -530,32 +639,44 @@ export default function PageModifierAgent() {
               + Ajouter un champ
             </button>
           </section>
+          )}
 
-          {erreur && <p className="text-sm text-[#F87171]">{erreur}</p>}
+          {(["vitrine", "comportement", "connaissance", "profil"] as SectionId[]).includes(
+            sectionActive
+          ) && (
+            <>
+              {erreur && <p className="text-sm text-[#F87171]">{erreur}</p>}
 
-          <div className="flex items-center gap-3">
-            <button
-              type="submit"
-              disabled={enregistrement}
-              className="rounded-full bg-dj-gradient px-6 py-3 text-sm font-bold text-[#1A0D02] transition-transform hover:-translate-y-0.5 disabled:opacity-50"
-            >
-              {enregistrement ? "Enregistrement…" : "Enregistrer"}
-            </button>
-            {message && <span className="text-sm text-dj-texte-muet">{message}</span>}
-          </div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="submit"
+                  disabled={enregistrement}
+                  className="rounded-full bg-dj-gradient px-6 py-3 text-sm font-bold text-[#1A0D02] transition-transform hover:-translate-y-0.5 disabled:opacity-50"
+                >
+                  {enregistrement ? "Enregistrement…" : "Enregistrer"}
+                </button>
+                {message && <span className="text-sm text-dj-texte-muet">{message}</span>}
+              </div>
+            </>
+          )}
         </form>
 
-        <section className="mt-10 border-t border-dj-bordure pt-8">
+        {sectionActive === "droits" && (
+        <section className="mt-6">
           <h2 className="text-lg font-bold mb-4">Droits de l&apos;agent</h2>
           <DroitsAgent agentId={agentId} />
         </section>
+        )}
 
-        <section className="mt-10 border-t border-dj-bordure pt-8">
+        {sectionActive === "proactivite" && (
+        <section className="mt-6">
           <h2 className="text-lg font-bold mb-4">Proactivité</h2>
           <ProactiviteAgent agentId={agentId} />
         </section>
+        )}
 
-        <section className="mt-10 flex flex-col gap-4">
+        {sectionActive === "documents" && (
+        <section className="mt-6 flex flex-col gap-4">
           <h2 className="font-display text-lg font-bold text-dj-texte">Documents PDF indexés</h2>
 
           {documents === null && <p className="text-sm text-dj-texte-muet">Chargement...</p>}
@@ -605,8 +726,10 @@ export default function PageModifierAgent() {
             </button>
           </div>
         </section>
+        )}
 
-        <section className="mt-10 flex flex-col gap-4">
+        {sectionActive === "bibliotheque" && (
+        <section className="mt-6 flex flex-col gap-4">
           <h2 className="font-display text-lg font-bold text-dj-texte">
             Bibliothèque (images, audio, vidéo, PDF...)
           </h2>
@@ -679,8 +802,9 @@ export default function PageModifierAgent() {
             </div>
           </div>
         </section>
+        )}
 
-        <SectionMiseAJour agentId={agentId} />
+        {sectionActive === "maj" && <SectionMiseAJour agentId={agentId} />}
       </main>
     </div>
   );
@@ -801,5 +925,34 @@ function SectionMiseAJour({ agentId }: { agentId: string }) {
         </div>
       )}
     </section>
+  );
+}
+
+// Même pattern que l'onglet du feed (djiguigne-frontend/app/page.tsx),
+// repris ici tel quel (Bourama, 27/07 : "je veux que le dashboard
+// ressemble à ça pour les sections") : une ligne de couleur sous
+// l'onglet actif, transparent au repos pour ne pas sauter d'1-2px au
+// clic.
+function Onglet({
+  actif,
+  onClick,
+  children,
+}: {
+  actif: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`border-b-2 px-1 pb-3 text-sm transition-colors ${
+        actif
+          ? "border-dj-accent-1 font-medium text-dj-texte"
+          : "border-transparent text-dj-texte-muet hover:text-dj-texte"
+      }`}
+    >
+      {children}
+    </button>
   );
 }
