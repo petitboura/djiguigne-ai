@@ -65,6 +65,13 @@ export const dictionaries = {
       title: "Le produit",
       intro:
         "Djiguignè AI est un laboratoire d'IA spécialisées : des créateurs sélectionnés y publient des agents dédiés à un domaine précis, que n'importe qui peut utiliser immédiatement, sans compétence technique.",
+      sections: {
+        matieres: "Matières",
+        metier: "Métier",
+        filiere: "Filière",
+        domaine: "Domaine",
+      },
+      faqButton: "FAQ",
       faqTitle: "Tarifs et accès",
       faq: [
         {
@@ -190,6 +197,13 @@ export const dictionaries = {
       title: "The product",
       intro:
         "Djiguignè AI is a specialized AI laboratory: selected creators publish agents dedicated to a precise domain, which anyone can use right away, with no technical skills required.",
+      sections: {
+        matieres: "Subjects",
+        metier: "Profession",
+        filiere: "Track",
+        domaine: "Domain",
+      },
+      faqButton: "FAQ",
       faqTitle: "Pricing and access",
       faq: [
         {

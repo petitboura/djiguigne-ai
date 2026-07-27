@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getDictionary } from "@/lib/dictionaries";
-import { siteConfig, type Locale } from "@/lib/site-config";
+import { type Locale } from "@/lib/site-config";
 import { JsonLd } from "@/components/JsonLd";
 
 export function generateMetadata({ params }: { params: { locale: Locale } }): Metadata {
@@ -32,48 +31,44 @@ export default function ServicesPage({ params }: { params: { locale: Locale } })
       />
 
       <section className="mx-auto max-w-2xl px-5 py-16">
-        <h1 className="animate-dj-fade-up font-display text-3xl font-extrabold text-dj-texte sm:text-4xl">
-          {dict.services.title}
-        </h1>
-        <p className="mt-5 animate-dj-fade-up text-lg text-dj-texte-muet" style={{ animationDelay: "0.1s" }}>
-          {dict.services.intro}
-        </p>
-
-        <div className="mt-8 flex flex-col gap-3 animate-dj-fade-up sm:flex-row sm:items-center" style={{ animationDelay: "0.2s" }}>
-          <Link
-            href={siteConfig.appUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block rounded-full bg-dj-gradient px-6 py-3 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5"
-          >
-            {dict.nav.cta}
-          </Link>
-          <Link
-            href={`/${locale}/contact`}
-            className="text-sm font-medium text-dj-texte-muet underline-offset-4 hover:text-dj-texte hover:underline"
-          >
-            {dict.nav.contact}
-          </Link>
-        </div>
-
-        <div className="mt-14">
-          <h2 className="mb-6 font-display text-2xl font-bold text-dj-texte">{dict.services.faqTitle}</h2>
-          <div className="flex flex-col gap-3">
-            {dict.services.faq.map((item) => (
-              <details
-                key={item.q}
-                className="group rounded-xl border border-dj-bordure bg-dj-surface p-4 open:border-dj-bordure-forte"
+        {/*
+          Maquette uniquement (Bourama, 2026-07-27) : les 4 boutons de
+          section ci-dessous ne sont PAS encore branchés -- pas de
+          onClick, pas d'appel API. Le comportement réel (afficher les
+          IA d'une section selon leur date/moment de création) sera
+          câblé dans une session dédiée une fois le modèle de données
+          confirmé. Rien à gauche pour l'instant (laissé volontairement
+          vide).
+        */}
+        <div className="flex justify-end">
+          <div className="flex w-full max-w-xs flex-col gap-3 animate-dj-fade-up">
+            {(
+              [
+                dict.services.sections.matieres,
+                dict.services.sections.metier,
+                dict.services.sections.filiere,
+                dict.services.sections.domaine,
+              ] as const
+            ).map((label, i) => (
+              <button
+                key={label}
+                type="button"
+                className="rounded-xl border border-dj-bordure bg-dj-surface px-5 py-4 text-left font-display text-base font-semibold text-dj-texte transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute"
+                style={{ animationDelay: `${i * 0.05}s` }}
               >
-                <summary className="cursor-pointer list-none font-display text-sm font-semibold text-dj-texte marker:content-none">
-                  <span className="flex items-center justify-between gap-3">
-                    {item.q}
-                    <span className="text-dj-accent-1 transition-transform group-open:rotate-45">+</span>
-                  </span>
-                </summary>
-                <p className="mt-3 text-sm text-dj-texte-muet">{item.a}</p>
-              </details>
+                {label}
+              </button>
             ))}
           </div>
+        </div>
+
+        <div className="mt-6 flex justify-end animate-dj-fade-up" style={{ animationDelay: "0.2s" }}>
+          <button
+            type="button"
+            className="rounded-full border border-dj-bordure px-5 py-2 text-sm font-medium text-dj-texte-muet transition-colors hover:border-dj-bordure-forte hover:text-dj-texte"
+          >
+            {dict.services.faqButton}
+          </button>
         </div>
       </section>
     </>
