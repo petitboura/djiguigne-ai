@@ -51,12 +51,17 @@ const config: Config = {
           "0%, 100%": { opacity: "0.55", transform: "scale(1)" },
           "50%": { opacity: "0.9", transform: "scale(1.06)" },
         },
+        "dj-scroll": {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
       },
       animation: {
         "dj-fade-up": "dj-fade-up 0.5s ease both",
         "dj-fade-in": "dj-fade-in 0.8s ease both",
         "dj-orbit": "dj-orbit 18s linear infinite",
         "dj-glow": "dj-glow 3.2s ease-in-out infinite",
+        "dj-scroll": "dj-scroll 32s linear infinite",
       },
     },
   },

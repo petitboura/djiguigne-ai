@@ -5,6 +5,7 @@ import { getDictionary } from "@/lib/dictionaries";
 import { siteConfig, type Locale } from "@/lib/site-config";
 import { JsonLd } from "@/components/JsonLd";
 import { BoutonDevenirCreateur } from "@/components/BoutonDevenirCreateur";
+import { RubanAgents } from "@/components/RubanAgents";
 
 export function generateMetadata({ params }: { params: { locale: Locale } }): Metadata {
   const dict = getDictionary(params.locale);
@@ -120,6 +121,8 @@ export default function HomePage({ params }: { params: { locale: Locale } }) {
             annulerLabel={dict.home.heroCtaExplicationAnnuler}
           />
         </div>
+
+        <RubanAgents />
       </section>
 
       {/* --- Ce que fait la plateforme --- */}
