@@ -71,10 +71,9 @@ const SECTIONS = [
 ] as const;
 type SectionId = (typeof SECTIONS)[number]["id"];
 
-// Puce "Mes IA" (à côté des onglets, même esprit que le bouton
-// "Catégories" du feed : un filtre/raccourci à part, pas une 6e section)
-// -- ouvre la liste des IA du créateur, cliquer sur l'une d'elles change
-// d'agent en cours d'édition (voir docstring du bouton plus bas).
+// Liste des IA du créateur, affichée en permanence dans la colonne de
+// gauche (Bourama, 27/07 : "comme des pubs", plus de puce/popup) --
+// cliquer sur l'une d'elles change d'agent en cours d'édition.
 type AgentMini = { id: string; nom: string; icone_page?: string };
 
 export default function PageModifierAgent() {
@@ -141,7 +140,6 @@ export default function PageModifierAgent() {
   const [sectionActive, setSectionActive] = useState<SectionId>("vitrine");
 
   const [mesAgents, setMesAgents] = useState<AgentMini[] | null>(null);
-  const [puceAgentsOuverte, setPuceAgentsOuverte] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -325,70 +323,53 @@ export default function PageModifierAgent() {
     <div className="min-h-screen">
       <TopBar />
 
-      <main className="mx-auto max-w-2xl px-5 py-10">
+      <main className="mx-auto max-w-6xl px-5 py-10">
+        <div className="flex flex-col gap-8 md:flex-row md:items-start">
+          {/* Liste de tes IA "comme des pubs" (Bourama, 27/07) : plus de
+              puce/popup "Mes IA" -- la liste reste affichée en
+              permanence à gauche, cette page EST le dashboard. L'ancien
+              /dashboard (grille "IA créées (N)" + bouton créer)
+              disparaît, son contenu est ici. */}
+          <aside className="flex flex-shrink-0 flex-row gap-3 overflow-x-auto pb-2 md:w-64 md:flex-col md:overflow-visible md:pb-0">
+            <Link
+              href="/dashboard/agents/nouveau"
+              className="flex flex-shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-2xl border border-dashed border-dj-bordure px-4 py-3 text-sm font-medium text-dj-texte-muet transition-colors hover:border-dj-accent-1 hover:text-dj-texte md:justify-start"
+            >
+              + Créer une IA
+            </Link>
+
+            {mesAgents === null && (
+              <p className="px-3 py-3 text-sm text-dj-texte-muet">Chargement...</p>
+            )}
+            {mesAgents?.map((a) => (
+              <Link
+                key={a.id}
+                href={`/dashboard/agents/${a.id}/modifier`}
+                className={`flex flex-shrink-0 items-center gap-2 whitespace-nowrap rounded-2xl border px-4 py-3 text-sm transition-colors ${
+                  a.id === agentId
+                    ? "border-dj-accent-1 bg-dj-surface-haute text-dj-texte"
+                    : "border-dj-bordure text-dj-texte-muet hover:border-dj-bordure-forte hover:text-dj-texte"
+                }`}
+              >
+                <span className="text-lg leading-none">{a.icone_page ?? "🤖"}</span>
+                <span className="truncate">{a.nom}</span>
+              </Link>
+            ))}
+          </aside>
+
+          <div className="min-w-0 flex-1">
         <div className="mb-5 flex gap-2">
           <BoutonRetour />
           <BoutonAccueil />
         </div>
         <h1 className="font-display text-2xl font-bold text-dj-texte">Modifier {nom}</h1>
 
-        <div className="mb-2 mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b border-dj-bordure pb-0">
-          <div className="flex flex-wrap gap-x-6">
+        <div className="mb-2 mt-6 flex flex-wrap gap-x-6 gap-y-3 border-b border-dj-bordure pb-0">
             {SECTIONS.map((s) => (
               <Onglet key={s.id} actif={sectionActive === s.id} onClick={() => setSectionActive(s.id)}>
                 {s.label}
               </Onglet>
             ))}
-          </div>
-
-          {/* Puce "Mes IA" : à part des onglets (même esprit que le
-              bouton "Catégories" du feed) -- ouvre la liste de tes IA,
-              cliquer sur l'une d'elles change d'agent en cours
-              d'édition. */}
-          <div className="relative mb-3">
-            <button
-              type="button"
-              onClick={() => setPuceAgentsOuverte((v) => !v)}
-              className="flex items-center gap-1.5 rounded-lg border border-dj-bordure px-3 py-1.5 text-sm text-dj-texte-muet transition-colors hover:border-dj-accent-1 hover:text-dj-texte"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="3" width="7" height="7" rx="1.5" />
-                <rect x="14" y="3" width="7" height="7" rx="1.5" />
-                <rect x="3" y="14" width="7" height="7" rx="1.5" />
-                <rect x="14" y="14" width="7" height="7" rx="1.5" />
-              </svg>
-              Mes IA
-            </button>
-
-            {puceAgentsOuverte && (
-              <>
-                <div className="fixed inset-0 z-40" onClick={() => setPuceAgentsOuverte(false)} />
-                <div className="absolute right-0 top-full z-50 mt-2 w-64 rounded-2xl border border-dj-bordure bg-dj-surface p-2 shadow-xl">
-                  {!mesAgents || mesAgents.length === 0 ? (
-                    <p className="px-3 py-2 text-sm text-dj-texte-muet">
-                      {mesAgents === null ? "Chargement..." : "Aucune autre IA."}
-                    </p>
-                  ) : (
-                    <div className="flex max-h-64 flex-col gap-1 overflow-y-auto">
-                      {mesAgents.map((a) => (
-                        <Link
-                          key={a.id}
-                          href={`/dashboard/agents/${a.id}/modifier`}
-                          onClick={() => setPuceAgentsOuverte(false)}
-                          className={`flex items-center gap-2 rounded-full px-3 py-2 text-left text-sm transition-colors hover:bg-dj-surface-haute ${
-                            a.id === agentId ? "text-dj-accent-1" : "text-dj-texte"
-                          }`}
-                        >
-                          <span className="text-lg leading-none">{a.icone_page ?? "🤖"}</span>
-                          <span className="truncate">{a.nom}</span>
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
         </div>
 
         <form onSubmit={enregistrer} className="mt-6 flex flex-col gap-8">
@@ -805,6 +786,8 @@ export default function PageModifierAgent() {
         )}
 
         {sectionActive === "maj" && <SectionMiseAJour agentId={agentId} />}
+          </div>
+        </div>
       </main>
     </div>
   );
