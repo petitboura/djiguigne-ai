@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { connecterOuInscrire } from "@/lib/authFallback";
@@ -13,6 +14,7 @@ type MethodeConnexion = "email" | "telephone";
 
 export default function PageConnexion({ params }: { params: { locale: Locale } }) {
   const { locale } = params;
+  const router = useRouter();
   const dict = getDictionary(locale);
   const [methode, setMethode] = useState<MethodeConnexion>("email");
   const [email, setEmail] = useState("");
@@ -44,9 +46,10 @@ export default function PageConnexion({ params }: { params: { locale: Locale } }
       return;
     }
 
-    // Après connexion, on renvoie vers l'app produit (pas de dashboard
-    // encore construit côté vitrine — voir discussion en cours).
-    window.location.href = siteConfig.appUrl;
+    // Reste sur le vitrine après connexion — ne renvoie plus vers l'app
+    // externe (voir discussion du 27/07 : "la connexion dans la vitrine
+    // reste dans la vitrine, il n'emmène nulle part").
+    router.push(`/${locale}`);
   }
 
   return (

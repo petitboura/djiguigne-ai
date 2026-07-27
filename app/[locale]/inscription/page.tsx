@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { inscrireOuConnecter, type TypeCompte } from "@/lib/authFallback";
@@ -13,6 +14,7 @@ type MethodeInscription = "email" | "telephone";
 
 export default function PageInscription({ params }: { params: { locale: Locale } }) {
   const { locale } = params;
+  const router = useRouter();
   const dict = getDictionary(locale);
   const [typeCompte, setTypeCompte] = useState<TypeCompte>("utilisateur");
   const [methode, setMethode] = useState<MethodeInscription>("email");
@@ -45,7 +47,7 @@ export default function PageInscription({ params }: { params: { locale: Locale }
       return;
     }
 
-    window.location.href = siteConfig.appUrl;
+    router.push(`/${locale}`);
   }
 
   return (
