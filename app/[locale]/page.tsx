@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getDictionary } from "@/lib/dictionaries";
-import { siteConfig, type Locale } from "@/lib/site-config";
+import type { Locale } from "@/lib/site-config";
 import { JsonLd } from "@/components/JsonLd";
 import { BoutonDevenirCreateur } from "@/components/BoutonDevenirCreateur";
 import { RubanAgents } from "@/components/RubanAgents";
@@ -106,9 +106,7 @@ export default function HomePage({ params }: { params: { locale: Locale } }) {
           style={{ animationDelay: "0.3s" }}
         >
           <Link
-            href={siteConfig.appUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={`/${locale}/services`}
             className="rounded-full bg-dj-gradient px-6 py-3 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5"
           >
             {dict.home.heroCta}

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { siteConfig, type Locale } from "@/lib/site-config";
+import type { Locale } from "@/lib/site-config";
 import type { getDictionary } from "@/lib/dictionaries";
 import { supabase } from "@/lib/supabase";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -60,14 +60,6 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
 
         <div className="hidden items-center gap-4 md:flex">
           <LanguageSwitcher locale={locale} />
-          {connecte === false && (
-            <Link
-              href={`/${locale}/connexion`}
-              className="text-sm text-dj-texte-muet transition-colors hover:text-dj-texte"
-            >
-              {dict.auth.loginTitle}
-            </Link>
-          )}
           {connecte === true && (
             <Link
               href="/dashboard"
@@ -77,9 +69,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             </Link>
           )}
           <Link
-            href={siteConfig.appUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={`/${locale}/services`}
             className="rounded-full bg-dj-gradient px-4 py-2 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5"
           >
             {dict.nav.cta}
@@ -110,15 +100,6 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
               {l.label}
             </Link>
           ))}
-          {connecte === false && (
-            <Link
-              href={`/${locale}/connexion`}
-              onClick={() => setOpen(false)}
-              className="rounded-lg px-2 py-2.5 text-sm text-dj-texte-muet hover:bg-dj-surface hover:text-dj-texte"
-            >
-              {dict.auth.loginTitle}
-            </Link>
-          )}
           {connecte === true && (
             <Link
               href="/dashboard"
@@ -131,9 +112,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           <div className="mt-2 flex items-center justify-between px-2">
             <LanguageSwitcher locale={locale} />
             <Link
-              href={siteConfig.appUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={`/${locale}/services`}
               onClick={() => setOpen(false)}
               className="rounded-full bg-dj-gradient px-4 py-2 text-sm font-bold text-[#1A0D02]"
             >
