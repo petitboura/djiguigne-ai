@@ -16,23 +16,21 @@ export function generateMetadata({ params }: { params: { locale: Locale } }): Me
   };
 }
 
-// Les 5 étapes du formulaire guidé — reprises telles que décrites dans
-// l'article de blog "creer-agent-ia-specialise-sans-coder" (lib/posts.ts),
-// pour ne jamais raconter deux versions différentes du même processus.
+// Ce que voit un VISITEUR (pas un créateur) : comment trouver et utiliser
+// une IA. Remplace l'ancienne version qui décrivait le formulaire de
+// création (Identité/Comportement/Outils/...) — hors-sujet ici depuis que
+// "Devenir créateur" a son propre flow d'explication dédié (Bourama,
+// 2026-07-27 : "c'est plus la création" sur cette page).
 const STEPS: Record<Locale, { title: string; body: string }[]> = {
   fr: [
-    { title: "Identité", body: "Le ton, la posture et les limites de l'agent." },
-    { title: "Comportement", body: "Comment il réagit selon le type de requête." },
-    { title: "Outils", body: "Ce que l'agent peut faire, au-delà de répondre." },
-    { title: "Base de connaissance", body: "PDF, page Notion ou texte libre, modifiable à tout moment." },
-    { title: "Interface", body: "La manière dont les utilisateurs interagissent avec lui." },
+    { title: "Choisis une matière", body: "Maths, code, langues, coaching... filtre les IA par domaine." },
+    { title: "Trouve ton IA", body: "Regarde son profil, sa description, ce qu'elle sait faire." },
+    { title: "Discute avec elle", body: "Directement dans le chat, sans rien installer ni configurer." },
   ],
   en: [
-    { title: "Identity", body: "The agent's tone, posture, and limits." },
-    { title: "Behavior", body: "How it reacts depending on the type of request." },
-    { title: "Tools", body: "What the agent can do, beyond just answering." },
-    { title: "Knowledge base", body: "A PDF, a Notion page, or free text, editable anytime." },
-    { title: "Interface", body: "How users interact with it." },
+    { title: "Pick a subject", body: "Math, code, languages, coaching... filter AIs by domain." },
+    { title: "Find your AI", body: "Check its profile, description, and what it can do." },
+    { title: "Start chatting", body: "Right in the chat, nothing to install or configure." },
   ],
 };
 
@@ -133,10 +131,10 @@ export default function HomePage({ params }: { params: { locale: Locale } }) {
         <p className="mx-auto mt-4 max-w-2xl text-dj-texte-muet">{dict.home.sectionWhatBody}</p>
       </section>
 
-      {/* --- Process en 5 étapes : vraie séquence -> numérotation
-          justifiée (voir skill frontend-design). --- */}
+      {/* --- Process en 3 étapes (côté visiteur) : vraie séquence ->
+          numérotation justifiée (voir skill frontend-design). --- */}
       <section className="mx-auto max-w-4xl px-5 py-10">
-        <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <ol className="grid gap-4 sm:grid-cols-3">
           {steps.map((step, i) => (
             <li
               key={step.title}
