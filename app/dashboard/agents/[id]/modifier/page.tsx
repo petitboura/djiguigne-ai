@@ -66,15 +66,21 @@ const SECTIONS = [
   { id: "droits", label: "Droits" },
   { id: "proactivite", label: "Proactivité" },
   { id: "documents", label: "Documents PDF" },
-  { id: "bibliotheque", label: "Bibliothèque" },
   { id: "maj", label: "Mise à jour" },
 ] as const;
-type SectionId = (typeof SECTIONS)[number]["id"];
+type SectionId = (typeof SECTIONS)[number]["id"] | "bibliotheque";
 
 // Liste des IA du créateur, affichée en permanence dans la colonne de
 // gauche (Bourama, 27/07 : "comme des pubs", plus de puce/popup) --
 // cliquer sur l'une d'elles change d'agent en cours d'édition.
 type AgentMini = { id: string; nom: string; icone_page?: string };
+
+function categorieFichierBiblio(mime: string): "image" | "video" | "audio" | "document" {
+  if (mime.startsWith("image/")) return "image";
+  if (mime.startsWith("video/")) return "video";
+  if (mime.startsWith("audio/")) return "audio";
+  return "document";
+}
 
 export default function PageModifierAgent() {
   const router = useRouter();
@@ -132,6 +138,13 @@ export default function PageModifierAgent() {
   const [titreFichierBiblio, setTitreFichierBiblio] = useState("");
   const [descriptionFichierBiblio, setDescriptionFichierBiblio] = useState("");
   const [envoiBiblio, setEnvoiBiblio] = useState(false);
+  // Sous-onglets Bibliothèque (Bourama, 27/07 : "il y a plusieurs [types]
+  // du coup je veux que... son clic affiche aussi des onglets, images
+  // vidéos etc") -- catégorie déduite du type_mime déjà stocké côté
+  // backend (core/bibliotheque_fichiers.py), pas de nouveau champ.
+  const [biblioFiltre, setBiblioFiltre] = useState<
+    "tous" | "image" | "video" | "audio" | "document"
+  >("tous");
 
   const [enregistrement, setEnregistrement] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -363,6 +376,29 @@ export default function PageModifierAgent() {
                 <path d="M15 6l-6 6 6 6" />
               </svg>
             </button>
+
+            {/* Bibliothèque sort des onglets du haut et vit ici (Bourama,
+                27/07) : "autre chose" que les 8 sections simples --
+                plusieurs types de contenu (image/vidéo/document...), son
+                clic affiche ses propres sous-onglets (voir plus bas,
+                sectionActive === "bibliotheque"). */}
+            <button
+              type="button"
+              onClick={() => setSectionActive("bibliotheque")}
+              title="Bibliothèque"
+              className={`flex flex-shrink-0 items-center gap-2 whitespace-nowrap rounded-2xl border px-4 py-3 text-sm transition-colors md:justify-start ${
+                sidebarReduite ? "md:w-10 md:justify-center md:px-0" : ""
+              } ${
+                sectionActive === "bibliotheque"
+                  ? "border-dj-accent-1 bg-dj-surface-haute text-dj-texte"
+                  : "border-dj-bordure text-dj-texte-muet hover:border-dj-bordure-forte hover:text-dj-texte"
+              }`}
+            >
+              <span className="text-lg leading-none">📚</span>
+              <span className={sidebarReduite ? "truncate md:hidden" : "truncate"}>Bibliothèque</span>
+            </button>
+
+            <div className="my-1 hidden h-px w-full bg-dj-bordure md:block" />
 
             {mesAgents === null && (
               <p className="px-3 py-3 text-sm text-dj-texte-muet">Chargement...</p>
@@ -749,13 +785,33 @@ export default function PageModifierAgent() {
             réponses de l&apos;IA, comme ci-dessus.
           </p>
 
+          <div className="flex flex-wrap gap-x-5 gap-y-2 border-b border-dj-bordure pb-0">
+            {(
+              [
+                ["tous", "Tous"],
+                ["image", "Images"],
+                ["video", "Vidéos"],
+                ["audio", "Audio"],
+                ["document", "Documents"],
+              ] as const
+            ).map(([valeur, label]) => (
+              <Onglet key={valeur} actif={biblioFiltre === valeur} onClick={() => setBiblioFiltre(valeur)}>
+                {label}
+              </Onglet>
+            ))}
+          </div>
+
           {fichiersBiblio === null && <p className="text-sm text-dj-texte-muet">Chargement...</p>}
           {fichiersBiblio?.length === 0 && (
             <p className="text-sm text-dj-texte-muet">Aucun fichier dans la bibliothèque.</p>
           )}
           {fichiersBiblio && fichiersBiblio.length > 0 && (
             <div className="flex flex-col gap-2">
-              {fichiersBiblio.map((f) => (
+              {fichiersBiblio
+                .filter(
+                  (f) => biblioFiltre === "tous" || categorieFichierBiblio(f.type_mime) === biblioFiltre
+                )
+                .map((f) => (
                 <div
                   key={f.id}
                   className="flex items-center justify-between rounded-xl border border-dj-bordure bg-dj-surface px-4 py-3"
