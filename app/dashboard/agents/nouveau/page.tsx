@@ -11,6 +11,7 @@ import { BoutonAccueil } from "@/components/BoutonAccueil";
 import { ChampImage } from "@/components/ChampImage";
 import { BoutonPartager } from "@/components/BoutonPartager";
 import { chargerCategories, type Categorie } from "@/components/PopupCategories";
+import { MATIERES } from "@/lib/matieres";
 import { DroitsAgentCreation } from "@/components/DroitsAgentCreation";
 
 // Étape D.6 (pivot social) : formulaire de création d'agent, nouveau flow
@@ -71,20 +72,6 @@ function FormulaireCreerAgent() {
   // categorie_id plus tard").
   const [categorie, setCategorie] = useState<Categorie | null>(null);
 
-  // Bloc "Matières" (Bourama, 2026-07-27) : maquette uniquement, comme
-  // les boutons de section sur /services -- PAS envoyé dans le payload
-  // POST /api/agents pour l'instant, pas de câblage avec categorie_id.
-  const MATIERES = [
-    "Informatique",
-    "Physique",
-    "Économie",
-    "Chimie",
-    "Anglais",
-    "SVT (Biologie)",
-    "Français",
-    "Gestion",
-    "Arabe",
-  ] as const;
   const [matiereChoisie, setMatiereChoisie] = useState<string | null>(null);
   const [autreMatiereTexte, setAutreMatiereTexte] = useState("");
 
@@ -172,6 +159,22 @@ function FormulaireCreerAgent() {
       })
       .catch(() => {});
   }, [searchParams]);
+
+  // Présélection de la matière transmise en query param (Bourama,
+  // 2026-07-27) : arrivée via "Devenir créateur" -> choix de la matière
+  // sur l'accueil. Si la valeur ne correspond à aucune matière fixe de
+  // la liste, elle est traitée comme "Autre" avec le texte pré-rempli.
+  useEffect(() => {
+    const matiere = searchParams.get("matiere");
+    if (!matiere) return;
+    if ((MATIERES as readonly string[]).includes(matiere)) {
+      setMatiereChoisie(matiere);
+    } else {
+      setMatiereChoisie("Autre");
+      setAutreMatiereTexte(matiere);
+    }
+  }, [searchParams]);
+
 
   function majComportement(i: number, champ: keyof LigneComportement, valeur: string) {
     setComportements((prev) =>
