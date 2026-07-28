@@ -4,6 +4,7 @@ import { siteConfig, type Locale } from "@/lib/site-config";
 import { getDictionary } from "@/lib/dictionaries";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { CtaBasDePage } from "@/components/CtaBasDePage";
 import { CookieBanner } from "@/components/CookieBanner";
 import { JsonLd } from "@/components/JsonLd";
 
@@ -75,6 +76,7 @@ export default function LocaleLayout({
       <div className="flex min-h-screen flex-col">
         <Header locale={locale} dict={dict} />
         <main className="flex-1">{children}</main>
+        <CtaBasDePage locale={locale} dict={dict} />
         <Footer locale={locale} dict={dict} />
       </div>
       <CookieBanner locale={locale} dict={dict} />
