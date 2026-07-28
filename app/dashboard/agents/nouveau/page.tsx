@@ -10,7 +10,7 @@ import { BoutonRetour } from "@/components/BoutonRetour";
 import { BoutonAccueil } from "@/components/BoutonAccueil";
 import { ChampImage } from "@/components/ChampImage";
 import { BoutonPartager } from "@/components/BoutonPartager";
-import { PopupCategories, chargerCategories, type Categorie } from "@/components/PopupCategories";
+import { chargerCategories, type Categorie } from "@/components/PopupCategories";
 import { DroitsAgentCreation } from "@/components/DroitsAgentCreation";
 
 // Étape D.6 (pivot social) : formulaire de création d'agent, nouveau flow
@@ -63,10 +63,30 @@ function FormulaireCreerAgent() {
   // courte phrase affichée sous le titre au premier écran du chat
   // (équivalent du champ "Phrase d'accueil" du formulaire Streamlit).
   const [sousTitre, setSousTitre] = useState("");
-  // Catégorie obligatoire (Bourama, 2026-07-15) : bouton "Créer" bloqué
-  // tant que rien n'est choisi (voir validation dans gererSoumission).
+  // Catégorie : gardé pour la présélection via query param (arrivée
+  // depuis l'accueil), mais le picker manuel (33 catégories en base) est
+  // retiré du formulaire (Bourama, 2026-07-27) au profit du bloc
+  // "Matières" ci-dessous. Pas encore de UI pour choisir `categorie`
+  // sans passer par l'URL -- accepté pour l'instant (Bourama : "je gère
+  // categorie_id plus tard").
   const [categorie, setCategorie] = useState<Categorie | null>(null);
-  const [popupCategorieOuvert, setPopupCategorieOuvert] = useState(false);
+
+  // Bloc "Matières" (Bourama, 2026-07-27) : maquette uniquement, comme
+  // les boutons de section sur /services -- PAS envoyé dans le payload
+  // POST /api/agents pour l'instant, pas de câblage avec categorie_id.
+  const MATIERES = [
+    "Informatique",
+    "Physique",
+    "Économie",
+    "Chimie",
+    "Anglais",
+    "SVT (Biologie)",
+    "Français",
+    "Gestion",
+    "Arabe",
+  ] as const;
+  const [matiereChoisie, setMatiereChoisie] = useState<string | null>(null);
+  const [autreMatiereTexte, setAutreMatiereTexte] = useState("");
 
   const [ton, setTon] = useState(TON_OPTIONS[0]);
   const [postureGenerale, setPostureGenerale] = useState("");
@@ -176,10 +196,12 @@ function FormulaireCreerAgent() {
       setErreur("Remplis au moins la posture générale ou les limites globales.");
       return;
     }
-    if (!categorie) {
-      setErreur("Choisis une catégorie pour ton agent.");
-      return;
-    }
+    // Validation "catégorie obligatoire" retirée avec le picker manuel
+    // (Bourama, 2026-07-27) : plus aucun moyen dans l'UI de fixer
+    // `categorie` sans passer par le query param -- garder ce blocage
+    // aurait rendu le formulaire impossible à soumettre. `categorie_id`
+    // repart donc potentiellement vide tant que le bloc "Matières"
+    // n'est pas branché.
 
     setEnvoi(true);
     let idAgentCree: string | null = null;
@@ -359,29 +381,45 @@ function FormulaireCreerAgent() {
             </div>
 
             <div>
-              <label className={labelClasse}>
-                Catégorie <span className="text-dj-accent-1">*</span>
-              </label>
+              <label className={labelClasse}>Matière</label>
               <p className="mt-1 text-xs text-dj-texte-muet">
-                Obligatoire — c&apos;est ce qui permet aux visiteurs de trouver ton
-                agent par thème.
+                Maquette pour l&apos;instant — pas encore envoyé à la création.
               </p>
-              <button
-                type="button"
-                onClick={() => setPopupCategorieOuvert(true)}
-                className={`${champClasse} flex items-center justify-between text-left`}
-              >
-                <span className={categorie ? "text-dj-texte" : "text-dj-texte-muet"}>
-                  {categorie ? categorie.nom : "Choisir une catégorie..."}
-                </span>
-                <span aria-hidden="true">▾</span>
-              </button>
-              <PopupCategories
-                ouvert={popupCategorieOuvert}
-                onFermer={() => setPopupCategorieOuvert(false)}
-                categorieActuelleId={categorie?.id}
-                onChoisir={setCategorie}
-              />
+              <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {MATIERES.map((m) => (
+                  <label
+                    key={m}
+                    className="flex items-center gap-2 rounded-lg border border-dj-bordure bg-dj-surface-haute px-3 py-2 text-sm text-dj-texte"
+                  >
+                    <input
+                      type="radio"
+                      name="matiere"
+                      checked={matiereChoisie === m}
+                      onChange={() => setMatiereChoisie(m)}
+                      className="accent-dj-accent-1"
+                    />
+                    {m}
+                  </label>
+                ))}
+                <label className="flex items-center gap-2 rounded-lg border border-dj-bordure bg-dj-surface-haute px-3 py-2 text-sm text-dj-texte">
+                  <input
+                    type="radio"
+                    name="matiere"
+                    checked={matiereChoisie === "Autre"}
+                    onChange={() => setMatiereChoisie("Autre")}
+                    className="accent-dj-accent-1"
+                  />
+                  Autre
+                </label>
+              </div>
+              {matiereChoisie === "Autre" && (
+                <input
+                  value={autreMatiereTexte}
+                  onChange={(e) => setAutreMatiereTexte(e.target.value)}
+                  placeholder="Précise la matière..."
+                  className={`${champClasse} mt-2`}
+                />
+              )}
             </div>
 
             <div>
