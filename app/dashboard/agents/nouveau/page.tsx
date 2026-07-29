@@ -10,7 +10,6 @@ import { BoutonRetour } from "@/components/BoutonRetour";
 import { BoutonAccueil } from "@/components/BoutonAccueil";
 import { ChampImage } from "@/components/ChampImage";
 import { BoutonPartager } from "@/components/BoutonPartager";
-import { chargerCategories, type Categorie } from "@/components/PopupCategories";
 import { MATIERES } from "@/lib/matieres";
 import { DroitsAgentCreation } from "@/components/DroitsAgentCreation";
 
@@ -64,16 +63,22 @@ function FormulaireCreerAgent() {
   // courte phrase affichée sous le titre au premier écran du chat
   // (équivalent du champ "Phrase d'accueil" du formulaire Streamlit).
   const [sousTitre, setSousTitre] = useState("");
-  // Catégorie : gardé pour la présélection via query param (arrivée
-  // depuis l'accueil), mais le picker manuel (33 catégories en base) est
-  // retiré du formulaire (Bourama, 2026-07-27) au profit du bloc
-  // "Matières" ci-dessous. Pas encore de UI pour choisir `categorie`
-  // sans passer par l'URL -- accepté pour l'instant (Bourama : "je gère
-  // categorie_id plus tard").
-  const [categorie, setCategorie] = useState<Categorie | null>(null);
-
+  // Système "matière" (2026-07-29) : remplace entièrement l'ancien
+  // système de catégories dans ce formulaire (indépendant, aucun lien
+  // entre les deux -- voir migration ajout_matiere_agents côté backend).
+  // Une seule IA par matière : la liste ne propose que les matières
+  // encore libres (GET /api/matieres), "Autre" y compris.
   const [matiereChoisie, setMatiereChoisie] = useState<string | null>(null);
   const [autreMatiereTexte, setAutreMatiereTexte] = useState("");
+  const [matieresDisponibles, setMatieresDisponibles] = useState<
+    { nom: string; disponible: boolean }[] | null
+  >(null);
+
+  useEffect(() => {
+    appelerApi("/api/matieres")
+      .then((data) => setMatieresDisponibles(data as { nom: string; disponible: boolean }[]))
+      .catch(() => setMatieresDisponibles([]));
+  }, []);
 
   const [ton, setTon] = useState(TON_OPTIONS[0]);
   const [postureGenerale, setPostureGenerale] = useState("");
@@ -145,21 +150,6 @@ function FormulaireCreerAgent() {
     });
   }, [router]);
 
-  // Présélection de la catégorie transmise en query param (Bourama,
-  // 2026-07-27) : quand on arrive ici via "Devenir créateur" -> choix de
-  // la matière sur l'accueil, la catégorie est déjà connue -- pas besoin
-  // de la re-choisir dans le formulaire.
-  useEffect(() => {
-    const categorieId = searchParams.get("categorie");
-    if (!categorieId) return;
-    chargerCategories()
-      .then((categories) => {
-        const trouvee = categories.find((c) => c.id === categorieId);
-        if (trouvee) setCategorie(trouvee);
-      })
-      .catch(() => {});
-  }, [searchParams]);
-
   // Présélection de la matière transmise en query param (Bourama,
   // 2026-07-27) : arrivée via "Devenir créateur" -> choix de la matière
   // sur l'accueil. Si la valeur ne correspond à aucune matière fixe de
@@ -199,12 +189,16 @@ function FormulaireCreerAgent() {
       setErreur("Remplis au moins la posture générale ou les limites globales.");
       return;
     }
-    // Validation "catégorie obligatoire" retirée avec le picker manuel
-    // (Bourama, 2026-07-27) : plus aucun moyen dans l'UI de fixer
-    // `categorie` sans passer par le query param -- garder ce blocage
-    // aurait rendu le formulaire impossible à soumettre. `categorie_id`
-    // repart donc potentiellement vide tant que le bloc "Matières"
-    // n'est pas branché.
+    // Matière obligatoire (2026-07-29) : remplace l'ancienne validation
+    // "catégorie obligatoire" -- même exigence, nouveau système.
+    if (!matiereChoisie) {
+      setErreur("La matière est obligatoire.");
+      return;
+    }
+    if (matiereChoisie === "Autre" && !autreMatiereTexte.trim()) {
+      setErreur('Précise la matière dans "Autre".');
+      return;
+    }
 
     setEnvoi(true);
     let idAgentCree: string | null = null;
@@ -229,7 +223,8 @@ function FormulaireCreerAgent() {
           image_vitrine_url: imageVitrineUrl || null,
           description,
           sous_titre: sousTitre,
-          categorie_id: categorie?.id,
+          matiere: matiereChoisie,
+          matiere_detail: matiereChoisie === "Autre" ? autreMatiereTexte.trim() : null,
           profil_utilisateur_schema: profilChamps
             .filter((c) => c.nom.trim())
             .map((c) => ({ nom: c.nom.trim(), description: c.description.trim() })),
@@ -386,34 +381,34 @@ function FormulaireCreerAgent() {
             <div>
               <label className={labelClasse}>Matière</label>
               <p className="mt-1 text-xs text-dj-texte-muet">
-                Maquette pour l&apos;instant — pas encore envoyé à la création.
+                Une seule IA par matière — celles déjà prises n&apos;apparaissent plus ici.
               </p>
+              {matieresDisponibles === null && (
+                <p className="mt-2 text-sm text-dj-texte-muet">Chargement...</p>
+              )}
+              {matieresDisponibles && matieresDisponibles.every((m) => !m.disponible) && (
+                <p className="mt-2 text-sm text-dj-texte-muet">
+                  Toutes les matières sont déjà prises pour le moment.
+                </p>
+              )}
               <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {MATIERES.map((m) => (
-                  <label
-                    key={m}
-                    className="flex items-center gap-2 rounded-lg border border-dj-bordure bg-dj-surface-haute px-3 py-2 text-sm text-dj-texte"
-                  >
-                    <input
-                      type="radio"
-                      name="matiere"
-                      checked={matiereChoisie === m}
-                      onChange={() => setMatiereChoisie(m)}
-                      className="accent-dj-accent-1"
-                    />
-                    {m}
-                  </label>
-                ))}
-                <label className="flex items-center gap-2 rounded-lg border border-dj-bordure bg-dj-surface-haute px-3 py-2 text-sm text-dj-texte">
-                  <input
-                    type="radio"
-                    name="matiere"
-                    checked={matiereChoisie === "Autre"}
-                    onChange={() => setMatiereChoisie("Autre")}
-                    className="accent-dj-accent-1"
-                  />
-                  Autre
-                </label>
+                {matieresDisponibles
+                  ?.filter((m) => m.disponible)
+                  .map(({ nom: m }) => (
+                    <label
+                      key={m}
+                      className="flex items-center gap-2 rounded-lg border border-dj-bordure bg-dj-surface-haute px-3 py-2 text-sm text-dj-texte"
+                    >
+                      <input
+                        type="radio"
+                        name="matiere"
+                        checked={matiereChoisie === m}
+                        onChange={() => setMatiereChoisie(m)}
+                        className="accent-dj-accent-1"
+                      />
+                      {m}
+                    </label>
+                  ))}
               </div>
               {matiereChoisie === "Autre" && (
                 <input

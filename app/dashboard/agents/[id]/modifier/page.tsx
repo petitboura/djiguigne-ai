@@ -9,7 +9,6 @@ import { TopBar } from "@/components/TopBar";
 import { BoutonRetour } from "@/components/BoutonRetour";
 import { BoutonAccueil } from "@/components/BoutonAccueil";
 import { ChampImage } from "@/components/ChampImage";
-import { PopupCategories, chargerCategories, type Categorie } from "@/components/PopupCategories";
 import { DroitsAgent } from "@/components/DroitsAgent";
 import { ProactiviteAgent } from "@/components/ProactiviteAgent";
 
@@ -36,7 +35,8 @@ type AgentEditable = {
   sous_titre: string;
   placeholder_saisie: string;
   actif: boolean;
-  categorie_id: string | null;
+  matiere: string | null;
+  matiere_detail: string | null;
   profil_utilisateur_schema: { nom: string; description: string }[];
 };
 
@@ -152,8 +152,21 @@ export default function PageModifierAgent() {
   // Même correctif que la page de création (2026-07-12, Bourama).
   const [pleinEcranTexteLibre, setPleinEcranTexteLibre] = useState(false);
   const [actif, setActif] = useState(true);
-  const [categorie, setCategorie] = useState<Categorie | null>(null);
-  const [popupCategorieOuvert, setPopupCategorieOuvert] = useState(false);
+  // Système "matière" (2026-07-29) : remplace le picker de catégorie ici
+  // aussi, même logique que le formulaire de création -- indépendant de
+  // l'ancien système catégorie (categorie_id reste en base, inutilisé
+  // par ce formulaire).
+  const [matiereChoisie, setMatiereChoisie] = useState<string | null>(null);
+  const [autreMatiereTexte, setAutreMatiereTexte] = useState("");
+  const [matieresDisponibles, setMatieresDisponibles] = useState<
+    { nom: string; disponible: boolean }[] | null
+  >(null);
+
+  useEffect(() => {
+    appelerApi("/api/matieres")
+      .then((data) => setMatieresDisponibles(data as { nom: string; disponible: boolean }[]))
+      .catch(() => setMatieresDisponibles([]));
+  }, []);
 
   // Même fonctionnalité que la page de création (2026-07-21), voir
   // ChampProfilUtilisateur côté api/agents.py.
@@ -227,15 +240,8 @@ export default function PageModifierAgent() {
         setTexteLibre(r.texte_libre || "");
         setActif(r.actif);
         setProfilChamps(r.profil_utilisateur_schema || []);
-        if (r.categorie_id) {
-          const idCategorie = r.categorie_id;
-          chargerCategories()
-            .then((toutes) => {
-              const trouvee = toutes.find((cat) => cat.id === idCategorie);
-              setCategorie(trouvee ?? { id: idCategorie, nom: idCategorie, mots_cles: [], parent_id: null });
-            })
-            .catch(() => setCategorie({ id: idCategorie, nom: idCategorie, mots_cles: [], parent_id: null }));
-        }
+        setMatiereChoisie(r.matiere || null);
+        setAutreMatiereTexte(r.matiere_detail || "");
       })
       .catch((e) => setErreurChargement(e instanceof Error ? e.message : "Erreur inconnue."))
       .finally(() => setChargement(false));
@@ -269,6 +275,10 @@ export default function PageModifierAgent() {
 
   async function enregistrer(e: React.FormEvent) {
     e.preventDefault();
+    if (matiereChoisie === "Autre" && !autreMatiereTexte.trim()) {
+      setErreur('Précise la matière dans "Autre".');
+      return;
+    }
     setEnregistrement(true);
     setMessage(null);
     setErreur(null);
@@ -286,7 +296,8 @@ export default function PageModifierAgent() {
           sous_titre: sousTitre,
           placeholder_saisie: placeholderSaisie,
           actif,
-          categorie_id: categorie?.id,
+          matiere: matiereChoisie,
+          matiere_detail: matiereChoisie === "Autre" ? autreMatiereTexte.trim() : null,
           profil_utilisateur_schema: profilChamps
             .filter((c) => c.nom.trim())
             .map((c) => ({ nom: c.nom.trim(), description: c.description.trim() })),
@@ -551,26 +562,45 @@ export default function PageModifierAgent() {
             </div>
 
             <div>
-              <label className={labelClasse}>Catégorie</label>
+              <label className={labelClasse}>Matière</label>
               <p className="mt-1 text-xs text-dj-texte-muet">
-                Ce qui permet aux visiteurs de trouver ton agent par thème.
+                Une seule IA par matière — celles déjà prises par une autre IA
+                n&apos;apparaissent plus ici.
               </p>
-              <button
-                type="button"
-                onClick={() => setPopupCategorieOuvert(true)}
-                className={`${champClasse} flex items-center justify-between text-left`}
-              >
-                <span className={categorie ? "text-dj-texte" : "text-dj-texte-muet"}>
-                  {categorie ? categorie.nom : "Choisir une catégorie..."}
-                </span>
-                <span aria-hidden="true">▾</span>
-              </button>
-              <PopupCategories
-                ouvert={popupCategorieOuvert}
-                onFermer={() => setPopupCategorieOuvert(false)}
-                categorieActuelleId={categorie?.id}
-                onChoisir={setCategorie}
-              />
+              {matieresDisponibles === null && (
+                <p className="mt-2 text-sm text-dj-texte-muet">Chargement...</p>
+              )}
+              <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {matieresDisponibles
+                  // La matière actuelle de CET agent doit rester sélectionnable
+                  // même si /api/matieres la marque "prise" (c'est lui qui la
+                  // détient) -- sinon impossible de simplement enregistrer le
+                  // reste du formulaire sans perdre sa matière.
+                  ?.filter((m) => m.disponible || m.nom === matiereChoisie)
+                  .map(({ nom: m }) => (
+                    <label
+                      key={m}
+                      className="flex items-center gap-2 rounded-lg border border-dj-bordure bg-dj-surface-haute px-3 py-2 text-sm text-dj-texte"
+                    >
+                      <input
+                        type="radio"
+                        name="matiere"
+                        checked={matiereChoisie === m}
+                        onChange={() => setMatiereChoisie(m)}
+                        className="accent-dj-accent-1"
+                      />
+                      {m}
+                    </label>
+                  ))}
+              </div>
+              {matiereChoisie === "Autre" && (
+                <input
+                  value={autreMatiereTexte}
+                  onChange={(e) => setAutreMatiereTexte(e.target.value)}
+                  placeholder="Précise la matière..."
+                  className={`${champClasse} mt-2`}
+                />
+              )}
             </div>
 
             <div>
