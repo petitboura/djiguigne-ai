@@ -11,17 +11,18 @@ import { siteConfig, type Locale } from "@/lib/site-config";
 // ont maintenant de vraies données en base (voir metier/filiere/domaine/
 // langue_africaine dans djiguigne-backend/api/agents.py -- texte libre,
 // une IA par valeur -- et matiere qui a une liste fixe).
-type CleSection = "matieres" | "metier" | "filiere" | "domaine" | "languesAfricaines";
+type CleSection = "matieres" | "metier" | "filiere" | "domaine" | "languesAfricaines" | "execution";
 
 // Paramètre de requête `/api/feed` et champ de l'agent à afficher comme
 // tag pour chaque section -- voir avec_matiere/avec_metier/avec_filiere/
-// avec_domaine/avec_langue_africaine dans api/main.py.
+// avec_domaine/avec_langue_africaine/avec_execution dans api/main.py.
 const CONFIG_SECTIONS: Record<CleSection, { param: string; champ: keyof AgentProduit }> = {
   matieres: { param: "avec_matiere", champ: "matiere" },
   metier: { param: "avec_metier", champ: "metier" },
   filiere: { param: "avec_filiere", champ: "filiere" },
   domaine: { param: "avec_domaine", champ: "domaine" },
   languesAfricaines: { param: "avec_langue_africaine", champ: "langue_africaine" },
+  execution: { param: "avec_execution", champ: "execution" },
 };
 
 type AgentProduit = {
@@ -35,6 +36,7 @@ type AgentProduit = {
   filiere: string | null;
   domaine: string | null;
   langue_africaine: string | null;
+  execution: string | null;
 };
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -96,6 +98,7 @@ export function SectionsProduit({
             { cle: "filiere" as const, icon: <IconChemin /> },
             { cle: "domaine" as const, icon: <IconGrille /> },
             { cle: "languesAfricaines" as const, icon: <IconGlobe /> },
+            { cle: "execution" as const, icon: <IconEclair /> },
           ]
         ).map(({ cle, icon }, i) => (
           <button
@@ -224,6 +227,16 @@ function IconGlobe() {
       <circle cx="12" cy="12" r="10" />
       <path d="M2 12h20" />
       <path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z" />
+    </svg>
+  );
+}
+
+// Ajoutée le 2026-07-31 pour le 6ème bouton "Exécution" -- même
+// convention que les icônes ci-dessus.
+function IconEclair() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M13 2 3 14h8l-1 8 10-12h-8l1-8z" />
     </svg>
   );
 }
