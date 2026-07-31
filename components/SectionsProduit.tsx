@@ -5,13 +5,24 @@ import Image from "next/image";
 import { siteConfig, type Locale } from "@/lib/site-config";
 
 // Ajouté le 2026-07-31 (Bourama : "il y a 3-4 sections mais rien
-// là-dessus" -- les 4 boutons de la page Produit étaient une maquette
-// non branchée, voir l'ancien commentaire dans services/page.tsx).
-// Seule "Matières" a des données en base pour l'instant (voir MATIERES
-// dans djiguigne-backend/api/agents.py) : les 3 autres affichent
-// sectionBientot en attendant que Bourama définisse leur modèle de
-// données (voir discussion du 31/07).
-type CleSection = "matieres" | "metier" | "filiere" | "domaine";
+// là-dessus" -- les boutons de la page Produit étaient une maquette non
+// branchée, voir l'ancien commentaire dans services/page.tsx). Complété
+// le même jour avec le 5ème bouton "Langues africaines". Les 5 sections
+// ont maintenant de vraies données en base (voir metier/filiere/domaine/
+// langue_africaine dans djiguigne-backend/api/agents.py -- texte libre,
+// une IA par valeur -- et matiere qui a une liste fixe).
+type CleSection = "matieres" | "metier" | "filiere" | "domaine" | "languesAfricaines";
+
+// Paramètre de requête `/api/feed` et champ de l'agent à afficher comme
+// tag pour chaque section -- voir avec_matiere/avec_metier/avec_filiere/
+// avec_domaine/avec_langue_africaine dans api/main.py.
+const CONFIG_SECTIONS: Record<CleSection, { param: string; champ: keyof AgentProduit }> = {
+  matieres: { param: "avec_matiere", champ: "matiere" },
+  metier: { param: "avec_metier", champ: "metier" },
+  filiere: { param: "avec_filiere", champ: "filiere" },
+  domaine: { param: "avec_domaine", champ: "domaine" },
+  languesAfricaines: { param: "avec_langue_africaine", champ: "langue_africaine" },
+};
 
 type AgentProduit = {
   id: string;
@@ -20,6 +31,10 @@ type AgentProduit = {
   image_vitrine_url: string | null;
   description: string;
   matiere: string | null;
+  metier: string | null;
+  filiere: string | null;
+  domaine: string | null;
+  langue_africaine: string | null;
 };
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -39,7 +54,9 @@ export function SectionsProduit({
   };
 }) {
   const [ouverte, setOuverte] = useState<CleSection | null>(null);
-  const [agents, setAgents] = useState<AgentProduit[] | null>(null);
+  // Un cache par section évite de refaire l'appel API à chaque fois
+  // qu'on rouvre un bouton déjà consulté.
+  const [agentsParSection, setAgentsParSection] = useState<Partial<Record<CleSection, AgentProduit[]>>>({});
   const [chargement, setChargement] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
 
@@ -49,22 +66,25 @@ export function SectionsProduit({
       return;
     }
     setOuverte(section);
-    if (section !== "matieres") return; // pas encore de données pour les 3 autres
+    if (agentsParSection[section]) return; // déjà chargé
 
     setChargement(true);
     setErreur(null);
     try {
       if (!API_URL) throw new Error("API non configurée.");
-      const reponse = await fetch(`${API_URL}/api/feed?avec_matiere=true&limite=50`);
+      const { param } = CONFIG_SECTIONS[section];
+      const reponse = await fetch(`${API_URL}/api/feed?${param}=true&limite=50`);
       if (!reponse.ok) throw new Error(`Erreur API ${reponse.status}`);
       const donnees = await reponse.json();
-      setAgents(donnees.agents ?? []);
+      setAgentsParSection((prev) => ({ ...prev, [section]: donnees.agents ?? [] }));
     } catch {
       setErreur(strings.erreur);
     } finally {
       setChargement(false);
     }
   }
+
+  const agentsSectionOuverte = ouverte ? agentsParSection[ouverte] : undefined;
 
   return (
     <div className="flex flex-col items-start gap-6">
@@ -75,6 +95,7 @@ export function SectionsProduit({
             { cle: "metier" as const, icon: <IconMallette /> },
             { cle: "filiere" as const, icon: <IconChemin /> },
             { cle: "domaine" as const, icon: <IconGrille /> },
+            { cle: "languesAfricaines" as const, icon: <IconGlobe /> },
           ]
         ).map(({ cle, icon }, i) => (
           <button
@@ -97,52 +118,53 @@ export function SectionsProduit({
 
       {ouverte && (
         <div className="w-full animate-dj-fade-up">
-          {ouverte !== "matieres" ? (
-            <p className="text-sm text-dj-texte-muet">{strings.bientot}</p>
-          ) : chargement ? (
+          {chargement ? (
             <p className="text-sm text-dj-texte-muet">{strings.chargement}</p>
           ) : erreur ? (
             <p className="text-sm text-dj-texte-muet">{erreur}</p>
-          ) : !agents || agents.length === 0 ? (
+          ) : !agentsSectionOuverte || agentsSectionOuverte.length === 0 ? (
             <p className="text-sm text-dj-texte-muet">{strings.vide}</p>
           ) : (
             <div className="grid w-full gap-3 sm:grid-cols-2">
-              {agents.map((agent) => (
-                <a
-                  key={agent.id}
-                  href={`${siteConfig.appUrl}/agent/${agent.id}/chat`}
-                  className="group flex items-center gap-3 rounded-xl border border-dj-bordure bg-dj-surface p-3 text-left transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute"
-                >
-                  <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-dj-surface-haute">
-                    {agent.image_vitrine_url ? (
-                      <Image
-                        src={agent.image_vitrine_url}
-                        alt=""
-                        fill
-                        className="object-cover"
-                        sizes="40px"
-                      />
-                    ) : (
-                      <span className="text-lg leading-none">{agent.icone_page || "🤖"}</span>
-                    )}
-                  </span>
-                  <span className="flex min-w-0 flex-col">
-                    <span className="flex items-center gap-2">
-                      <span className="truncate font-display text-sm font-bold text-dj-texte">
-                        {agent.nom}
-                      </span>
-                      {agent.matiere && (
-                        <span className="shrink-0 rounded-full border border-dj-bordure px-2 py-0.5 text-[11px] text-dj-texte-muet">
-                          {agent.matiere}
-                        </span>
+              {agentsSectionOuverte.map((agent) => {
+                const tag = agent[CONFIG_SECTIONS[ouverte].champ];
+                return (
+                  <a
+                    key={agent.id}
+                    href={`${siteConfig.appUrl}/agent/${agent.id}/chat`}
+                    className="group flex items-center gap-3 rounded-xl border border-dj-bordure bg-dj-surface p-3 text-left transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute"
+                  >
+                    <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-dj-surface-haute">
+                      {agent.image_vitrine_url ? (
+                        <Image
+                          src={agent.image_vitrine_url}
+                          alt=""
+                          fill
+                          className="object-cover"
+                          sizes="40px"
+                        />
+                      ) : (
+                        <span className="text-lg leading-none">{agent.icone_page || "🤖"}</span>
                       )}
                     </span>
-                    {agent.description && (
-                      <span className="truncate text-xs text-dj-texte-muet">{agent.description}</span>
-                    )}
-                  </span>
-                </a>
-              ))}
+                    <span className="flex min-w-0 flex-col">
+                      <span className="flex items-center gap-2">
+                        <span className="truncate font-display text-sm font-bold text-dj-texte">
+                          {agent.nom}
+                        </span>
+                        {tag && (
+                          <span className="shrink-0 rounded-full border border-dj-bordure px-2 py-0.5 text-[11px] text-dj-texte-muet">
+                            {tag}
+                          </span>
+                        )}
+                      </span>
+                      {agent.description && (
+                        <span className="truncate text-xs text-dj-texte-muet">{agent.description}</span>
+                      )}
+                    </span>
+                  </a>
+                );
+              })}
             </div>
           )}
         </div>
@@ -190,6 +212,18 @@ function IconGrille() {
       <rect x="14" y="3" width="7" height="7" rx="1" />
       <rect x="3" y="14" width="7" height="7" rx="1" />
       <rect x="14" y="14" width="7" height="7" rx="1" />
+    </svg>
+  );
+}
+
+// Ajoutée le 2026-07-31 pour le 5ème bouton "Langues africaines" --
+// même convention que les icônes ci-dessus.
+function IconGlobe() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M2 12h20" />
+      <path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z" />
     </svg>
   );
 }

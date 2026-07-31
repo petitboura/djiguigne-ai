@@ -70,6 +70,7 @@ export const dictionaries = {
         metier: "Métier",
         filiere: "Filière",
         domaine: "Domaine",
+        languesAfricaines: "Langues africaines",
       },
       // Ajouté le 2026-07-31 (Bourama : les 4 boutons de section doivent
       // afficher les IA correspondantes -- voir SectionsProduit.tsx).
@@ -210,6 +211,7 @@ export const dictionaries = {
         metier: "Profession",
         filiere: "Track",
         domaine: "Domain",
+        languesAfricaines: "African languages",
       },
       sectionChargement: "Loading…",
       sectionVide: "No AI in this category yet.",
