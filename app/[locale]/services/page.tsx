@@ -47,6 +47,11 @@ export default function ServicesPage({ params }: { params: { locale: Locale } })
             vide: dict.services.sectionVide,
             erreur: dict.services.sectionErreur,
             bientot: dict.services.sectionBientot,
+            devenirCreateurLabel: dict.home.heroCtaSecondary,
+            devenirCreateurExplicationTitre: dict.home.heroCtaExplicationTitre,
+            devenirCreateurExplicationCorps: dict.home.heroCtaExplicationCorps,
+            devenirCreateurContinuer: dict.home.heroCtaExplicationContinuer,
+            devenirCreateurAnnuler: dict.home.heroCtaExplicationAnnuler,
           }}
         />
 

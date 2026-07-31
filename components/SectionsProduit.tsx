@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { BoutonDevenirCreateur } from "@/components/BoutonDevenirCreateur";
 import Image from "next/image";
 import { siteConfig, type Locale } from "@/lib/site-config";
 
@@ -53,6 +54,11 @@ export function SectionsProduit({
     vide: string;
     erreur: string;
     bientot: string;
+    devenirCreateurLabel: string;
+    devenirCreateurExplicationTitre: string;
+    devenirCreateurExplicationCorps: string;
+    devenirCreateurContinuer: string;
+    devenirCreateurAnnuler: string;
   };
 }) {
   const [ouverte, setOuverte] = useState<CleSection | null>(null);
@@ -126,7 +132,16 @@ export function SectionsProduit({
           ) : erreur ? (
             <p className="text-sm text-dj-texte-muet">{erreur}</p>
           ) : !agentsSectionOuverte || agentsSectionOuverte.length === 0 ? (
-            <p className="text-sm text-dj-texte-muet">{strings.vide}</p>
+            <div className="flex flex-col items-start gap-3">
+              <p className="text-sm text-dj-texte-muet">{strings.vide}</p>
+              <BoutonDevenirCreateur
+                label={strings.devenirCreateurLabel}
+                explicationTitre={strings.devenirCreateurExplicationTitre}
+                explicationCorps={strings.devenirCreateurExplicationCorps}
+                continuerLabel={strings.devenirCreateurContinuer}
+                annulerLabel={strings.devenirCreateurAnnuler}
+              />
+            </div>
           ) : (
             <div className="grid w-full gap-3 sm:grid-cols-2">
               {agentsSectionOuverte.map((agent) => {

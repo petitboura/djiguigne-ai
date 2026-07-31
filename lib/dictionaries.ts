@@ -78,7 +78,8 @@ export const dictionaries = {
       // "Métier"/"Filière"/"Domaine" n'ont pas encore de champ en base
       // (seul le système "matière" existe), d'où sectionBientot.
       sectionChargement: "Chargement…",
-      sectionVide: "Aucune IA dans cette catégorie pour le moment.",
+      sectionVide:
+        "Il n'y a pas encore d'IA dans cette catégorie, c'est l'occasion de créer la vôtre !",
       sectionErreur: "Impossible de charger les IA pour le moment.",
       sectionBientot: "Cette catégorie arrive bientôt.",
       faqButton: "FAQ",
@@ -216,7 +217,8 @@ export const dictionaries = {
         execution: "Execution",
       },
       sectionChargement: "Loading…",
-      sectionVide: "No AI in this category yet.",
+      sectionVide:
+        "There's no AI in this category yet, it's a great opportunity to create yours!",
       sectionErreur: "Couldn't load the AIs right now.",
       sectionBientot: "This category is coming soon.",
       faqButton: "FAQ",
