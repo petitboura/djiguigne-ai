@@ -71,6 +71,14 @@ export const dictionaries = {
         filiere: "Filière",
         domaine: "Domaine",
       },
+      // Ajouté le 2026-07-31 (Bourama : les 4 boutons de section doivent
+      // afficher les IA correspondantes -- voir SectionsProduit.tsx).
+      // "Métier"/"Filière"/"Domaine" n'ont pas encore de champ en base
+      // (seul le système "matière" existe), d'où sectionBientot.
+      sectionChargement: "Chargement…",
+      sectionVide: "Aucune IA dans cette catégorie pour le moment.",
+      sectionErreur: "Impossible de charger les IA pour le moment.",
+      sectionBientot: "Cette catégorie arrive bientôt.",
       faqButton: "FAQ",
       faqTitle: "Tarifs et accès",
       faq: [
@@ -203,6 +211,10 @@ export const dictionaries = {
         filiere: "Track",
         domaine: "Domain",
       },
+      sectionChargement: "Loading…",
+      sectionVide: "No AI in this category yet.",
+      sectionErreur: "Couldn't load the AIs right now.",
+      sectionBientot: "This category is coming soon.",
       faqButton: "FAQ",
       faqTitle: "Pricing and access",
       faq: [
