@@ -36,6 +36,17 @@ export function generateMetadata({ params }: { params: { locale: Locale } }): Me
       title: siteConfig.brandName,
       description: tagline,
       url: `${siteConfig.url}/${locale}`,
+      // Image statique en URL absolue (meme logique que le partage
+      // d'agent dans djiguigne-frontend, qui fonctionne deja) : plus
+      // fiable qu'une generation dynamique (ImageResponse) qui peut
+      // echouer silencieusement en prod.
+      images: [{ url: `${siteConfig.url}/opengraph-image.png`, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: siteConfig.brandName,
+      description: tagline,
+      images: [`${siteConfig.url}/opengraph-image.png`],
     },
   };
 }
