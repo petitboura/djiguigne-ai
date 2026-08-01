@@ -271,10 +271,19 @@ export function SectionsProduit({
               <div className="grid w-full gap-4 sm:grid-cols-2">
                 {agentsSectionOuverte.map((agent) => {
                   const tag = agent[CONFIG_SECTIONS[ouverte].champ];
+                  // ?retour= (Bourama, 2026-08-01) : permet à la sidebar du
+                  // chat (djiguigne-frontend/SidebarChat.tsx) d'afficher
+                  // "Retour au site" au lieu de "Retour à l'agent", ET sert
+                  // de marqueur d'origine "vient de la vitrine" côté
+                  // ChatAgentClient pour enregistrer cette IA comme chat par
+                  // défaut si l'utilisateur est connecté (même règle que
+                  // choisir une IA depuis l'app elle-même).
                   return (
                     <a
                       key={agent.id}
-                      href={`${siteConfig.appUrl}/agent/${agent.id}/chat`}
+                      href={`${siteConfig.appUrl}/agent/${agent.id}/chat?retour=${encodeURIComponent(
+                        `${siteConfig.url}/${locale}/services`
+                      )}`}
                       className="group flex flex-col gap-3 rounded-2xl border border-dj-bordure bg-dj-surface p-4 text-left transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute sm:p-5"
                     >
                       <span className="flex items-center gap-3">
