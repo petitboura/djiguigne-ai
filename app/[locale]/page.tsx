@@ -10,7 +10,9 @@ import { RubanAgents } from "@/components/RubanAgents";
 export function generateMetadata({ params }: { params: { locale: Locale } }): Metadata {
   const dict = getDictionary(params.locale);
   return {
-    title: dict.home.heroTitle,
+    // Pas de title ici : on retombe sur le default du layout parent
+    // ("Djiguignè AI"), sinon l'onglet affiche la tagline (trop longue,
+    // le nom de marque se retrouve coupe en fin de titre).
     description: dict.home.heroSubtitle,
     alternates: { canonical: `/${params.locale}` },
   };
