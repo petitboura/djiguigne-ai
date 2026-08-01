@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { appelerApi, appelerApiFichier, ajouterFichierBibliotheque } from "@/lib/api";
+import { appelerApi, appelerApiFichier, ajouterFichierBibliotheque, ajouterLienBibliotheque } from "@/lib/api";
 import { TopBar } from "@/components/TopBar";
 import { BoutonRetour } from "@/components/BoutonRetour";
 import { BoutonAccueil } from "@/components/BoutonAccueil";
@@ -75,7 +75,8 @@ type SectionId = (typeof SECTIONS)[number]["id"] | "bibliotheque" | "moi" | "art
 // cliquer sur l'une d'elles change d'agent en cours d'édition.
 type AgentMini = { id: string; nom: string; icone_page?: string };
 
-function categorieFichierBiblio(mime: string): "image" | "video" | "audio" | "document" {
+function categorieFichierBiblio(mime: string): "image" | "video" | "audio" | "document" | "lien" {
+  if (mime === "text/uri-list") return "lien";
   if (mime.startsWith("image/")) return "image";
   if (mime.startsWith("video/")) return "video";
   if (mime.startsWith("audio/")) return "audio";
@@ -194,6 +195,11 @@ export default function PageModifierAgent() {
   const [titreFichierBiblio, setTitreFichierBiblio] = useState("");
   const [descriptionFichierBiblio, setDescriptionFichierBiblio] = useState("");
   const [envoiBiblio, setEnvoiBiblio] = useState(false);
+  // Ajoutés le 01/08 (Bourama : "Lien" demandait quand même un upload,
+  // alors que ça n'a rien à voir) -- bascule le formulaire entre les deux
+  // modes ; urlLienBiblio n'est utilisé qu'en mode "lien".
+  const [modeAjoutBiblio, setModeAjoutBiblio] = useState<"fichier" | "lien">("fichier");
+  const [urlLienBiblio, setUrlLienBiblio] = useState("");
   // Sous-onglets Bibliothèque (Bourama, 27/07 : "il y a plusieurs [types]
   // du coup je veux que... son clic affiche aussi des onglets, images
   // vidéos etc") -- catégorie déduite du type_mime déjà stocké côté
@@ -338,6 +344,27 @@ export default function PageModifierAgent() {
   }
 
   async function ajouterFichierBiblio() {
+    if (modeAjoutBiblio === "lien") {
+      if (!urlLienBiblio.trim() || !descriptionFichierBiblio.trim()) return;
+      setEnvoiBiblio(true);
+      try {
+        await ajouterLienBibliotheque(
+          agentId,
+          urlLienBiblio.trim(),
+          descriptionFichierBiblio.trim(),
+          titreFichierBiblio.trim()
+        );
+        setUrlLienBiblio("");
+        setTitreFichierBiblio("");
+        setDescriptionFichierBiblio("");
+        chargerBibliotheque();
+      } catch (e) {
+        window.alert(e instanceof Error ? e.message : "Échec de l'ajout du lien.");
+      } finally {
+        setEnvoiBiblio(false);
+      }
+      return;
+    }
     if (!nouveauFichierBiblio || !descriptionFichierBiblio.trim()) return;
     setEnvoiBiblio(true);
     try {
@@ -951,8 +978,36 @@ export default function PageModifierAgent() {
           )}
 
           <div className="flex flex-col gap-3">
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setModeAjoutBiblio("fichier")}
+                className={`rounded-full border px-4 py-1.5 text-xs transition-colors ${
+                  modeAjoutBiblio === "fichier"
+                    ? "border-dj-bordure-forte bg-dj-surface-haute text-dj-texte"
+                    : "border-dj-bordure text-dj-texte-muet hover:text-dj-texte"
+                }`}
+              >
+                Fichier
+              </button>
+              <button
+                type="button"
+                onClick={() => setModeAjoutBiblio("lien")}
+                className={`rounded-full border px-4 py-1.5 text-xs transition-colors ${
+                  modeAjoutBiblio === "lien"
+                    ? "border-dj-bordure-forte bg-dj-surface-haute text-dj-texte"
+                    : "border-dj-bordure text-dj-texte-muet hover:text-dj-texte"
+                }`}
+              >
+                Lien
+              </button>
+            </div>
             <textarea
-              placeholder="Description (obligatoire) : de quoi parle ce fichier, dans quel contexte l'IA doit le proposer ?"
+              placeholder={
+                modeAjoutBiblio === "lien"
+                  ? "Description (obligatoire) : de quoi parle ce lien, dans quel contexte l'IA doit le proposer ?"
+                  : "Description (obligatoire) : de quoi parle ce fichier, dans quel contexte l'IA doit le proposer ?"
+              }
               value={descriptionFichierBiblio}
               onChange={(e) => setDescriptionFichierBiblio(e.target.value)}
               rows={2}
@@ -966,16 +1021,30 @@ export default function PageModifierAgent() {
                 onChange={(e) => setTitreFichierBiblio(e.target.value)}
                 className="rounded-full border border-dj-bordure bg-dj-surface px-4 py-2 text-sm text-dj-texte outline-none focus:border-dj-bordure-forte sm:w-1/3"
               />
-              <input
-                type="file"
-                accept="application/pdf,image/jpeg,image/png,image/webp,audio/mpeg,audio/wav,audio/ogg,video/mp4,video/webm,video/quicktime"
-                onChange={(e) => setNouveauFichierBiblio(e.target.files?.[0] ?? null)}
-                className="text-sm text-dj-texte file:mr-3 file:rounded-full file:border file:border-dj-bordure file:bg-dj-surface-haute file:px-4 file:py-2 file:text-xs file:text-dj-texte hover:file:border-dj-bordure-forte"
-              />
+              {modeAjoutBiblio === "lien" ? (
+                <input
+                  type="url"
+                  placeholder="https://…"
+                  value={urlLienBiblio}
+                  onChange={(e) => setUrlLienBiblio(e.target.value)}
+                  className="flex-1 rounded-full border border-dj-bordure bg-dj-surface px-4 py-2 text-sm text-dj-texte outline-none focus:border-dj-bordure-forte"
+                />
+              ) : (
+                <input
+                  type="file"
+                  accept="application/pdf,image/jpeg,image/png,image/webp,audio/mpeg,audio/wav,audio/ogg,video/mp4,video/webm,video/quicktime"
+                  onChange={(e) => setNouveauFichierBiblio(e.target.files?.[0] ?? null)}
+                  className="text-sm text-dj-texte file:mr-3 file:rounded-full file:border file:border-dj-bordure file:bg-dj-surface-haute file:px-4 file:py-2 file:text-xs file:text-dj-texte hover:file:border-dj-bordure-forte"
+                />
+              )}
               <button
                 type="button"
                 onClick={ajouterFichierBiblio}
-                disabled={!nouveauFichierBiblio || !descriptionFichierBiblio.trim() || envoiBiblio}
+                disabled={
+                  modeAjoutBiblio === "lien"
+                    ? !urlLienBiblio.trim() || !descriptionFichierBiblio.trim() || envoiBiblio
+                    : !nouveauFichierBiblio || !descriptionFichierBiblio.trim() || envoiBiblio
+                }
                 className="rounded-full border border-dj-bordure px-4 py-2 text-xs text-dj-texte transition-colors hover:border-dj-bordure-forte disabled:opacity-50"
               >
                 {envoiBiblio ? "Envoi…" : "Ajouter"}

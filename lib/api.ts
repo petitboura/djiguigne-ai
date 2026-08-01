@@ -179,6 +179,22 @@ export async function ajouterFichierBibliotheque(
   return reponse.json();
 }
 
+// Ajoutée le 01/08 (Bourama : le filtre "Lien" existait déjà côté
+// bibliothèque sans aucun moyen réel d'en ajouter un -- pendant JSON de
+// ajouterFichierBibliotheque ci-dessus, mais sans FormData/fichier :
+// juste une URL. Voir POST /{agent_id}/bibliotheque/lien côté backend.
+export async function ajouterLienBibliotheque(
+  agentId: string,
+  url: string,
+  description: string,
+  titre?: string
+) {
+  return appelerApi(`/api/agents/${agentId}/bibliotheque/lien`, {
+    method: "POST",
+    body: JSON.stringify({ url, description, titre: titre?.trim() || null }),
+  });
+}
+
 /**
  * Upload d'une image jointe à un message de chat -- voir
  * components/chat/ChatIA.tsx:envoyerMessage côté appelant. Réutilise
