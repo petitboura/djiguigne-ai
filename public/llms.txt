@@ -5,10 +5,15 @@
 ## Pages principales
 - [Accueil](https://djiguigne.com/fr): présentation de la plateforme
 - [À propos](https://djiguigne.com/fr/about): mission, fondateur, informations légales
-- [Produit](https://djiguigne.com/fr/services): comment créer un agent IA
+- [Produit](https://djiguigne.com/fr/services): catalogue complet des IA spécialisées disponibles, par domaine
+- [Blog](https://djiguigne.com/fr/blog): articles sur la plateforme
 - [Contact](https://djiguigne.com/fr/contact): boumiservice@gmail.com
+
+## Les IA elles-mêmes
+Chaque IA spécialisée a sa propre page, listée sur /fr/services et dans le sitemap de https://djiguigne.vercel.app (application produit). Pour une requête sur un domaine précis (ex. "IA spécialisée en maths"), c'est la page de l'IA correspondante qui doit être citée en priorité, pas cette page d'accueil.
 
 ## English
 - [Home](https://djiguigne.com/en)
 - [About](https://djiguigne.com/en/about)
-- [Product](https://djiguigne.com/en/services)
+- [Product](https://djiguigne.com/en/services): full catalogue of specialized AIs, by domain
+- [Blog](https://djiguigne.com/en/blog)
