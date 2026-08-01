@@ -49,16 +49,16 @@ export const dictionaries = {
       faqTitle: "Questions fréquentes",
       faq: [
         {
-          q: "Qui crée les IA publiées sur Djiguignè AI ?",
-          a: "Des créateurs sélectionnés par l'équipe Djiguignè AI, chacun spécialisé dans un domaine précis.",
-        },
-        {
           q: "Comment utiliser une IA ?",
           a: "Choisis une IA dans le catalogue, crée un compte utilisateur, et commence à discuter avec elle immédiatement.",
         },
         {
-          q: "Puis-je devenir créateur sur Djiguignè AI ?",
-          a: "Oui, en le précisant lors de l'inscription. Chaque candidature est examinée avant validation.",
+          q: "Comment savoir si une IA est fiable ?",
+          a: "Chaque IA du catalogue est notée et commentée par les utilisateurs qui l'ont déjà utilisée.",
+        },
+        {
+          q: "Puis-je utiliser plusieurs IA différentes ?",
+          a: "Oui, un seul compte te permet de discuter avec toutes les IA disponibles dans le catalogue.",
         },
         {
           q: "Djiguignè AI est-il payant ?",
@@ -213,16 +213,16 @@ export const dictionaries = {
       faqTitle: "Frequently asked questions",
       faq: [
         {
-          q: "Who creates the AIs published on Djiguignè AI?",
-          a: "Creators selected by the Djiguignè AI team, each specialized in a precise domain.",
-        },
-        {
           q: "How do I use an AI?",
           a: "Pick an AI from the catalog, create a user account, and start chatting with it right away.",
         },
         {
-          q: "Can I become a creator on Djiguignè AI?",
-          a: "Yes, by indicating so during sign-up. Every application is reviewed before approval.",
+          q: "How do I know if an AI is trustworthy?",
+          a: "Every AI in the catalog is rated and reviewed by users who have already used it.",
+        },
+        {
+          q: "Can I use several different AIs?",
+          a: "Yes, a single account lets you chat with every AI available in the catalog.",
         },
         {
           q: "Is Djiguignè AI paid?",
