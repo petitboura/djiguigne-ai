@@ -268,41 +268,41 @@ export function SectionsProduit({
                 />
               </div>
             ) : (
-              <div className="grid w-full gap-3 sm:grid-cols-2">
+              <div className="grid w-full gap-4 sm:grid-cols-2">
                 {agentsSectionOuverte.map((agent) => {
                   const tag = agent[CONFIG_SECTIONS[ouverte].champ];
                   return (
                     <a
                       key={agent.id}
                       href={`${siteConfig.appUrl}/agent/${agent.id}/chat`}
-                      className="group flex items-center gap-3 rounded-xl border border-dj-bordure bg-dj-surface p-3 text-left transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute"
+                      className="group flex items-start gap-4 rounded-2xl border border-dj-bordure bg-dj-surface p-4 text-left transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute sm:p-5"
                     >
-                      <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-dj-surface-haute">
+                      <span className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-dj-surface-haute">
                         {agent.image_vitrine_url ? (
                           <Image
                             src={agent.image_vitrine_url}
                             alt=""
                             fill
                             className="object-cover"
-                            sizes="40px"
+                            sizes="56px"
                           />
                         ) : (
-                          <span className="text-lg leading-none">{agent.icone_page || "🤖"}</span>
+                          <span className="text-2xl leading-none">{agent.icone_page || "🤖"}</span>
                         )}
                       </span>
-                      <span className="flex min-w-0 flex-col">
-                        <span className="flex items-center gap-2">
-                          <span className="truncate font-display text-sm font-bold text-dj-texte">
+                      <span className="flex min-w-0 flex-col gap-1.5">
+                        <span className="flex flex-wrap items-center gap-2">
+                          <span className="font-display text-base font-bold text-dj-texte">
                             {agent.nom}
                           </span>
                           {tag && (
-                            <span className="shrink-0 rounded-full border border-dj-bordure px-2 py-0.5 text-[11px] text-dj-texte-muet">
+                            <span className="shrink-0 rounded-full border border-dj-bordure px-2.5 py-1 text-xs text-dj-texte-muet">
                               {tag}
                             </span>
                           )}
                         </span>
                         {agent.description && (
-                          <span className="truncate text-xs text-dj-texte-muet">{agent.description}</span>
+                          <span className="text-sm text-dj-texte-muet">{agent.description}</span>
                         )}
                       </span>
                     </a>
