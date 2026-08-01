@@ -24,6 +24,10 @@ export function CtaBasDePage({ locale, dict }: { locale: Locale; dict: Dictionar
         explicationCorps={dict.home.heroCtaExplicationCorps}
         continuerLabel={dict.home.heroCtaExplicationContinuer}
         annulerLabel={dict.home.heroCtaExplicationAnnuler}
+        categorieTitre={dict.home.heroCtaCategorieTitre}
+        categorieLabels={dict.services.sections}
+        champLibrePlaceholder={dict.home.heroCtaChampLibrePlaceholder}
+        validerLabel={dict.home.heroCtaValider}
       />
     </div>
   );

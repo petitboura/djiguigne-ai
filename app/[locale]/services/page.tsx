@@ -52,6 +52,9 @@ export default function ServicesPage({ params }: { params: { locale: Locale } })
             devenirCreateurExplicationCorps: dict.home.heroCtaExplicationCorps,
             devenirCreateurContinuer: dict.home.heroCtaExplicationContinuer,
             devenirCreateurAnnuler: dict.home.heroCtaExplicationAnnuler,
+            devenirCreateurCategorieTitre: dict.home.heroCtaCategorieTitre,
+            devenirCreateurChampLibrePlaceholder: dict.home.heroCtaChampLibrePlaceholder,
+            devenirCreateurValider: dict.home.heroCtaValider,
           }}
         />
 

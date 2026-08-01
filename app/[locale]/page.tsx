@@ -117,6 +117,10 @@ export default function HomePage({ params }: { params: { locale: Locale } }) {
             explicationCorps={dict.home.heroCtaExplicationCorps}
             continuerLabel={dict.home.heroCtaExplicationContinuer}
             annulerLabel={dict.home.heroCtaExplicationAnnuler}
+            categorieTitre={dict.home.heroCtaCategorieTitre}
+            categorieLabels={dict.services.sections}
+            champLibrePlaceholder={dict.home.heroCtaChampLibrePlaceholder}
+            validerLabel={dict.home.heroCtaValider}
           />
         </div>
       </section>

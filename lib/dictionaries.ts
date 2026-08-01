@@ -30,6 +30,18 @@ export const dictionaries = {
         "Choisis d'abord la matière de ton IA, puis remplis le formulaire de création (identité, comportement, base de connaissance...). Ton IA est publiée dès que tu la crées.",
       heroCtaExplicationContinuer: "Continuer",
       heroCtaExplicationAnnuler: "Annuler",
+      // Ajouté le 2026-07-31 (Bourama : "met cet étape maintenant, c'est
+      // là où doit être autre et les listes") -- entre l'explication et
+      // le choix final, une étape "Choisis une catégorie" avec les mêmes
+      // catégories que la page Produit (voir dict.services.sections,
+      // réutilisé tel quel -- ne PAS dupliquer ces libellés ici). Utile
+      // seulement quand BoutonDevenirCreateur est appelé sans contexte de
+      // catégorie déjà connu (hero, CTA bas de page) -- quand il est
+      // appelé depuis une section déjà ouverte (état vide de
+      // SectionsProduit.tsx), cette étape est sautée.
+      heroCtaCategorieTitre: "Choisis une catégorie",
+      heroCtaChampLibrePlaceholder: "Tape ta réponse...",
+      heroCtaValider: "Valider",
       sectionWhatTitle: "Comment ça marche",
       sectionWhatBody: "Trois étapes pour trouver l'IA qu'il te faut et commencer à l'utiliser.",
       faqTitle: "Questions fréquentes",
@@ -173,6 +185,9 @@ export const dictionaries = {
         "First pick the subject of your AI, then fill in the creation form (identity, behavior, knowledge base...). Your AI is published as soon as you create it.",
       heroCtaExplicationContinuer: "Continue",
       heroCtaExplicationAnnuler: "Cancel",
+      heroCtaCategorieTitre: "Choose a category",
+      heroCtaChampLibrePlaceholder: "Type your answer...",
+      heroCtaValider: "Confirm",
       sectionWhatTitle: "How it works",
       sectionWhatBody: "Three steps to find the right AI and start using it.",
       faqTitle: "Frequently asked questions",

@@ -73,6 +73,12 @@ export function SectionsProduit({
     devenirCreateurExplicationCorps: string;
     devenirCreateurContinuer: string;
     devenirCreateurAnnuler: string;
+    // Ajouté le 2026-07-31 pour l'étape "choisis une catégorie" du
+    // popup Devenir créateur (voir BoutonDevenirCreateur.tsx) -- extension
+    // additive, rien d'existant ci-dessus n'est modifié.
+    devenirCreateurCategorieTitre: string;
+    devenirCreateurChampLibrePlaceholder: string;
+    devenirCreateurValider: string;
   };
 }) {
   const [ouverte, setOuverte] = useState<CleSection | null>(null);
@@ -265,6 +271,11 @@ export function SectionsProduit({
                   explicationCorps={strings.devenirCreateurExplicationCorps}
                   continuerLabel={strings.devenirCreateurContinuer}
                   annulerLabel={strings.devenirCreateurAnnuler}
+                  categorieTitre={strings.devenirCreateurCategorieTitre}
+                  categorieLabels={labels}
+                  champLibrePlaceholder={strings.devenirCreateurChampLibrePlaceholder}
+                  validerLabel={strings.devenirCreateurValider}
+                  categoriePreselectionnee={ouverte}
                 />
               </div>
             ) : (
