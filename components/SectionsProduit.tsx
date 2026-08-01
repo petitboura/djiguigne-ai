@@ -77,6 +77,11 @@ export function SectionsProduit({
 }) {
   const [ouverte, setOuverte] = useState<CleSection | null>(null);
   const [tiroirOuvert, setTiroirOuvert] = useState(false);
+  // Repliée par défaut dès qu'une catégorie est choisie : plus de place
+  // pour les IA (Bourama, 2026-08-01). Icônes seules + bouton pour
+  // déplier/replier -- une vraie barre latérale, pas juste des labels
+  // raccourcis.
+  const [barreRepliee, setBarreRepliee] = useState(true);
   const [monte, setMonte] = useState(false);
   useEffect(() => setMonte(true), []);
   // Un cache par section évite de refaire l'appel API à chaque fois
@@ -135,24 +140,62 @@ export function SectionsProduit({
         // --- Une catégorie sélectionnée : barre latérale (desktop) /
         // bouton + tiroir (mobile) à côté des résultats ---
         <div className="flex w-full flex-col gap-4 animate-dj-fade-up sm:flex-row sm:items-start sm:gap-6">
-          {/* Barre latérale desktop */}
-          <div className="hidden w-52 shrink-0 flex-col gap-2 sm:flex">
-            {SECTIONS.map(({ cle, icon }) => (
-              <button
-                key={cle}
-                type="button"
-                onClick={() => ouvrir(cle)}
-                aria-expanded={ouverte === cle}
-                className={
-                  ouverte === cle
-                    ? "flex items-center gap-2.5 rounded-lg border border-dj-bordure-forte bg-dj-surface-haute px-3.5 py-2.5 text-left text-sm font-semibold text-dj-texte transition-colors"
-                    : "flex items-center gap-2.5 rounded-lg border border-transparent px-3.5 py-2.5 text-left text-sm font-semibold text-dj-texte-muet transition-colors hover:border-dj-bordure hover:bg-dj-surface"
-                }
-              >
-                <span className="text-dj-accent-1">{icon}</span>
-                {labels[cle]}
-              </button>
-            ))}
+          {/* Barre latérale desktop -- rétractable (icônes seules) */}
+          <div
+            className={
+              barreRepliee
+                ? "hidden w-14 shrink-0 flex-col items-center gap-2 sm:flex"
+                : "hidden w-52 shrink-0 flex-col gap-2 sm:flex"
+            }
+          >
+            <button
+              type="button"
+              onClick={() => setBarreRepliee((v) => !v)}
+              aria-label={barreRepliee ? "Déplier la liste des catégories" : "Replier la liste des catégories"}
+              title={barreRepliee ? "Déplier" : "Replier"}
+              className={
+                barreRepliee
+                  ? "mb-1 flex h-9 w-9 items-center justify-center rounded-lg border border-dj-bordure text-dj-texte-muet transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute"
+                  : "mb-1 flex h-9 items-center justify-end gap-1 self-end rounded-lg border border-dj-bordure px-2.5 text-dj-texte-muet transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute"
+              }
+            >
+              <IconChevronDouble replie={barreRepliee} />
+            </button>
+
+            {SECTIONS.map(({ cle, icon }) =>
+              barreRepliee ? (
+                <button
+                  key={cle}
+                  type="button"
+                  onClick={() => ouvrir(cle)}
+                  aria-expanded={ouverte === cle}
+                  aria-label={labels[cle]}
+                  title={labels[cle]}
+                  className={
+                    ouverte === cle
+                      ? "flex h-11 w-11 items-center justify-center rounded-lg border border-dj-bordure-forte bg-dj-surface-haute text-dj-accent-1 transition-colors"
+                      : "flex h-11 w-11 items-center justify-center rounded-lg border border-transparent text-dj-texte-muet transition-colors hover:border-dj-bordure hover:bg-dj-surface"
+                  }
+                >
+                  {icon}
+                </button>
+              ) : (
+                <button
+                  key={cle}
+                  type="button"
+                  onClick={() => ouvrir(cle)}
+                  aria-expanded={ouverte === cle}
+                  className={
+                    ouverte === cle
+                      ? "flex items-center gap-2.5 rounded-lg border border-dj-bordure-forte bg-dj-surface-haute px-3.5 py-2.5 text-left text-sm font-semibold text-dj-texte transition-colors"
+                      : "flex items-center gap-2.5 rounded-lg border border-transparent px-3.5 py-2.5 text-left text-sm font-semibold text-dj-texte-muet transition-colors hover:border-dj-bordure hover:bg-dj-surface"
+                  }
+                >
+                  <span className="text-dj-accent-1">{icon}</span>
+                  {labels[cle]}
+                </button>
+              )
+            )}
           </div>
 
           {/* Déclencheur tiroir mobile */}
@@ -345,6 +388,28 @@ function IconChevronBas() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
+// Ajoutée le 2026-08-01 pour le bouton plier/déplier la barre latérale
+// desktop (redesign, Bourama). Pointe vers la droite quand repliée
+// (action = déplier), vers la gauche quand dépliée (action = replier).
+function IconChevronDouble({ replie }: { replie: boolean }) {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ transform: replie ? "none" : "rotate(180deg)" }}
+    >
+      <path d="m8 5 7 7-7 7" />
+      <path d="m14 5 7 7-7 7" />
     </svg>
   );
 }
