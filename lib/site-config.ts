@@ -8,7 +8,7 @@ export const siteConfig = {
   brandName: "Djiguignè AI",
   legalName: "Djiguignè AI (Boumi Diarra, auto-entrepreneur)",
   domain: "djiguigne.com",
-  url: "https://djiguigne.com",
+  url: "https://djiguigne-ai.vercel.app",
   // URL de l'application produit (création d'agent / chat), distincte du
   // site vitrine. Piloté par variable d'environnement (à définir dans
   // Vercel : Project Settings -> Environment Variables) pour pouvoir
