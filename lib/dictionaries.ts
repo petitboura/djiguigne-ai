@@ -17,6 +17,8 @@ export const dictionaries = {
       cookies: "Cookies",
       contact: "Contact",
       location: "Basé à Tunis, Tunisie",
+      casUsage: "Cas d'usage",
+      glossaire: "Glossaire",
     },
     home: {
       heroKicker: "Le laboratoire d'IA spécialisées",
@@ -95,15 +97,31 @@ export const dictionaries = {
       sectionErreur: "Impossible de charger les IA pour le moment.",
       sectionBientot: "Cette catégorie arrive bientôt.",
       faqButton: "FAQ",
-      faqTitle: "Tarifs et accès",
+      faqTitle: "Questions fréquentes",
       faq: [
         {
           q: "L'utilisation d'une IA est-elle payante ?",
           a: "Le modèle tarifaire n'est pas encore fixé — la plateforme est en phase de lancement.",
         },
         {
-          q: "Comment devenir créateur sur Djiguignè AI ?",
-          a: "En le précisant lors de l'inscription. Chaque candidature est examinée par l'équipe avant validation.",
+          q: "Mes données sont-elles sécurisées ?",
+          a: "Oui. Djiguignè AI ne partage pas tes conversations ni tes données personnelles avec des tiers.",
+        },
+        {
+          q: "Djiguignè AI fonctionne-t-il sur mobile ?",
+          a: "Oui, la plateforme est utilisable directement depuis un navigateur mobile, sans installation.",
+        },
+        {
+          q: "Qu'est-ce qu'une IA spécialisée, par rapport à une IA généraliste comme ChatGPT ?",
+          a: "Une IA spécialisée est dédiée à un seul domaine précis (une matière, un métier, une filière...) plutôt que de répondre à tout. Elle est configurée et alimentée spécifiquement sur ce domaine, ce qui la rend plus pertinente et plus fiable pour cet usage précis.",
+        },
+        {
+          q: "Comment trouver l'IA qui correspond à mon besoin ?",
+          a: "Le catalogue est classé par matière, métier, filière et domaine. Tu peux parcourir les catégories ci-dessus ou chercher directement l'IA correspondant à ton besoin.",
+        },
+        {
+          q: "Faut-il un compte pour discuter avec une IA ?",
+          a: "Oui, un compte utilisateur gratuit est nécessaire pour commencer une conversation avec une IA du catalogue.",
         },
       ],
     },
@@ -172,6 +190,8 @@ export const dictionaries = {
       cookies: "Cookies",
       contact: "Contact",
       location: "Based in Tunis, Tunisia",
+      casUsage: "Use cases",
+      glossaire: "Glossary",
     },
     home: {
       heroKicker: "The specialized AI laboratory",
@@ -237,15 +257,31 @@ export const dictionaries = {
       sectionErreur: "Couldn't load the AIs right now.",
       sectionBientot: "This category is coming soon.",
       faqButton: "FAQ",
-      faqTitle: "Pricing and access",
+      faqTitle: "Frequently asked questions",
       faq: [
         {
           q: "Is using an AI paid?",
           a: "The pricing model isn't finalized yet — the platform is in its launch phase.",
         },
         {
-          q: "How do I become a creator on Djiguignè AI?",
-          a: "By indicating so during sign-up. Every application is reviewed by the team before approval.",
+          q: "Is my data secure?",
+          a: "Yes. Djiguignè AI doesn't share your conversations or personal data with third parties.",
+        },
+        {
+          q: "Does Djiguignè AI work on mobile?",
+          a: "Yes, the platform works directly from a mobile browser, no installation needed.",
+        },
+        {
+          q: "What's a specialized AI, compared to a general-purpose AI like ChatGPT?",
+          a: "A specialized AI is dedicated to one precise domain (a subject, a profession, a field...) instead of answering everything. It's configured and fed specifically on that domain, making it more relevant and reliable for that particular use.",
+        },
+        {
+          q: "How do I find the AI that fits my need?",
+          a: "The catalog is organized by subject, profession, field, and domain. Browse the categories above, or search directly for the AI matching your need.",
+        },
+        {
+          q: "Do I need an account to chat with an AI?",
+          a: "Yes, a free user account is required to start a conversation with an AI from the catalog.",
         },
       ],
     },

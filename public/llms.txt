@@ -6,6 +6,8 @@
 - [Accueil](https://djiguigne.com/fr): présentation de la plateforme
 - [À propos](https://djiguigne.com/fr/about): mission, fondateur, informations légales
 - [Produit](https://djiguigne.com/fr/services): catalogue complet des IA spécialisées disponibles, par domaine
+- [Cas d'usage](https://djiguigne.com/fr/cas-usage): les domaines où une IA spécialisée fait la différence
+- [Glossaire](https://djiguigne.com/fr/glossaire): définitions des termes du secteur (agent IA, RAG, IA spécialisée...)
 - [Blog](https://djiguigne.com/fr/blog): articles sur la plateforme
 - [Contact](https://djiguigne.com/fr/contact): boumiservice@gmail.com
 

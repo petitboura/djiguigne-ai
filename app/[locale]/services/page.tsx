@@ -122,13 +122,24 @@ export default async function ServicesPage({ params }: { params: { locale: Local
           }}
         />
 
-        <div className="mt-6 flex justify-start animate-dj-fade-up" style={{ animationDelay: "0.2s" }}>
-          <button
-            type="button"
-            className="rounded-full border border-dj-bordure px-5 py-2 text-sm font-medium text-dj-texte-muet transition-colors hover:border-dj-bordure-forte hover:text-dj-texte"
-          >
-            {dict.services.faqButton}
-          </button>
+        <div className="mt-10">
+          <h2 className="mb-6 font-display text-2xl font-bold text-dj-texte">{dict.services.faqTitle}</h2>
+          <div className="flex flex-col gap-3">
+            {dict.services.faq.map((item) => (
+              <details
+                key={item.q}
+                className="group rounded-xl border border-dj-bordure bg-dj-surface p-4 open:border-dj-bordure-forte"
+              >
+                <summary className="cursor-pointer list-none font-display text-sm font-semibold text-dj-texte marker:content-none">
+                  <span className="flex items-center justify-between gap-3">
+                    {item.q}
+                    <span className="text-dj-accent-1 transition-transform group-open:rotate-45">+</span>
+                  </span>
+                </summary>
+                <p className="mt-3 text-sm text-dj-texte-muet">{item.a}</p>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
 

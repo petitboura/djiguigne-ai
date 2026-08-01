@@ -19,6 +19,18 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
         </div>
 
         <div className="flex flex-wrap gap-x-8 gap-y-3 text-sm">
+          <Link href={`/${locale}/services`} className="text-dj-texte-muet hover:text-dj-texte">
+            {dict.nav.services}
+          </Link>
+          <Link href={`/${locale}/cas-usage`} className="text-dj-texte-muet hover:text-dj-texte">
+            {dict.footer.casUsage}
+          </Link>
+          <Link href={`/${locale}/glossaire`} className="text-dj-texte-muet hover:text-dj-texte">
+            {dict.footer.glossaire}
+          </Link>
+          <Link href={`/${locale}/blog`} className="text-dj-texte-muet hover:text-dj-texte">
+            {dict.nav.blog}
+          </Link>
           <Link href={`/${locale}/legal/mentions-legales`} className="text-dj-texte-muet hover:text-dj-texte">
             {dict.footer.legal}
           </Link>
