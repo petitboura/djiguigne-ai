@@ -937,7 +937,19 @@ export default function PageModifierAgent() {
                 ["lien", "Lien"],
               ] as const
             ).map(([valeur, label]) => (
-              <Onglet key={valeur} actif={biblioFiltre === valeur} onClick={() => setBiblioFiltre(valeur)}>
+              <Onglet
+                key={valeur}
+                actif={biblioFiltre === valeur}
+                onClick={() => {
+                  setBiblioFiltre(valeur);
+                  // Ajouté le 01/08 (Bourama : "pourquoi il y a fichier
+                  // dans la section lien, je comprends pas" -- le
+                  // formulaire d'ajout restait sur "Fichier" par défaut
+                  // même en filtrant sur "Lien", aucun lien entre les
+                  // deux). Le formulaire suit maintenant l'onglet cliqué.
+                  setModeAjoutBiblio(valeur === "lien" ? "lien" : "fichier");
+                }}
+              >
                 {label}
               </Onglet>
             ))}
