@@ -275,36 +275,36 @@ export function SectionsProduit({
                     <a
                       key={agent.id}
                       href={`${siteConfig.appUrl}/agent/${agent.id}/chat`}
-                      className="group flex items-start gap-4 rounded-2xl border border-dj-bordure bg-dj-surface p-4 text-left transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute sm:p-5"
+                      className="group flex flex-col gap-3 rounded-2xl border border-dj-bordure bg-dj-surface p-4 text-left transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute sm:p-5"
                     >
-                      <span className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-dj-surface-haute">
-                        {agent.image_vitrine_url ? (
-                          <Image
-                            src={agent.image_vitrine_url}
-                            alt=""
-                            fill
-                            className="object-cover"
-                            sizes="56px"
-                          />
-                        ) : (
-                          <span className="text-2xl leading-none">{agent.icone_page || "🤖"}</span>
-                        )}
-                      </span>
-                      <span className="flex min-w-0 flex-col gap-1.5">
-                        <span className="flex flex-wrap items-center gap-2">
-                          <span className="font-display text-base font-bold text-dj-texte">
+                      <span className="flex items-center gap-3">
+                        <span className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-dj-surface-haute">
+                          {agent.image_vitrine_url ? (
+                            <Image
+                              src={agent.image_vitrine_url}
+                              alt=""
+                              fill
+                              className="object-cover"
+                              sizes="56px"
+                            />
+                          ) : (
+                            <span className="text-2xl leading-none">{agent.icone_page || "🤖"}</span>
+                          )}
+                        </span>
+                        <span className="flex min-w-0 flex-col gap-1.5">
+                          <span className="truncate font-display text-base font-bold text-dj-texte">
                             {agent.nom}
                           </span>
                           {tag && (
-                            <span className="shrink-0 rounded-full border border-dj-bordure px-2.5 py-1 text-xs text-dj-texte-muet">
+                            <span className="inline-flex w-fit shrink-0 rounded-full border border-dj-bordure px-2.5 py-1 text-xs text-dj-texte-muet">
                               {tag}
                             </span>
                           )}
                         </span>
-                        {agent.description && (
-                          <span className="text-sm text-dj-texte-muet">{agent.description}</span>
-                        )}
                       </span>
+                      {agent.description && (
+                        <span className="text-sm text-dj-texte-muet">{agent.description}</span>
+                        )}
                     </a>
                   );
                 })}
