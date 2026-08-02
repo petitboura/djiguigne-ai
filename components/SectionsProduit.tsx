@@ -292,7 +292,7 @@ export function SectionsProduit({
                   return (
                     <a
                       key={agent.id}
-                      href={`${siteConfig.appUrl}/agent/${agent.id}/chat?retour=${encodeURIComponent(
+                      href={`${siteConfig.appUrl}/agent/${agent.id}?retour=${encodeURIComponent(
                         `${siteConfig.url}/${locale}/services`
                       )}`}
                       className="group flex flex-col gap-3 rounded-2xl border border-dj-bordure bg-dj-surface p-4 text-left transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute sm:p-5"

@@ -58,7 +58,7 @@ export function RubanAgents() {
         {ruban.map((agent, i) => (
           <a
             key={`${agent.id}-${i}`}
-            href={`${siteConfig.appUrl}/agent/${agent.id}/chat?retour=${encodeURIComponent(window.location.href)}`}
+            href={`${siteConfig.appUrl}/agent/${agent.id}?retour=${encodeURIComponent(window.location.href)}`}
             className="flex w-max min-w-[96px] max-w-[220px] shrink-0 flex-col items-start gap-1.5"
           >
             <span className="flex items-center gap-2 whitespace-nowrap rounded-full border border-dj-bordure bg-dj-surface-haute py-1.5 pl-1.5 pr-3">
