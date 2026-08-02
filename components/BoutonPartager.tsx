@@ -13,14 +13,20 @@ import { useState } from "react";
 // séparée juste pour ça (le composant tourne toujours côté client, donc
 // `window` est toujours disponible).
 
+// Prop texteCopie ajoutée le 02/08 (partage des articles de blog, bilingue
+// fr/en) : optionnelle, valeur par défaut identique à avant -- les 3
+// appelants existants (page agent, dashboard) n'ont rien à changer.
+
 export function BoutonPartager({
   chemin,
   titre,
   libelle = "Partager",
+  texteCopie = "Copié !",
 }: {
   chemin: string;
   titre: string;
   libelle?: string;
+  texteCopie?: string;
 }) {
   const [copie, setCopie] = useState(false);
 
@@ -44,7 +50,9 @@ export function BoutonPartager({
       setTimeout(() => setCopie(false), 2000);
     } catch {
       // Presse-papiers indisponible (permissions, contexte non sécurisé) :
-      // repli le plus simple qui marche partout.
+      // repli le plus simple qui marche partout. Texte laissé en français
+      // (chemin quasi jamais emprunté par un navigateur moderne) plutôt
+      // que d'ajouter encore une prop pour ce cas limite.
       window.prompt("Copie ce lien :", url);
     }
   }
@@ -55,7 +63,7 @@ export function BoutonPartager({
       onClick={partager}
       className="flex items-center gap-1.5 rounded-full border border-dj-bordure px-4 py-2 text-sm text-dj-texte transition-colors hover:border-dj-bordure-forte"
     >
-      {copie ? "Copié !" : libelle}
+      {copie ? texteCopie : libelle}
     </button>
   );
 }

@@ -141,6 +141,8 @@ export const dictionaries = {
       intro: "Réflexions sur la création d'agents IA, le RAG, et l'accessibilité de l'IA spécialisée.",
       readMore: "Lire l'article",
       back: "Retour aux articles",
+      share: "Partager",
+      shared: "Copié !",
     },
     legal: {
       mentionsTitle: "Mentions légales",
@@ -301,6 +303,8 @@ export const dictionaries = {
       intro: "Thoughts on AI agent creation, RAG, and making specialized AI accessible.",
       readMore: "Read article",
       back: "Back to articles",
+      share: "Share",
+      shared: "Copied!",
     },
     legal: {
       mentionsTitle: "Legal notice",

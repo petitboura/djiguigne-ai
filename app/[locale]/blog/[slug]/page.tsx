@@ -5,6 +5,7 @@ import { getDictionary } from "@/lib/dictionaries";
 import { siteConfig, type Locale } from "@/lib/site-config";
 import { getPost, getPosts } from "@/lib/posts";
 import { JsonLd } from "@/components/JsonLd";
+import { BoutonPartager } from "@/components/BoutonPartager";
 
 export function generateStaticParams() {
   return siteConfig.locales.flatMap((locale) =>
@@ -19,15 +20,32 @@ export function generateMetadata({
 }): Metadata {
   const post = getPost(params.locale, params.slug);
   if (!post) return {};
+  // Next.js REMPLACE tout l'objet openGraph du layout parent dès qu'une
+  // page en redéfinit un (pas de fusion profonde) -- sans siteName/locale/
+  // url/images ici, un article partagé perdait silencieusement l'image de
+  // prévisualisation (WhatsApp, LinkedIn, etc. n'affichaient qu'un lien nu).
+  // Même chose pour twitter : absent ici, la carte de partage X retombait
+  // sur le titre/résumé génériques du site plutôt que ceux de l'article.
+  const image = `${siteConfig.url}/opengraph-image.png`;
   return {
     title: post.title,
     description: post.description,
     alternates: { canonical: `/${params.locale}/blog/${post.slug}` },
     openGraph: {
       type: "article",
+      locale: params.locale,
+      siteName: siteConfig.brandName,
       title: post.title,
       description: post.description,
       publishedTime: post.date,
+      url: `${siteConfig.url}/${params.locale}/blog/${post.slug}`,
+      images: [{ url: image, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.description,
+      images: [image],
     },
   };
 }
@@ -66,17 +84,24 @@ export default function BlogPostPage({
           ← {dict.blog.back}
         </Link>
 
-        <time
-          dateTime={post.date}
-          className="mt-6 block animate-dj-fade-up font-mono text-xs text-dj-texte-muet"
+        <div
+          className="mt-6 flex animate-dj-fade-up items-center justify-between gap-4"
           style={{ animationDelay: "0.05s" }}
         >
-          {new Date(post.date).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </time>
+          <time dateTime={post.date} className="font-mono text-xs text-dj-texte-muet">
+            {new Date(post.date).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </time>
+          <BoutonPartager
+            chemin={`/${locale}/blog/${post.slug}`}
+            titre={post.title}
+            libelle={dict.blog.share}
+            texteCopie={dict.blog.shared}
+          />
+        </div>
 
         <h1
           className="mt-2 animate-dj-fade-up font-display text-3xl font-extrabold text-dj-texte sm:text-4xl"
@@ -94,6 +119,15 @@ export default function BlogPostPage({
               {p}
             </p>
           ))}
+        </div>
+
+        <div className="mt-10 flex justify-center border-t border-dj-bordure pt-8">
+          <BoutonPartager
+            chemin={`/${locale}/blog/${post.slug}`}
+            titre={post.title}
+            libelle={dict.blog.share}
+            texteCopie={dict.blog.shared}
+          />
         </div>
       </article>
     </>
