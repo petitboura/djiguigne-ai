@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { siteConfig } from "@/lib/site-config";
+import { IconeMatrix } from "@/components/icones/IconeMatrix";
+
+// Même cas particulier que djiguigne-frontend (02/08, Bourama) : cet agent
+// précis n'a jamais l'image vitrine, même en miniature dans le ruban.
+const AGENTS_SANS_IMAGE_VITRINE = new Set(["math-matique"]);
 
 // Demande de Bourama (2026-07-27), accueil, entre les boutons et la
 // section suivante : un ruban qui défile horizontalement en continu,
@@ -63,7 +68,9 @@ export function RubanAgents() {
           >
             <span className="flex items-center gap-2 whitespace-nowrap rounded-full border border-dj-bordure bg-dj-surface-haute py-1.5 pl-1.5 pr-3">
               <span className="relative flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-dj-surface">
-                {agent.image_vitrine_url ? (
+                {AGENTS_SANS_IMAGE_VITRINE.has(agent.id) ? (
+                  <IconeMatrix className="h-4 w-4 text-dj-accent-1" />
+                ) : agent.image_vitrine_url ? (
                   <Image
                     src={agent.image_vitrine_url}
                     alt=""

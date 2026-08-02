@@ -4,6 +4,10 @@ import { getDictionary } from "@/lib/dictionaries";
 import { siteConfig, type Locale } from "@/lib/site-config";
 import { JsonLd } from "@/components/JsonLd";
 import { SectionsProduit } from "@/components/SectionsProduit";
+import { IconeMatrix } from "@/components/icones/IconeMatrix";
+
+// Même cas particulier que RubanAgents.tsx / SectionsProduit.tsx (02/08).
+const AGENTS_SANS_IMAGE_VITRINE = new Set(["math-matique"]);
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -156,7 +160,9 @@ export default async function ServicesPage({ params }: { params: { locale: Local
                 >
                   <span className="flex items-center gap-3">
                     <span className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-dj-surface-haute">
-                      {agent.image_vitrine_url ? (
+                      {AGENTS_SANS_IMAGE_VITRINE.has(agent.id) ? (
+                        <IconeMatrix className="h-5 w-5 text-dj-accent-1" />
+                      ) : agent.image_vitrine_url ? (
                         <Image
                           src={agent.image_vitrine_url}
                           alt=""

@@ -5,6 +5,10 @@ import { createPortal } from "react-dom";
 import { BoutonDevenirCreateur } from "@/components/BoutonDevenirCreateur";
 import Image from "next/image";
 import { siteConfig, type Locale } from "@/lib/site-config";
+import { IconeMatrix } from "@/components/icones/IconeMatrix";
+
+// Même cas particulier que RubanAgents.tsx / djiguigne-frontend (02/08).
+const AGENTS_SANS_IMAGE_VITRINE = new Set(["math-matique"]);
 
 // Ajouté le 2026-07-31 (Bourama : "il y a 3-4 sections mais rien
 // là-dessus" -- les boutons de la page Produit étaient une maquette non
@@ -299,7 +303,9 @@ export function SectionsProduit({
                     >
                       <span className="flex items-center gap-3">
                         <span className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-dj-surface-haute">
-                          {agent.image_vitrine_url ? (
+                          {AGENTS_SANS_IMAGE_VITRINE.has(agent.id) ? (
+                            <IconeMatrix className="h-6 w-6 text-dj-accent-1" />
+                          ) : agent.image_vitrine_url ? (
                             <Image
                               src={agent.image_vitrine_url}
                               alt=""
