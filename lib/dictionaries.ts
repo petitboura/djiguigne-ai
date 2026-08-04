@@ -175,6 +175,45 @@ export const dictionaries = {
       accountTypeCreatorDesc: "Je candidate pour publier mes propres IA",
       creatorNote: "La création est sur sélection. Ta candidature sera examinée par l'équipe avant validation.",
     },
+    // Ajouté le 04/08 (Bourama) : espace dédié aux établissements
+    // scolaires, distinct du parcours créateur (voir api/roles.py côté
+    // backend -- hiérarchie établissement/enseignant/étudiant). Réutilise
+    // dict.auth pour les libellés email/téléphone/mot de passe, pas de
+    // duplication.
+    etablissements: {
+      navLabel: "Établissements",
+      landing: {
+        kicker: "Un espace pour les écoles",
+        title: "Djiguignè pour les établissements",
+        subtitle:
+          "Un établissement inscrit ses enseignants, chaque enseignant inscrit ses étudiants. Chacun reçoit sa propre IA, reliée à celle de son établissement ou de son enseignant.",
+        hierarchyEtablissement: "Établissement",
+        hierarchyEnseignant: "Enseignant",
+        hierarchyEtudiant: "Étudiant",
+        roleEtablissementTitle: "Établissement",
+        roleEtablissementDesc: "Inscris ton établissement, invite tes enseignants, envoie des annonces.",
+        roleEnseignantTitle: "Enseignant",
+        roleEnseignantDesc: "Rattache-toi à ton établissement, inscris tes étudiants, pilote leur IA.",
+        roleEtudiantTitle: "Étudiant",
+        roleEtudiantDesc: "Rattache-toi à ton enseignant et retrouve ton IA personnelle.",
+        cta: "S'inscrire",
+      },
+      inscription: {
+        stepRoleTitle: "Tu es...",
+        stepEtablissementTitle: "Choisis ton établissement",
+        stepEtablissementPlaceholder: "Sélectionne un établissement",
+        stepEtablissementEmpty: "Aucun établissement disponible pour le moment.",
+        stepEnseignantTitle: "Choisis ton enseignant",
+        stepEnseignantPlaceholder: "Sélectionne un enseignant",
+        stepEnseignantEmpty: "Aucun enseignant disponible pour le moment.",
+        stepAuthTitle: "Crée ton compte",
+        back: "Retour",
+        next: "Continuer",
+        submitButton: "Créer mon compte",
+        submitButtonLoading: "Création…",
+        successRedirect: "Compte créé, redirection…",
+      },
+    },
   },
   en: {
     nav: {
@@ -336,6 +375,40 @@ export const dictionaries = {
       accountTypeCreator: "Creator",
       accountTypeCreatorDesc: "I apply to publish my own AIs",
       creatorNote: "Creator access is selective. Your application will be reviewed by the team before approval.",
+    },
+    etablissements: {
+      navLabel: "Institutions",
+      landing: {
+        kicker: "A space for schools",
+        title: "Djiguignè for institutions",
+        subtitle:
+          "An institution enrolls its teachers, each teacher enrolls their students. Everyone gets their own AI, linked to their institution's or teacher's.",
+        hierarchyEtablissement: "Institution",
+        hierarchyEnseignant: "Teacher",
+        hierarchyEtudiant: "Student",
+        roleEtablissementTitle: "Institution",
+        roleEtablissementDesc: "Register your institution, invite your teachers, send announcements.",
+        roleEnseignantTitle: "Teacher",
+        roleEnseignantDesc: "Attach yourself to your institution, enroll your students, manage their AI.",
+        roleEtudiantTitle: "Student",
+        roleEtudiantDesc: "Attach yourself to your teacher and find your personal AI.",
+        cta: "Sign up",
+      },
+      inscription: {
+        stepRoleTitle: "You are...",
+        stepEtablissementTitle: "Choose your institution",
+        stepEtablissementPlaceholder: "Select an institution",
+        stepEtablissementEmpty: "No institution available yet.",
+        stepEnseignantTitle: "Choose your teacher",
+        stepEnseignantPlaceholder: "Select a teacher",
+        stepEnseignantEmpty: "No teacher available yet.",
+        stepAuthTitle: "Create your account",
+        back: "Back",
+        next: "Continue",
+        submitButton: "Create my account",
+        submitButtonLoading: "Creating…",
+        successRedirect: "Account created, redirecting…",
+      },
     },
   },
 } as const;

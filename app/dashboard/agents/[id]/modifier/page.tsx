@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { appelerApi, appelerApiFichier, ajouterFichierBibliotheque, ajouterLienBibliotheque } from "@/lib/api";
+import { siteConfig } from "@/lib/site-config";
 import { TopBar } from "@/components/TopBar";
 import { BoutonRetour } from "@/components/BoutonRetour";
 import { BoutonAccueil } from "@/components/BoutonAccueil";
@@ -86,7 +87,7 @@ function categorieFichierBiblio(mime: string): "image" | "video" | "audio" | "do
 // Icônes de la sidebar (Bourama, 27/07 : "enlève tes emojis et ajoute des
 // icônes dignes de ma plateforme") -- même style que BoutonAccueil.tsx et
 // le chevron de la sidebar : traits (stroke), pas de remplissage, currentColor.
-function IconeNav({ nom }: { nom: "bibliotheque" | "moi" | "article" }) {
+function IconeNav({ nom }: { nom: "bibliotheque" | "moi" | "article" | "etablissements" }) {
   const commun = {
     width: 16,
     height: 16,
@@ -112,6 +113,17 @@ function IconeNav({ nom }: { nom: "bibliotheque" | "moi" | "article" }) {
       <svg {...commun}>
         <circle cx="12" cy="8" r="4" />
         <path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" />
+      </svg>
+    );
+  }
+
+  if (nom === "etablissements") {
+    return (
+      <svg {...commun}>
+        <path d="M4 21V7l8-4 8 4v14" />
+        <path d="M4 21h16" />
+        <line x1="9" y1="21" x2="9" y2="13" />
+        <line x1="15" y1="21" x2="15" y2="13" />
       </svg>
     );
   }
@@ -215,6 +227,10 @@ export default function PageModifierAgent() {
   const [sectionActive, setSectionActive] = useState<SectionId>("vitrine");
 
   const [mesAgents, setMesAgents] = useState<AgentMini[] | null>(null);
+  // Lien vers /etablissements réservé à Bourama (Bourama, 04/08 : "juste
+  // moi dans mon espace dans la vitrine") -- dynamique via profiles.role
+  // === "admin" (voir api/roles.py), jamais un email en dur.
+  const [estAdmin, setEstAdmin] = useState(false);
   // Repliable "comme un tableau de bord" (Bourama, 27/07) : par défaut
   // ouverte, un bouton replie vers la gauche (largeur réduite, icônes
   // seules, plus de nom ni de bouton créer).
@@ -265,6 +281,13 @@ export default function PageModifierAgent() {
     appelerApi(`/api/profiles/${session.user.id}`)
       .then((r: { agents: AgentMini[] }) => setMesAgents(r.agents))
       .catch(() => setMesAgents([]));
+  }, [session]);
+
+  useEffect(() => {
+    if (!session) return;
+    appelerApi("/api/roles/moi")
+      .then((r: { role: string | null }) => setEstAdmin(r.role === "admin"))
+      .catch(() => setEstAdmin(false));
   }, [session]);
 
   function chargerDocuments() {
@@ -506,6 +529,19 @@ export default function PageModifierAgent() {
                 <span className={sidebarReduite ? "truncate md:hidden" : "truncate"}>{label}</span>
               </button>
             ))}
+
+            {estAdmin && (
+              <Link
+                href={`/${siteConfig.defaultLocale}/etablissements`}
+                title="Établissements"
+                className={`flex flex-shrink-0 items-center gap-2 whitespace-nowrap rounded-2xl border border-dj-bordure px-4 py-3 text-sm text-dj-texte-muet transition-colors hover:border-dj-bordure-forte hover:text-dj-texte md:justify-start ${
+                  sidebarReduite ? "md:w-10 md:justify-center md:px-0" : ""
+                }`}
+              >
+                <IconeNav nom="etablissements" />
+                <span className={sidebarReduite ? "truncate md:hidden" : "truncate"}>Établissements</span>
+              </Link>
+            )}
 
             <div className="my-1 hidden h-px w-full bg-dj-bordure md:block" />
 
