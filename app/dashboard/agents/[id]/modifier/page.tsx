@@ -12,6 +12,7 @@ import { BoutonAccueil } from "@/components/BoutonAccueil";
 import { ChampImage } from "@/components/ChampImage";
 import { DroitsAgent } from "@/components/DroitsAgent";
 import { ProactiviteAgent } from "@/components/ProactiviteAgent";
+import { siteConfig } from "@/lib/site-config";
 
 // Étape "modifier un agent" (2026-07-12, demande de Bourama : "on ne peut
 // pas modifier ces agents créés" — gros morceau manquant depuis le début
@@ -572,7 +573,23 @@ export default function PageModifierAgent() {
           <BoutonRetour />
           <BoutonAccueil />
         </div>
-        <h1 className="font-display text-2xl font-bold text-dj-texte">Modifier {nom}</h1>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="font-display text-2xl font-bold text-dj-texte">Modifier {nom}</h1>
+
+          {/* "Tester" (2026-08-04, demande Bourama) : équivalent du bouton
+              présent dans "Mon espace" côté app (djiguigne-frontend,
+              AgentCard.tsx) -- accès direct au chat de l'IA. La vitrine
+              n'héberge pas le chat elle-même, donc on pointe vers l'app
+              via siteConfig.appUrl plutôt qu'une route locale. */}
+          <a
+            href={`${siteConfig.appUrl}/agent/${agentId}/chat`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full border border-dj-bordure bg-dj-fond/80 px-4 py-2 text-sm font-medium text-dj-texte-muet transition-colors hover:border-dj-bordure-forte hover:text-dj-texte"
+          >
+            Tester
+          </a>
+        </div>
 
         {sectionActive !== "bibliotheque" && sectionActive !== "moi" && sectionActive !== "article" && (
         <div className="mb-2 mt-6 flex flex-wrap gap-x-6 gap-y-3 border-b border-dj-bordure pb-0">
