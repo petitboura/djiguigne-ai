@@ -1,5 +1,11 @@
 "use client";
 
+// DÉSACTIVÉ — 05/08/2026
+// Ne pas réutiliser ni réactiver tant que ce n'est pas demandé explicitement.
+// Raison : demande de Bourama de couper la section Établissements de la
+// navigation normale, en gardant l'URL directe joignable pour qui la
+// connaît. Voir SECTIONS_DESACTIVEES.md à la racine du dépôt.
+
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";

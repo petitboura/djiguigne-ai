@@ -4,6 +4,12 @@ import { getDictionary } from "@/lib/dictionaries";
 import { siteConfig, type Locale } from "@/lib/site-config";
 import { JsonLd } from "@/components/JsonLd";
 
+// DÉSACTIVÉ — 05/08/2026
+// Ne pas réutiliser ni réactiver tant que ce n'est pas demandé explicitement.
+// Raison : demande de Bourama de couper la section Établissements de la
+// navigation normale, en gardant l'URL directe joignable pour qui la
+// connaît. Voir SECTIONS_DESACTIVEES.md à la racine du dépôt.
+
 // Ajouté le 04/08 (Bourama) : espace dédié aux établissements scolaires,
 // distinct du parcours créateur. Consomme la hiérarchie de rôles côté
 // backend (voir api/roles.py) au moment de l'inscription, pas ici --
