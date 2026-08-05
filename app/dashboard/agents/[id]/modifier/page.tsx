@@ -12,6 +12,7 @@ import { BoutonAccueil } from "@/components/BoutonAccueil";
 import { ChampImage } from "@/components/ChampImage";
 import { DroitsAgent } from "@/components/DroitsAgent";
 import { ProactiviteAgent } from "@/components/ProactiviteAgent";
+import { AdministrateursAgent } from "@/components/AdministrateursAgent";
 
 // Étape "modifier un agent" (2026-07-12, demande de Bourama : "on ne peut
 // pas modifier ces agents créés" — gros morceau manquant depuis le début
@@ -27,6 +28,10 @@ import { ProactiviteAgent } from "@/components/ProactiviteAgent";
 type AgentEditable = {
   id: string;
   nom: string;
+  // Ajouté 2026-08-05 : distingue le propriétaire d'un administrateur
+  // désigné, qui charge la même page mais ne voit pas l'onglet
+  // Administrateurs (voir estProprietaireAgent plus bas).
+  owner_id: string;
   icone_page: string;
   system_prompt: string;
   notion_page_id: string | null;
@@ -67,6 +72,10 @@ const SECTIONS = [
   { id: "droits", label: "Droits" },
   { id: "proactivite", label: "Proactivité" },
   { id: "documents", label: "Documents PDF" },
+  // Réservé au propriétaire, jamais à un administrateur désigné (2026-08-05,
+  // voir AdministrateursAgent.tsx) -- filtré à l'affichage plus bas, pas ici,
+  // pour ne pas dupliquer la liste des ids valides de SectionId.
+  { id: "administrateurs", label: "Administrateurs" },
   { id: "maj", label: "Mise à jour" },
 ] as const;
 type SectionId = (typeof SECTIONS)[number]["id"] | "bibliotheque" | "moi" | "article";
@@ -231,6 +240,11 @@ export default function PageModifierAgent() {
   // moi dans mon espace dans la vitrine") -- dynamique via profiles.role
   // === "admin" (voir api/roles.py), jamais un email en dur.
   const [estAdmin, setEstAdmin] = useState(false);
+  // Propriétaire vs administrateur désigné (2026-08-05) : les deux
+  // chargent la même page /edition (peut_modifier_comportement accepte
+  // maintenant agents_administrateurs, voir permissions_hierarchie.py),
+  // mais seul le propriétaire peut désigner d'autres administrateurs.
+  const [estProprietaireAgent, setEstProprietaireAgent] = useState(false);
   // Repliable "comme un tableau de bord" (Bourama, 27/07) : par défaut
   // ouverte, un bouton replie vers la gauche (largeur réduite, icônes
   // seules, plus de nom ni de bouton créer).
@@ -252,6 +266,7 @@ export default function PageModifierAgent() {
     appelerApi(`/api/agents/${agentId}/edition`)
       .then((r: AgentEditable) => {
         setNom(r.nom);
+        setEstProprietaireAgent(r.owner_id === session.user.id);
         setIconePage(r.icone_page || "🤖");
         setImageVitrineUrl(r.image_vitrine_url || "");
         setDescription(r.description || "");
@@ -592,7 +607,7 @@ export default function PageModifierAgent() {
 
         {sectionActive !== "bibliotheque" && sectionActive !== "moi" && sectionActive !== "article" && (
         <div className="mb-2 mt-6 flex flex-wrap gap-x-6 gap-y-3 border-b border-dj-bordure pb-0">
-            {SECTIONS.map((s) => (
+            {SECTIONS.filter((s) => s.id !== "administrateurs" || estProprietaireAgent).map((s) => (
               <Onglet key={s.id} actif={sectionActive === s.id} onClick={() => setSectionActive(s.id)}>
                 {s.label}
               </Onglet>
@@ -900,6 +915,13 @@ export default function PageModifierAgent() {
         <section className="mt-6">
           <h2 className="text-lg font-bold mb-4">Proactivité</h2>
           <ProactiviteAgent agentId={agentId} />
+        </section>
+        )}
+
+        {sectionActive === "administrateurs" && estProprietaireAgent && (
+        <section className="mt-6">
+          <h2 className="text-lg font-bold mb-4">Administrateurs</h2>
+          <AdministrateursAgent agentId={agentId} />
         </section>
         )}
 
