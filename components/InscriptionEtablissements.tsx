@@ -24,10 +24,12 @@ type CompteListe = { user_id: string; nom_affiche: string };
 // d'identifiants. À la fin, POST /api/roles/choisir enregistre le rôle et
 // le rattachement (voir api/roles.py côté backend).
 //
-// Redirection finale vers siteConfig.appUrl (l'app produit, pas la
-// vitrine) : ces comptes ne sont pas des créateurs sur djiguigne-ai, ils
-// utilisent l'IA de leur établissement/enseignant/eux-mêmes dans l'app.
-// À ajuster si Bourama veut une autre destination.
+// Redirection finale vers siteConfig.appUrl/dashboard/profil/modifier
+// (l'app produit, pas la vitrine) : ces comptes ne sont pas des créateurs
+// sur djiguigne-ai, ils utilisent l'IA de leur établissement/enseignant/
+// eux-mêmes dans l'app -- et n'ont jamais eu l'occasion de renseigner
+// nom/logo ailleurs (2026-08-05, audit A-F), donc on les envoie direct
+// sur la page qui le fait plutôt que sur l'accueil.
 export function InscriptionEtablissements({ dict, locale }: { dict: Dictionary; locale: Locale }) {
   const t = dict.etablissements.inscription;
 
@@ -111,7 +113,12 @@ export function InscriptionEtablissements({ dict, locale }: { dict: Dictionary; 
 
     setEnCours(false);
     setSucces(true);
-    window.location.href = siteConfig.appUrl;
+    // 2026-08-05 (audit A-F) : vers la page de profil (nom + logo) plutôt
+    // que l'accueil de l'app -- ces comptes n'ont jamais eu l'occasion de
+    // renseigner ça ailleurs (le formulaire ci-dessus ne capture que
+    // email/téléphone/mot de passe). /dashboard/profil/modifier gère déjà
+    // nom_affiche + avatar_url pour tout le monde, rien à construire.
+    window.location.href = `${siteConfig.appUrl}/dashboard/profil/modifier`;
   }
 
   return (
