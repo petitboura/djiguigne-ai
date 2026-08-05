@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { lireRegistreOutils } from "@/lib/api";
+import { GROUPES_GENERATION, GROUPES_SERVEURS, regrouperOutils } from "@/lib/droits-agent-info";
 
 // Variante de DroitsAgent.tsx pour le formulaire de CRÉATION : l'agent
 // n'existe pas encore, donc pas d'agentId, pas de lecture "coche" déjà
@@ -66,51 +67,85 @@ export function DroitsAgentCreation({
   const serveursParNom = new Map<string, OutilPlateforme>();
   for (const s of registre.serveurs) serveursParNom.set(s.nom_serveur, s);
 
+  const groupesGeneration = regrouperOutils(registre.generation, GROUPES_GENERATION, (o) => o.nom_outil);
+  const groupesServeurs = regrouperOutils(
+    Array.from(serveursParNom.values()),
+    GROUPES_SERVEURS,
+    (s) => s.nom_serveur
+  );
+
   return (
-    <div className="space-y-5">
-      <div>
-        <h3 className="mb-2 text-sm font-semibold text-dj-texte">Génération</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {registre.generation.map((outil) => (
-            <label
-              key={outil.nom_outil}
-              className={`flex items-center gap-2 text-sm text-dj-texte ${!outil.disponible ? "opacity-40" : ""}`}
-            >
-              <input
-                type="checkbox"
-                disabled={!outil.disponible}
-                checked={genererCoches.has(outil.nom_outil)}
-                onChange={() => basculerGeneration(outil.nom_outil)}
-              />
-              {outil.nom_outil}
-              {!outil.disponible && <span className="text-xs text-dj-texte-muet">(indisponible)</span>}
-            </label>
-          ))}
-        </div>
+    <div className="space-y-6">
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold text-dj-texte">Génération</h3>
+        {groupesGeneration.map((groupe) => (
+          <div key={groupe.titre}>
+            <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-dj-texte-muet">
+              {groupe.titre}
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {groupe.items.map(({ outil, item }) => (
+                <label
+                  key={item.nom_outil}
+                  className={`flex items-start gap-2 text-sm text-dj-texte ${!item.disponible ? "opacity-40" : ""}`}
+                >
+                  <input
+                    type="checkbox"
+                    className="mt-0.5"
+                    disabled={!item.disponible}
+                    checked={genererCoches.has(item.nom_outil)}
+                    onChange={() => basculerGeneration(item.nom_outil)}
+                  />
+                  <span>
+                    <span className="block font-medium">
+                      {outil.label}
+                      {!item.disponible && <span className="ml-1 text-xs text-dj-texte-muet">(indisponible)</span>}
+                    </span>
+                    {outil.description && (
+                      <span className="block text-xs text-dj-texte-muet">{outil.description}</span>
+                    )}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
 
-      <div>
-        <h3 className="mb-2 text-sm font-semibold text-dj-texte">Outils externes</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {Array.from(serveursParNom.values()).map((serveur) => (
-            <label
-              key={serveur.nom_serveur}
-              className={`flex items-center gap-2 text-sm text-dj-texte ${!serveur.disponible ? "opacity-40" : ""}`}
-            >
-              <input
-                type="checkbox"
-                disabled={!serveur.disponible}
-                checked={serveursCoches.has(serveur.nom_serveur)}
-                onChange={() => basculerServeur(serveur.nom_serveur)}
-              />
-              {serveur.nom_serveur}
-              {serveur.categorie === 3 && (
-                <span className="text-xs text-dj-texte-muet">(compte utilisateur requis)</span>
-              )}
-              {!serveur.disponible && <span className="text-xs text-dj-texte-muet">(indisponible)</span>}
-            </label>
-          ))}
-        </div>
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold text-dj-texte">Outils externes</h3>
+        {groupesServeurs.map((groupe) => (
+          <div key={groupe.titre}>
+            <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-dj-texte-muet">
+              {groupe.titre}
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {groupe.items.map(({ outil, item }) => (
+                <label
+                  key={item.nom_serveur}
+                  className={`flex items-start gap-2 text-sm text-dj-texte ${!item.disponible ? "opacity-40" : ""}`}
+                >
+                  <input
+                    type="checkbox"
+                    className="mt-0.5"
+                    disabled={!item.disponible}
+                    checked={serveursCoches.has(item.nom_serveur)}
+                    onChange={() => basculerServeur(item.nom_serveur)}
+                  />
+                  <span>
+                    <span className="block font-medium">
+                      {outil.label}
+                      {!item.disponible && <span className="ml-1 text-xs text-dj-texte-muet">(indisponible)</span>}
+                    </span>
+                    {outil.description && (
+                      <span className="block text-xs text-dj-texte-muet">{outil.description}</span>
+                    )}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
