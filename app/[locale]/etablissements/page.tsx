@@ -67,23 +67,27 @@ export default function EtablissementsPage({ params }: { params: { locale: Local
 
         {/* Signature visuelle : la hiérarchie établissement -> enseignant ->
             étudiant, littéralement, puisque c'est le principe même de la
-            fonctionnalité (voir ROLES_VALIDES côté backend). */}
+            fonctionnalité (voir ROLES_VALIDES côté backend).
+            Cliquable depuis le 06/08 (Bourama) : même lien que les 3
+            cartes plus bas (?role=... présélectionné) -- roles[i] est
+            dans le même ordre (établissement, enseignant, étudiant). */}
         <div
           className="mx-auto mt-14 flex max-w-lg animate-dj-fade-up flex-col items-center"
           style={{ animationDelay: "0.24s" }}
         >
           {[t.hierarchyEtablissement, t.hierarchyEnseignant, t.hierarchyEtudiant].map((label, i) => (
             <div key={label} className="flex flex-col items-center">
-              <div
-                className={`rounded-full border px-6 py-3 font-display text-sm font-bold ${
+              <Link
+                href={`/${locale}/etablissements/inscription?role=${roles[i].cle}`}
+                className={`inline-block rounded-full border px-6 py-3 text-center font-display text-sm font-bold transition-transform hover:-translate-y-0.5 ${
                   i === 0
                     ? "border-dj-accent-1 bg-dj-gradient text-[#1A0D02]"
-                    : "border-dj-bordure bg-dj-surface text-dj-texte"
+                    : "border-dj-bordure bg-dj-surface text-dj-texte hover:border-dj-bordure-forte"
                 }`}
                 style={{ width: `${220 - i * 40}px` }}
               >
                 {label}
-              </div>
+              </Link>
               {i < 2 && (
                 <svg width="2" height="32" viewBox="0 0 2 32" className="text-dj-bordure-forte">
                   <line x1="1" y1="0" x2="1" y2="32" stroke="currentColor" strokeWidth="2" strokeDasharray="1 5" strokeLinecap="round" />
