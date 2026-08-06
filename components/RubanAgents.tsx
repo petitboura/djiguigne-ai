@@ -3,11 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { siteConfig } from "@/lib/site-config";
-import { IconeMatrix } from "@/components/icones/IconeMatrix";
-
-// Même cas particulier que djiguigne-frontend (02/08, Bourama) : cet agent
-// précis n'a jamais l'image vitrine, même en miniature dans le ruban.
-const AGENTS_SANS_IMAGE_VITRINE = new Set(["math-matique"]);
+import { IconeGenerique } from "@/components/icones/IconeGenerique";
 
 // Demande de Bourama (2026-07-27), accueil, entre les boutons et la
 // section suivante : un ruban qui défile horizontalement en continu,
@@ -16,11 +12,14 @@ const AGENTS_SANS_IMAGE_VITRINE = new Set(["math-matique"]);
 // description publique en dessous (pas de cadre, 2 lignes max, tronquée).
 // Carte volontairement étroite -- juste la largeur du nom, pas un large
 // bloc -- donc la description se tronque vite, ce qui est le but.
+//
+// Icône réécrite le 2026-08-05 (demande Bourama) : icone_url (dessinée ou
+// uploadée) remplace icone_page (emoji) et image_vitrine_url, généralisé
+// depuis le cas particulier "math-matique"/IconeMatrix.
 type AgentRuban = {
   id: string;
   nom: string;
-  icone_page: string;
-  image_vitrine_url: string | null;
+  icone_url: string | null;
   description: string;
 };
 
@@ -68,18 +67,16 @@ export function RubanAgents() {
           >
             <span className="flex items-center gap-2 whitespace-nowrap rounded-full border border-dj-bordure bg-dj-surface-haute py-1.5 pl-1.5 pr-3">
               <span className="relative flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-dj-surface">
-                {AGENTS_SANS_IMAGE_VITRINE.has(agent.id) ? (
-                  <IconeMatrix className="h-4 w-4 text-dj-accent-1" />
-                ) : agent.image_vitrine_url ? (
+                {agent.icone_url ? (
                   <Image
-                    src={agent.image_vitrine_url}
+                    src={agent.icone_url}
                     alt=""
                     fill
                     className="object-cover"
                     sizes="28px"
                   />
                 ) : (
-                  <span className="text-sm leading-none">{agent.icone_page || "🤖"}</span>
+                  <IconeGenerique className="h-4 w-4 text-dj-accent-1" />
                 )}
               </span>
               <span className="font-display text-sm font-bold text-dj-texte">{agent.nom}</span>

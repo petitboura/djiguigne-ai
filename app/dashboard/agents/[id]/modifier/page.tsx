@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import Image from "next/image";
 import { appelerApi, appelerApiFichier, ajouterFichierBibliotheque, ajouterLienBibliotheque } from "@/lib/api";
 import { siteConfig } from "@/lib/site-config";
 import { TopBar } from "@/components/TopBar";
 import { BoutonRetour } from "@/components/BoutonRetour";
 import { BoutonAccueil } from "@/components/BoutonAccueil";
 import { ChampImage } from "@/components/ChampImage";
+import { IconeGenerique } from "@/components/icones/IconeGenerique";
 import { DroitsAgent } from "@/components/DroitsAgent";
 import { ProactiviteAgent } from "@/components/ProactiviteAgent";
 import { AdministrateursAgent } from "@/components/AdministrateursAgent";
@@ -32,11 +34,13 @@ type AgentEditable = {
   // désigné, qui charge la même page mais ne voit pas l'onglet
   // Administrateurs (voir estProprietaireAgent plus bas).
   owner_id: string;
-  icone_page: string;
+  // Nouveau système d'icône (2026-08-05) : remplace icone_page (emoji) et
+  // image_vitrine_url (bannière) partout dans l'affichage. Voir
+  // migrations/2026_08_05_ajout_icone_url_agents.sql (djiguigne-backend).
+  icone_url: string | null;
   system_prompt: string;
   notion_page_id: string | null;
   texte_libre: string;
-  image_vitrine_url: string | null;
   description: string;
   sous_titre: string;
   placeholder_saisie: string;
@@ -83,7 +87,7 @@ type SectionId = (typeof SECTIONS)[number]["id"] | "bibliotheque" | "moi" | "art
 // Liste des IA du créateur, affichée en permanence dans la colonne de
 // gauche (Bourama, 27/07 : "comme des pubs", plus de puce/popup) --
 // cliquer sur l'une d'elles change d'agent en cours d'édition.
-type AgentMini = { id: string; nom: string; icone_page?: string };
+type AgentMini = { id: string; nom: string; icone_url?: string | null };
 
 function categorieFichierBiblio(mime: string): "image" | "video" | "audio" | "document" | "lien" {
   if (mime === "text/uri-list") return "lien";
@@ -160,8 +164,7 @@ export default function PageModifierAgent() {
   const [erreurChargement, setErreurChargement] = useState<string | null>(null);
 
   const [nom, setNom] = useState("");
-  const [iconePage, setIconePage] = useState("🤖");
-  const [imageVitrineUrl, setImageVitrineUrl] = useState("");
+  const [iconeUrl, setIconeUrl] = useState("");
   const [description, setDescription] = useState("");
   // Ajouté le 2026-07-12 (Bourama : "le dashboard de modification aussi
   // changer") -- même correctif que le formulaire de création, distinct
@@ -267,8 +270,7 @@ export default function PageModifierAgent() {
       .then((r: AgentEditable) => {
         setNom(r.nom);
         setEstProprietaireAgent(r.owner_id === session.user.id);
-        setIconePage(r.icone_page || "🤖");
-        setImageVitrineUrl(r.image_vitrine_url || "");
+        setIconeUrl(r.icone_url || "");
         setDescription(r.description || "");
         setSousTitre(r.sous_titre || "");
         setPlaceholderSaisie(r.placeholder_saisie || "");
@@ -291,7 +293,7 @@ export default function PageModifierAgent() {
   useEffect(() => {
     if (!session) return;
     // Même endpoint que /dashboard (GET /api/profiles/{user_id}) : on
-    // n'a besoin ici que de id/nom/icone_page, mais la route ne renvoie
+    // n'a besoin ici que de id/nom/icone_url, mais la route ne renvoie
     // pas moins -- champs superflus ignorés côté AgentMini.
     appelerApi(`/api/profiles/${session.user.id}`)
       .then((r: { agents: AgentMini[] }) => setMesAgents(r.agents))
@@ -331,11 +333,10 @@ export default function PageModifierAgent() {
         method: "PATCH",
         body: JSON.stringify({
           nom,
-          icone_page: iconePage,
+          icone_url: iconeUrl || null,
           system_prompt: systemPrompt,
           lien_notion: lienNotion || null,
           texte_libre: texteLibre,
-          image_vitrine_url: imageVitrineUrl || null,
           description,
           sous_titre: sousTitre,
           placeholder_saisie: placeholderSaisie,
@@ -576,7 +577,13 @@ export default function PageModifierAgent() {
                     : "border-dj-bordure text-dj-texte-muet hover:border-dj-bordure-forte hover:text-dj-texte"
                 }`}
               >
-                <span className="text-lg leading-none">{a.icone_page ?? "🤖"}</span>
+                <span className="relative flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-dj-surface-haute">
+                  {a.icone_url ? (
+                    <Image src={a.icone_url} alt="" fill className="object-cover" sizes="24px" />
+                  ) : (
+                    <IconeGenerique className="h-3.5 w-3.5 text-dj-accent-1" />
+                  )}
+                </span>
                 <span className={sidebarReduite ? "truncate md:hidden" : "truncate"}>{a.nom}</span>
               </Link>
             ))}
@@ -625,20 +632,11 @@ export default function PageModifierAgent() {
               <input value={nom} onChange={(e) => setNom(e.target.value)} className={champClasse} />
             </div>
 
-            <div>
-              <label className={labelClasse}>Icône</label>
-              <input
-                value={iconePage}
-                onChange={(e) => setIconePage(e.target.value)}
-                maxLength={4}
-                className={`${champClasse} w-20 text-center text-xl`}
-              />
-            </div>
-
             <ChampImage
-              label="Image de vitrine"
-              valeur={imageVitrineUrl}
-              onChange={setImageVitrineUrl}
+              label="Icône"
+              valeur={iconeUrl}
+              onChange={setIconeUrl}
+              rond
             />
 
             <div>

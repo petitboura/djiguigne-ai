@@ -6,10 +6,7 @@ import Link from "next/link";
 import { BoutonDevenirCreateur } from "@/components/BoutonDevenirCreateur";
 import Image from "next/image";
 import { siteConfig, type Locale } from "@/lib/site-config";
-import { IconeMatrix } from "@/components/icones/IconeMatrix";
-
-// Même cas particulier que RubanAgents.tsx / djiguigne-frontend (02/08).
-const AGENTS_SANS_IMAGE_VITRINE = new Set(["math-matique"]);
+import { IconeGenerique } from "@/components/icones/IconeGenerique";
 
 // Ajouté le 2026-07-31 (Bourama : "il y a 3-4 sections mais rien
 // là-dessus" -- les boutons de la page Produit étaient une maquette non
@@ -53,8 +50,7 @@ const CONFIG_SECTIONS: Partial<Record<CleSection, { param: string; champ: keyof 
 type AgentProduit = {
   id: string;
   nom: string;
-  icone_page: string;
-  image_vitrine_url: string | null;
+  icone_url: string | null;
   description: string;
   matiere: string | null;
   metier: string | null;
@@ -376,18 +372,16 @@ export function SectionsProduit({
                     >
                       <span className="flex items-center gap-3">
                         <span className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-dj-surface-haute">
-                          {AGENTS_SANS_IMAGE_VITRINE.has(agent.id) ? (
-                            <IconeMatrix className="h-6 w-6 text-dj-accent-1" />
-                          ) : agent.image_vitrine_url ? (
+                          {agent.icone_url ? (
                             <Image
-                              src={agent.image_vitrine_url}
+                              src={agent.icone_url}
                               alt=""
                               fill
                               className="object-cover"
                               sizes="56px"
                             />
                           ) : (
-                            <span className="text-2xl leading-none">{agent.icone_page || "🤖"}</span>
+                            <IconeGenerique className="h-7 w-7 text-dj-accent-1" />
                           )}
                         </span>
                         <span className="flex min-w-0 flex-col gap-1.5">
