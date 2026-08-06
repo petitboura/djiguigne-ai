@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { connecterOuInscrire } from "@/lib/authFallback";
+import { appelerApi } from "@/lib/api";
 import { ChampMotDePasse } from "@/components/ChampMotDePasse";
 import { ChampTelephone } from "@/components/ChampTelephone";
 import type { getDictionary } from "@/lib/dictionaries";
@@ -49,6 +50,24 @@ export function FormulaireConnexion({ dict, locale }: { dict: Dictionary; locale
     if (error) {
       setErreur(error.message);
       return;
+    }
+
+    // Établissement/enseignant/étudiant (06/08) : même destination que la
+    // fin de l'inscription dédiée (InscriptionEtablissements.tsx) --
+    // directement sur l'IA dédiée au rôle, sur l'app produit. Ce
+    // comportement n'existait pas encore le 27/07 quand la règle "reste
+    // sur la vitrine après connexion" ci-dessous a été écrite : elle ne
+    // s'applique donc plus qu'aux comptes sans rôle (créateurs/visiteurs
+    // classiques). Si l'appel échoue (réseau, etc.), on ne bloque pas la
+    // connexion -- repli silencieux sur le comportement existant.
+    try {
+      const monRole: { role: string | null; agent_id: string | null } = await appelerApi("/api/roles/moi");
+      if (monRole.role && monRole.agent_id) {
+        window.location.href = `${siteConfig.appUrl}/agent/${monRole.agent_id}`;
+        return;
+      }
+    } catch {
+      // Repli silencieux ci-dessous.
     }
 
     // Reste sur le vitrine après connexion — ne renvoie plus vers l'app
