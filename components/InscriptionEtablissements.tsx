@@ -21,6 +21,15 @@ type Role = "etablissement" | "enseignant" | "etudiant";
 type MethodeAuth = "email" | "telephone";
 type CompteListe = { user_id: string; nom_affiche: string };
 
+// Agents dédiés par rôle (06/08, Bourama) : après inscription, chacun
+// tombe directement sur son IA (id vérifié en base -- table `agents`,
+// project rwcyeppxfonvqbvztxyg) plutôt que sur la page de profil.
+const AGENT_PAR_ROLE: Record<Role, string> = {
+  etudiant: "nitrux",
+  enseignant: "stirux",
+  etablissement: "lirinus",
+};
+
 // Ajouté le 04/08 (Bourama) : parcours d'inscription dédié aux
 // établissements/enseignants/étudiants, séparé du parcours créateur
 // (FormulaireInscription.tsx) -- même mécanique d'auth (email/téléphone +
@@ -30,12 +39,10 @@ type CompteListe = { user_id: string; nom_affiche: string };
 // d'identifiants. À la fin, POST /api/roles/choisir enregistre le rôle et
 // le rattachement (voir api/roles.py côté backend).
 //
-// Redirection finale vers siteConfig.appUrl/dashboard/profil/modifier
-// (l'app produit, pas la vitrine) : ces comptes ne sont pas des créateurs
-// sur djiguigne-ai, ils utilisent l'IA de leur établissement/enseignant/
-// eux-mêmes dans l'app -- et n'ont jamais eu l'occasion de renseigner
-// nom/logo ailleurs (2026-08-05, audit A-F), donc on les envoie direct
-// sur la page qui le fait plutôt que sur l'accueil.
+// Redirection finale : vers l'agent IA dédié au rôle choisi (voir
+// AGENT_PAR_ROLE ci-dessus), sur siteConfig.appUrl (l'app produit, pas
+// la vitrine).
+//
 //
 // roleInitial (06/08, Bourama) : quand on arrive depuis une des 3 cartes
 // cliquables de /etablissements (?role=...), on saute directement
@@ -133,12 +140,11 @@ export function InscriptionEtablissements({
 
     setEnCours(false);
     setSucces(true);
-    // 2026-08-05 (audit A-F) : vers la page de profil (nom + logo) plutôt
-    // que l'accueil de l'app -- ces comptes n'ont jamais eu l'occasion de
-    // renseigner ça ailleurs (le formulaire ci-dessus ne capture que
-    // email/téléphone/mot de passe). /dashboard/profil/modifier gère déjà
-    // nom_affiche + avatar_url pour tout le monde, rien à construire.
-    window.location.href = `${siteConfig.appUrl}/dashboard/profil/modifier`;
+    // 06/08 (Bourama) : chacun tombe directement sur son IA dédiée
+    // (voir AGENT_PAR_ROLE) plutôt que sur /dashboard/profil/modifier.
+    // Le profil (nom + logo) reste modifiable depuis le chat ensuite,
+    // ce n'est plus une étape obligatoire immédiate.
+    window.location.href = `${siteConfig.appUrl}/agent/${AGENT_PAR_ROLE[role]}`;
   }
 
   return (
