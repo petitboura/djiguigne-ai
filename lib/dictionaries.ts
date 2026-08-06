@@ -86,6 +86,7 @@ export const dictionaries = {
         domaine: "Domaine",
         languesAfricaines: "Langues africaines",
         execution: "Exécution",
+        etablissement: "Pour les établissements",
       },
       // Ajouté le 2026-07-31 (Bourama : les 4 boutons de section doivent
       // afficher les IA correspondantes -- voir SectionsProduit.tsx).
@@ -291,6 +292,7 @@ export const dictionaries = {
         domaine: "Domain",
         languesAfricaines: "African languages",
         execution: "Execution",
+        etablissement: "For institutions",
       },
       sectionChargement: "Loading…",
       sectionVide:

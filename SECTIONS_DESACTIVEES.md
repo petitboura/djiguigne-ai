@@ -26,3 +26,10 @@ réactiver une section listée ici sans l'accord explicite de Bourama.
   ici, mais dépend de cette section désactivée.
 - **Rappel :** ne pas réutiliser ni réactiver cette section tant que
   Bourama ne le demande pas explicitement.
+- **Mise à jour du 06/08/2026 :** Bourama a explicitement demandé un
+  lien vers `/etablissements` depuis la page Produit (7ème bouton
+  "Pour les établissements" dans `SectionsProduit.tsx`, voir aussi
+  `lib/dictionaries.ts` clé `services.sections.etablissement`). C'est
+  la seule exception accordée : ce bouton mène vers la page, mais rien
+  d'autre n'a été réactivé (toujours aucun lien dans le menu principal
+  ni sur l'accueil). Le reste des règles ci-dessus reste valable.

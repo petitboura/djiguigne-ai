@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import Link from "next/link";
 import { BoutonDevenirCreateur } from "@/components/BoutonDevenirCreateur";
 import Image from "next/image";
 import { siteConfig, type Locale } from "@/lib/site-config";
@@ -17,12 +18,30 @@ const AGENTS_SANS_IMAGE_VITRINE = new Set(["math-matique"]);
 // ont maintenant de vraies données en base (voir metier/filiere/domaine/
 // langue_africaine dans djiguigne-backend/api/agents.py -- texte libre,
 // une IA par valeur -- et matiere qui a une liste fixe).
-type CleSection = "matieres" | "metier" | "filiere" | "domaine" | "languesAfricaines" | "execution";
+// "etablissement" (ajouté le 06/08) est à part : ce n'est pas un champ
+// d'agent filtrable via /api/feed (voir CONFIG_SECTIONS ci-dessous, qui
+// ne le liste pas exprès) -- c'est un lien direct vers la page
+// /etablissements existante (présentation + inscription établissement/
+// enseignant/étudiant, voir api/roles.py côté backend). Cette page était
+// désactivée de la navigation normale (voir SECTIONS_DESACTIVEES.md) ;
+// Bourama a explicitement demandé ce lien depuis la page Produit, donc
+// seul ce bouton y mène -- rien d'autre n'a été réactivé (pas de lien
+// dans le menu ni sur l'accueil).
+type CleSection =
+  | "matieres"
+  | "metier"
+  | "filiere"
+  | "domaine"
+  | "languesAfricaines"
+  | "execution"
+  | "etablissement";
 
 // Paramètre de requête `/api/feed` et champ de l'agent à afficher comme
 // tag pour chaque section -- voir avec_matiere/avec_metier/avec_filiere/
 // avec_domaine/avec_langue_africaine/avec_execution dans api/main.py.
-const CONFIG_SECTIONS: Record<CleSection, { param: string; champ: keyof AgentProduit }> = {
+// Partial car "etablissement" n'a pas de champ agent -- ce bouton ne
+// passe jamais par ouvrir()/cette config (voir SECTIONS ci-dessous).
+const CONFIG_SECTIONS: Partial<Record<CleSection, { param: string; champ: keyof AgentProduit }>> = {
   matieres: { param: "avec_matiere", champ: "matiere" },
   metier: { param: "avec_metier", champ: "metier" },
   filiere: { param: "avec_filiere", champ: "filiere" },
@@ -51,13 +70,18 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 // (desktop) et le tiroir (mobile) -- voir redesign du 2026-08-01
 // (Bourama : sélectionner une catégorie replie la liste en barre
 // latérale ; sur mobile ça devient un bouton qui ouvre un tiroir).
-const SECTIONS: { cle: CleSection; icon: JSX.Element }[] = [
+// `href` (ajouté le 06/08) : présent seulement pour "etablissement".
+// Signale au rendu (3 endroits : liste initiale, barre latérale desktop,
+// tiroir mobile) qu'il faut afficher un lien direct plutôt que le
+// bouton "ouvrir une section d'agents" habituel.
+const SECTIONS: { cle: CleSection; icon: JSX.Element; href?: (locale: Locale) => string }[] = [
   { cle: "matieres", icon: <IconLivre /> },
   { cle: "metier", icon: <IconMallette /> },
   { cle: "filiere", icon: <IconChemin /> },
   { cle: "domaine", icon: <IconGrille /> },
   { cle: "languesAfricaines", icon: <IconGlobe /> },
   { cle: "execution", icon: <IconEclair /> },
+  { cle: "etablissement", icon: <IconBatiment />, href: (locale) => `/${locale}/etablissements` },
 ];
 
 export function SectionsProduit({
@@ -113,7 +137,9 @@ export function SectionsProduit({
     setErreur(null);
     try {
       if (!API_URL) throw new Error("API non configurée.");
-      const { param } = CONFIG_SECTIONS[section];
+      const config = CONFIG_SECTIONS[section];
+      if (!config) return; // "etablissement" : pas de config, ne devrait jamais arriver ici (lien direct, pas de bouton ouvrir())
+      const { param } = config;
       const reponse = await fetch(`${API_URL}/api/feed?${param}=true&limite=50`);
       if (!reponse.ok) throw new Error(`Erreur API ${reponse.status}`);
       const donnees = await reponse.json();
@@ -132,19 +158,31 @@ export function SectionsProduit({
       {!ouverte ? (
         // --- Rien de sélectionné : liste empilée classique ---
         <div className="flex w-full max-w-xs flex-col gap-3 animate-dj-fade-up">
-          {SECTIONS.map(({ cle, icon }, i) => (
-            <button
-              key={cle}
-              type="button"
-              onClick={() => ouvrir(cle)}
-              aria-expanded={false}
-              className="flex items-center gap-3 rounded-xl border border-dj-bordure bg-dj-surface px-5 py-4 text-left font-display text-base font-semibold text-dj-texte transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute"
-              style={{ animationDelay: `${i * 0.05}s` }}
-            >
-              <span className="text-dj-accent-1">{icon}</span>
-              {labels[cle]}
-            </button>
-          ))}
+          {SECTIONS.map(({ cle, icon, href }, i) =>
+            href ? (
+              <Link
+                key={cle}
+                href={href(locale)}
+                className="flex items-center gap-3 rounded-xl border border-dj-bordure bg-dj-surface px-5 py-4 text-left font-display text-base font-semibold text-dj-texte transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute"
+                style={{ animationDelay: `${i * 0.05}s` }}
+              >
+                <span className="text-dj-accent-1">{icon}</span>
+                {labels[cle]}
+              </Link>
+            ) : (
+              <button
+                key={cle}
+                type="button"
+                onClick={() => ouvrir(cle)}
+                aria-expanded={false}
+                className="flex items-center gap-3 rounded-xl border border-dj-bordure bg-dj-surface px-5 py-4 text-left font-display text-base font-semibold text-dj-texte transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute"
+                style={{ animationDelay: `${i * 0.05}s` }}
+              >
+                <span className="text-dj-accent-1">{icon}</span>
+                {labels[cle]}
+              </button>
+            )
+          )}
         </div>
       ) : (
         // --- Une catégorie sélectionnée : barre latérale (desktop) /
@@ -172,8 +210,29 @@ export function SectionsProduit({
               <IconChevronDouble replie={barreRepliee} />
             </button>
 
-            {SECTIONS.map(({ cle, icon }) =>
-              barreRepliee ? (
+            {SECTIONS.map(({ cle, icon, href }) =>
+              href ? (
+                barreRepliee ? (
+                  <Link
+                    key={cle}
+                    href={href(locale)}
+                    aria-label={labels[cle]}
+                    title={labels[cle]}
+                    className="flex h-11 w-11 items-center justify-center rounded-lg border border-transparent text-dj-texte-muet transition-colors hover:border-dj-bordure hover:bg-dj-surface"
+                  >
+                    {icon}
+                  </Link>
+                ) : (
+                  <Link
+                    key={cle}
+                    href={href(locale)}
+                    className="flex items-center gap-2.5 rounded-lg border border-transparent px-3.5 py-2.5 text-left text-sm font-semibold text-dj-texte-muet transition-colors hover:border-dj-bordure hover:bg-dj-surface"
+                  >
+                    <span className="text-dj-accent-1">{icon}</span>
+                    {labels[cle]}
+                  </Link>
+                )
+              ) : barreRepliee ? (
                 <button
                   key={cle}
                   type="button"
@@ -237,22 +296,34 @@ export function SectionsProduit({
                   >
                     <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-dj-bordure" />
                     <div className="flex flex-col gap-2">
-                      {SECTIONS.map(({ cle, icon }) => (
-                        <button
-                          key={cle}
-                          type="button"
-                          onClick={() => ouvrir(cle)}
-                          aria-expanded={ouverte === cle}
-                          className={
-                            ouverte === cle
-                              ? "flex items-center gap-3 rounded-xl border border-dj-bordure-forte bg-dj-surface-haute px-4 py-3 text-left text-sm font-semibold text-dj-texte transition-colors"
-                              : "flex items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-left text-sm font-semibold text-dj-texte transition-colors hover:bg-dj-surface-haute"
-                          }
-                        >
-                          <span className="text-dj-accent-1">{icon}</span>
-                          {labels[cle]}
-                        </button>
-                      ))}
+                      {SECTIONS.map(({ cle, icon, href }) =>
+                        href ? (
+                          <Link
+                            key={cle}
+                            href={href(locale)}
+                            onClick={() => setTiroirOuvert(false)}
+                            className="flex items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-left text-sm font-semibold text-dj-texte transition-colors hover:bg-dj-surface-haute"
+                          >
+                            <span className="text-dj-accent-1">{icon}</span>
+                            {labels[cle]}
+                          </Link>
+                        ) : (
+                          <button
+                            key={cle}
+                            type="button"
+                            onClick={() => ouvrir(cle)}
+                            aria-expanded={ouverte === cle}
+                            className={
+                              ouverte === cle
+                                ? "flex items-center gap-3 rounded-xl border border-dj-bordure-forte bg-dj-surface-haute px-4 py-3 text-left text-sm font-semibold text-dj-texte transition-colors"
+                                : "flex items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-left text-sm font-semibold text-dj-texte transition-colors hover:bg-dj-surface-haute"
+                            }
+                          >
+                            <span className="text-dj-accent-1">{icon}</span>
+                            {labels[cle]}
+                          </button>
+                        )
+                      )}
                     </div>
                   </div>
                 </div>,
@@ -279,13 +350,14 @@ export function SectionsProduit({
                   categorieLabels={labels}
                   champLibrePlaceholder={strings.devenirCreateurChampLibrePlaceholder}
                   validerLabel={strings.devenirCreateurValider}
-                  categoriePreselectionnee={ouverte}
+                  categoriePreselectionnee={ouverte === "etablissement" ? null : ouverte}
                 />
               </div>
             ) : (
               <div className="grid w-full gap-4 sm:grid-cols-2">
                 {agentsSectionOuverte.map((agent) => {
-                  const tag = agent[CONFIG_SECTIONS[ouverte].champ];
+                  const configOuverte = ouverte ? CONFIG_SECTIONS[ouverte] : undefined;
+                  const tag = configOuverte ? agent[configOuverte.champ] : undefined;
                   // ?retour= (Bourama, 2026-08-01) : permet à la sidebar du
                   // chat (djiguigne-frontend/SidebarChat.tsx) d'afficher
                   // "Retour au site" au lieu de "Retour à l'agent", ET sert
@@ -394,6 +466,26 @@ function IconGlobe() {
       <circle cx="12" cy="12" r="10" />
       <path d="M2 12h20" />
       <path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z" />
+    </svg>
+  );
+}
+
+// Ajoutée le 06/08 pour le 7ème bouton "Pour les établissements" --
+// même convention que les icônes ci-dessus (bâtiment simple).
+function IconBatiment() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="2" width="16" height="20" rx="1" />
+      <path d="M9 22v-4h6v4" />
+      <path d="M8 6h.01" />
+      <path d="M12 6h.01" />
+      <path d="M16 6h.01" />
+      <path d="M8 10h.01" />
+      <path d="M12 10h.01" />
+      <path d="M16 10h.01" />
+      <path d="M8 14h.01" />
+      <path d="M12 14h.01" />
+      <path d="M16 14h.01" />
     </svg>
   );
 }
