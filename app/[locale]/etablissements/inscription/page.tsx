@@ -17,7 +17,21 @@ export function generateMetadata({ params }: { params: { locale: Locale } }): Me
   };
 }
 
-export default function InscriptionEtablissementsPage({ params }: { params: { locale: Locale } }) {
+// ?role= (06/08, Bourama) : présélection du rôle quand on arrive depuis
+// une des 3 cartes cliquables de /etablissements (voir page.tsx). Ignoré
+// si absent ou invalide -- on retombe sur l'étape "role" normale.
+const ROLES_VALIDES = new Set(["etablissement", "enseignant", "etudiant"]);
+
+export default function InscriptionEtablissementsPage({
+  params,
+  searchParams,
+}: {
+  params: { locale: Locale };
+  searchParams: { role?: string };
+}) {
   const dict = getDictionary(params.locale);
-  return <InscriptionEtablissements dict={dict} locale={params.locale} />;
+  const roleInitial = ROLES_VALIDES.has(searchParams.role ?? "")
+    ? (searchParams.role as "etablissement" | "enseignant" | "etudiant")
+    : null;
+  return <InscriptionEtablissements dict={dict} locale={params.locale} roleInitial={roleInitial} />;
 }

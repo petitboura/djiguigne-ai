@@ -36,10 +36,24 @@ type CompteListe = { user_id: string; nom_affiche: string };
 // eux-mêmes dans l'app -- et n'ont jamais eu l'occasion de renseigner
 // nom/logo ailleurs (2026-08-05, audit A-F), donc on les envoie direct
 // sur la page qui le fait plutôt que sur l'accueil.
-export function InscriptionEtablissements({ dict, locale }: { dict: Dictionary; locale: Locale }) {
+//
+// roleInitial (06/08, Bourama) : quand on arrive depuis une des 3 cartes
+// cliquables de /etablissements (?role=...), on saute directement
+// l'étape "role" -- initialise le state avec ce rôle au lieu de null.
+// Le bouton "S'inscrire" du haut de la landing, lui, ne passe pas de
+// rôle : comportement inchangé (étape "role" affichée normalement).
+export function InscriptionEtablissements({
+  dict,
+  locale,
+  roleInitial = null,
+}: {
+  dict: Dictionary;
+  locale: Locale;
+  roleInitial?: Role | null;
+}) {
   const t = dict.etablissements.inscription;
 
-  const [role, setRole] = useState<Role | null>(null);
+  const [role, setRole] = useState<Role | null>(roleInitial);
   const [etablissementId, setEtablissementId] = useState<string>("");
   const [enseignantId, setEnseignantId] = useState<string>("");
 

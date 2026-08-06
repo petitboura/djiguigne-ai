@@ -75,13 +75,14 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 // tiroir mobile) qu'il faut afficher un lien direct plutôt que le
 // bouton "ouvrir une section d'agents" habituel.
 const SECTIONS: { cle: CleSection; icon: JSX.Element; href?: (locale: Locale) => string }[] = [
+  // "etablissement" en tête de liste (demande Bourama, 06/08).
+  { cle: "etablissement", icon: <IconBatiment />, href: (locale) => `/${locale}/etablissements` },
   { cle: "matieres", icon: <IconLivre /> },
   { cle: "metier", icon: <IconMallette /> },
   { cle: "filiere", icon: <IconChemin /> },
   { cle: "domaine", icon: <IconGrille /> },
   { cle: "languesAfricaines", icon: <IconGlobe /> },
   { cle: "execution", icon: <IconEclair /> },
-  { cle: "etablissement", icon: <IconBatiment />, href: (locale) => `/${locale}/etablissements` },
 ];
 
 export function SectionsProduit({

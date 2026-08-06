@@ -31,9 +31,9 @@ export default function EtablissementsPage({ params }: { params: { locale: Local
   const t = dict.etablissements.landing;
 
   const roles = [
-    { titre: t.roleEtablissementTitle, desc: t.roleEtablissementDesc },
-    { titre: t.roleEnseignantTitle, desc: t.roleEnseignantDesc },
-    { titre: t.roleEtudiantTitle, desc: t.roleEtudiantDesc },
+    { cle: "etablissement" as const, titre: t.roleEtablissementTitle, desc: t.roleEtablissementDesc },
+    { cle: "enseignant" as const, titre: t.roleEnseignantTitle, desc: t.roleEnseignantDesc },
+    { cle: "etudiant" as const, titre: t.roleEtudiantTitle, desc: t.roleEtudiantDesc },
   ];
 
   return (
@@ -103,15 +103,21 @@ export default function EtablissementsPage({ params }: { params: { locale: Local
       </section>
 
       <section className="mx-auto grid max-w-4xl gap-4 px-5 pb-20 sm:grid-cols-3">
+        {/* Cartes cliquables (06/08, Bourama) : chaque carte mène direct
+            vers l'inscription avec le rôle présélectionné (?role=...),
+            contrairement au bouton "S'inscrire" ci-dessus qui laisse le
+            choix du rôle à l'étape suivante -- voir InscriptionEtablissements.tsx
+            (lecture de searchParams.role dans inscription/page.tsx). */}
         {roles.map((r, i) => (
-          <div
-            key={r.titre}
-            className="animate-dj-fade-up rounded-2xl border border-dj-bordure bg-dj-surface p-6"
+          <Link
+            key={r.cle}
+            href={`/${locale}/etablissements/inscription?role=${r.cle}`}
+            className="animate-dj-fade-up rounded-2xl border border-dj-bordure bg-dj-surface p-6 text-left transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute"
             style={{ animationDelay: `${0.4 + i * 0.08}s` }}
           >
             <h2 className="font-display text-lg font-bold text-dj-accent-1">{r.titre}</h2>
             <p className="mt-2 text-sm text-dj-texte-muet">{r.desc}</p>
-          </div>
+          </Link>
         ))}
       </section>
     </>
