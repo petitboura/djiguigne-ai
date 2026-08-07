@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { connecterOuInscrire } from "@/lib/authFallback";
 import { appelerApi } from "@/lib/api";
+import { construireUrlApp } from "@/lib/lienApp";
 import { ChampMotDePasse } from "@/components/ChampMotDePasse";
 import { ChampTelephone } from "@/components/ChampTelephone";
 import type { getDictionary } from "@/lib/dictionaries";
@@ -63,7 +64,8 @@ export function FormulaireConnexion({ dict, locale }: { dict: Dictionary; locale
     try {
       const monRole: { role: string | null; agent_id: string | null } = await appelerApi("/api/roles/moi");
       if (monRole.role && monRole.agent_id) {
-        window.location.href = `${siteConfig.appUrl}/agent/${monRole.agent_id}`;
+        const retour = encodeURIComponent(`${siteConfig.url}/${locale}`);
+        window.location.href = await construireUrlApp(`/agent/${monRole.agent_id}?retour=${retour}`);
         return;
       }
     } catch {

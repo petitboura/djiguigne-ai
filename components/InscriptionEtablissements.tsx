@@ -11,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { inscrireOuConnecter } from "@/lib/authFallback";
 import { appelerApi } from "@/lib/api";
+import { construireUrlApp } from "@/lib/lienApp";
 import { ChampMotDePasse } from "@/components/ChampMotDePasse";
 import { ChampTelephone } from "@/components/ChampTelephone";
 import { ChampImage } from "@/components/ChampImage";
@@ -171,7 +172,12 @@ export function InscriptionEtablissements({
     setSucces(true);
     // 06/08 (Bourama) : chacun tombe directement sur son IA dédiée
     // (voir AGENT_PAR_ROLE) plutôt que sur /dashboard/profil/modifier.
-    window.location.href = `${siteConfig.appUrl}/agent/${AGENT_PAR_ROLE[role]}`;
+    // 07/08 : construireUrlApp() attache la session active (voir
+    // lib/lienApp.ts) pour que l'app arrive déjà connectée, avec ?retour=
+    // pour que l'IA devienne le chat par défaut (voir ChatAgentClient.tsx
+    // côté app).
+    const retour = encodeURIComponent(`${siteConfig.url}/${locale}`);
+    window.location.href = await construireUrlApp(`/agent/${AGENT_PAR_ROLE[role]}?retour=${retour}`);
   }
 
   return (

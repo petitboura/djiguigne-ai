@@ -15,6 +15,7 @@ import { IconeGenerique } from "@/components/icones/IconeGenerique";
 import { DroitsAgent } from "@/components/DroitsAgent";
 import { ProactiviteAgent } from "@/components/ProactiviteAgent";
 import { AdministrateursAgent } from "@/components/AdministrateursAgent";
+import { LienVersApp } from "@/components/LienVersApp";
 
 // Étape "modifier un agent" (2026-07-12, demande de Bourama : "on ne peut
 // pas modifier ces agents créés" — gros morceau manquant depuis le début
@@ -601,15 +602,17 @@ export default function PageModifierAgent() {
               présent dans "Mon espace" côté app (djiguigne-frontend,
               AgentCard.tsx) -- accès direct au chat de l'IA. La vitrine
               n'héberge pas le chat elle-même, donc on pointe vers l'app
-              via siteConfig.appUrl plutôt qu'une route locale. */}
-          <a
-            href={`${siteConfig.appUrl}/agent/${agentId}/chat`}
-            target="_blank"
-            rel="noopener noreferrer"
+              via siteConfig.appUrl plutôt qu'une route locale.
+              07/08 : LienVersApp transporte la session pour arriver déjà
+              connecté -- volontairement SANS ?retour= : un test par le
+              créateur ne doit pas remplacer son IA par défaut. */}
+          <LienVersApp
+            chemin={`/agent/${agentId}/chat`}
+            nouvelOnglet
             className="rounded-full border border-dj-bordure bg-dj-fond/80 px-4 py-2 text-sm font-medium text-dj-texte-muet transition-colors hover:border-dj-bordure-forte hover:text-dj-texte"
           >
             Tester
-          </a>
+          </LienVersApp>
         </div>
 
         {sectionActive !== "bibliotheque" && sectionActive !== "moi" && sectionActive !== "article" && (

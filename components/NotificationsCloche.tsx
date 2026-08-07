@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { appelerApi } from "@/lib/api";
 import { PleinEcran } from "@/components/PleinEcran";
+import { LienVersApp } from "@/components/LienVersApp";
 
 // Demande de Bourama (2026-07-15) : "un icone notification juste à côté
 // de mon espace et dès que tu clique, un pop up qui affiche les
@@ -153,6 +154,12 @@ function LigneNotification({
   onDetailFeedback: (n: NotificationItem) => void;
 }) {
   const lien = lienNotification(n);
+  // 07/08/2026 : /agent/... n'est pas une route locale de la vitrine
+  // (djiguigne-ai n'héberge pas la fiche/le chat) -- ces liens pointaient
+  // sur une page inexistante (404) avant ce correctif. Pointe vers l'app
+  // via LienVersApp (transporte la session), les autres restent des
+  // routes internes normales (<Link>).
+  const lienVersApp = lien?.startsWith("/agent/");
   const contenu = (
     <div
       className={`flex items-start gap-3 px-3 py-3 transition-colors hover:bg-dj-surface-haute ${
@@ -169,6 +176,14 @@ function LigneNotification({
       {!n.lu && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-dj-accent-1" />}
     </div>
   );
+
+  if (lien && lienVersApp) {
+    return (
+      <LienVersApp chemin={lien} onAvantNavigation={() => onOuvrir(n)} className="block">
+        {contenu}
+      </LienVersApp>
+    );
+  }
 
   if (lien) {
     return (
@@ -376,13 +391,13 @@ function PopupDetailFeedback({ n, onFermer }: { n: NotificationItem; onFermer: (
             >
               Modifier {n.agent_nom ?? "l'IA"}
             </Link>
-            <Link
-              href={`/agent/${n.agent_id}/chat`}
-              onClick={onFermer}
+            <LienVersApp
+              chemin={`/agent/${n.agent_id}/chat`}
+              onAvantNavigation={onFermer}
               className="rounded-full bg-dj-gradient px-4 py-2 text-sm font-semibold text-[#1A0D02]"
             >
               Ouvrir {n.agent_nom ?? "l'IA"}
-            </Link>
+            </LienVersApp>
           </>
         ) : undefined
       }

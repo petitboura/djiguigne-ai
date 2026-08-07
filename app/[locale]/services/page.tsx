@@ -5,6 +5,7 @@ import { siteConfig, type Locale } from "@/lib/site-config";
 import { JsonLd } from "@/components/JsonLd";
 import { SectionsProduit } from "@/components/SectionsProduit";
 import { IconeGenerique } from "@/components/icones/IconeGenerique";
+import { LienVersApp } from "@/components/LienVersApp";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -150,8 +151,10 @@ export default async function ServicesPage({ params }: { params: { locale: Local
           <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {agents.map((agent) => (
               <li key={agent.id}>
-                <a
-                  href={`${siteConfig.appUrl}/agent/${agent.id}`}
+                <LienVersApp
+                  chemin={`/agent/${agent.id}?retour=${encodeURIComponent(
+                    `${siteConfig.url}/${locale}/services`
+                  )}`}
                   className="group flex flex-col gap-3 rounded-2xl border border-dj-bordure bg-dj-surface p-4 transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute"
                 >
                   <span className="flex items-center gap-3">
@@ -173,7 +176,7 @@ export default async function ServicesPage({ params }: { params: { locale: Local
                   {agent.description && (
                     <span className="line-clamp-2 text-sm text-dj-texte-muet">{agent.description}</span>
                   )}
-                </a>
+                </LienVersApp>
               </li>
             ))}
           </ul>

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { siteConfig } from "@/lib/site-config";
 import { IconeGenerique } from "@/components/icones/IconeGenerique";
+import { LienVersApp } from "@/components/LienVersApp";
 
 // Demande de Bourama (2026-07-27), accueil, entre les boutons et la
 // section suivante : un ruban qui défile horizontalement en continu,
@@ -60,9 +60,9 @@ export function RubanAgents() {
     >
       <div className="flex w-max animate-dj-scroll gap-8 hover:[animation-play-state:paused]">
         {ruban.map((agent, i) => (
-          <a
+          <LienVersApp
             key={`${agent.id}-${i}`}
-            href={`${siteConfig.appUrl}/agent/${agent.id}?retour=${encodeURIComponent(window.location.href)}`}
+            chemin={`/agent/${agent.id}?retour=${encodeURIComponent(window.location.href)}`}
             className="flex w-max min-w-[96px] max-w-[220px] shrink-0 flex-col items-start gap-1.5"
           >
             <span className="flex items-center gap-2 whitespace-nowrap rounded-full border border-dj-bordure bg-dj-surface-haute py-1.5 pl-1.5 pr-3">
@@ -86,7 +86,7 @@ export function RubanAgents() {
                 {agent.description}
               </p>
             )}
-          </a>
+          </LienVersApp>
         ))}
       </div>
     </div>

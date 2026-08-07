@@ -7,6 +7,7 @@ import { BoutonDevenirCreateur } from "@/components/BoutonDevenirCreateur";
 import Image from "next/image";
 import { siteConfig, type Locale } from "@/lib/site-config";
 import { IconeGenerique } from "@/components/icones/IconeGenerique";
+import { LienVersApp } from "@/components/LienVersApp";
 
 // Ajouté le 2026-07-31 (Bourama : "il y a 3-4 sections mais rien
 // là-dessus" -- les boutons de la page Produit étaient une maquette non
@@ -363,9 +364,9 @@ export function SectionsProduit({
                   // défaut si l'utilisateur est connecté (même règle que
                   // choisir une IA depuis l'app elle-même).
                   return (
-                    <a
+                    <LienVersApp
                       key={agent.id}
-                      href={`${siteConfig.appUrl}/agent/${agent.id}?retour=${encodeURIComponent(
+                      chemin={`/agent/${agent.id}?retour=${encodeURIComponent(
                         `${siteConfig.url}/${locale}/services`
                       )}`}
                       className="group flex flex-col gap-3 rounded-2xl border border-dj-bordure bg-dj-surface p-4 text-left transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute sm:p-5"
@@ -398,7 +399,7 @@ export function SectionsProduit({
                       {agent.description && (
                         <span className="text-sm text-dj-texte-muet">{agent.description}</span>
                         )}
-                    </a>
+                    </LienVersApp>
                   );
                 })}
               </div>
