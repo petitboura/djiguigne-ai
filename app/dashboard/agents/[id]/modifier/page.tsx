@@ -16,6 +16,7 @@ import { DroitsAgent } from "@/components/DroitsAgent";
 import { ProactiviteAgent } from "@/components/ProactiviteAgent";
 import { AdministrateursAgent } from "@/components/AdministrateursAgent";
 import { LienVersApp } from "@/components/LienVersApp";
+import { PopupCategorieSpecialite, LABELS_CATEGORIE, type CleSection, type SelectionCategorie } from "@/components/PopupCategorieSpecialite";
 
 // Étape "modifier un agent" (2026-07-12, demande de Bourama : "on ne peut
 // pas modifier ces agents créés" — gros morceau manquant depuis le début
@@ -48,6 +49,14 @@ type AgentEditable = {
   actif: boolean;
   matiere: string | null;
   matiere_detail: string | null;
+  // Ajoutés le 08/08/2026 : renvoyés par le backend depuis toujours
+  // (AgentEditable), simplement jamais lus ni affichés ici -- voir
+  // PopupCategorieSpecialite.
+  langue_africaine: string | null;
+  metier: string | null;
+  filiere: string | null;
+  domaine: string | null;
+  execution: string | null;
   profil_utilisateur_schema: { nom: string; description: string }[];
 };
 
@@ -187,6 +196,15 @@ export default function PageModifierAgent() {
   const [matieresDisponibles, setMatieresDisponibles] = useState<
     { nom: string; disponible: boolean }[] | null
   >(null);
+  // Catégorie/spécialité (08/08/2026) : un agent peut appartenir à l'une
+  // des 6 catégories (matieres/metier/filiere/domaine/languesAfricaines/
+  // execution), pas seulement "matiere" -- voir PopupCategorieSpecialite.
+  // categorieActive détermine laquelle est actuellement remplie en base ;
+  // valeurCategorieLibre porte la valeur pour les 5 catégories texte
+  // libre (metier/filiere/domaine/languesAfricaines/execution), matiere
+  // continue d'utiliser matiereChoisie/autreMatiereTexte ci-dessus.
+  const [categorieActive, setCategorieActive] = useState<CleSection | null>(null);
+  const [valeurCategorieLibre, setValeurCategorieLibre] = useState("");
 
   useEffect(() => {
     appelerApi("/api/matieres")
@@ -282,6 +300,27 @@ export default function PageModifierAgent() {
         setProfilChamps(r.profil_utilisateur_schema || []);
         setMatiereChoisie(r.matiere || null);
         setAutreMatiereTexte(r.matiere_detail || "");
+        // Détermine laquelle des 6 catégories est actuellement remplie
+        // en base (un agent n'en a jamais qu'une, cf. exclusivité côté
+        // backend) -- voir PopupCategorieSpecialite.
+        if (r.matiere) {
+          setCategorieActive("matieres");
+        } else if (r.metier) {
+          setCategorieActive("metier");
+          setValeurCategorieLibre(r.metier);
+        } else if (r.filiere) {
+          setCategorieActive("filiere");
+          setValeurCategorieLibre(r.filiere);
+        } else if (r.domaine) {
+          setCategorieActive("domaine");
+          setValeurCategorieLibre(r.domaine);
+        } else if (r.langue_africaine) {
+          setCategorieActive("languesAfricaines");
+          setValeurCategorieLibre(r.langue_africaine);
+        } else if (r.execution) {
+          setCategorieActive("execution");
+          setValeurCategorieLibre(r.execution);
+        }
       })
       .catch((e) => setErreurChargement(e instanceof Error ? e.message : "Erreur inconnue."))
       .finally(() => setChargement(false));
@@ -322,7 +361,7 @@ export default function PageModifierAgent() {
 
   async function enregistrer(e: React.FormEvent) {
     e.preventDefault();
-    if (matiereChoisie === "Autre" && !autreMatiereTexte.trim()) {
+    if (categorieActive === "matieres" && matiereChoisie === "Autre" && !autreMatiereTexte.trim()) {
       setErreur('Précise la matière dans "Autre".');
       return;
     }
@@ -330,6 +369,26 @@ export default function PageModifierAgent() {
     setMessage(null);
     setErreur(null);
     try {
+      // Catégorie/spécialité (08/08/2026) : seul le champ de la catégorie
+      // ACTIVE est envoyé (les 5 autres restent `undefined`, donc absents
+      // du JSON -- JSON.stringify élimine les clés undefined). Le
+      // backend vide alors automatiquement les 5 autres colonnes
+      // (exclusivité, voir api/agents.py:modifier_agent) -- pas besoin de
+      // les envoyer explicitement à null ici.
+      const champsCategorie: Record<string, string | null | undefined> = {
+        matiere: categorieActive === "matieres" ? matiereChoisie : undefined,
+        matiere_detail:
+          categorieActive === "matieres"
+            ? matiereChoisie === "Autre"
+              ? autreMatiereTexte.trim()
+              : null
+            : undefined,
+        metier: categorieActive === "metier" ? valeurCategorieLibre : undefined,
+        filiere: categorieActive === "filiere" ? valeurCategorieLibre : undefined,
+        domaine: categorieActive === "domaine" ? valeurCategorieLibre : undefined,
+        langue_africaine: categorieActive === "languesAfricaines" ? valeurCategorieLibre : undefined,
+        execution: categorieActive === "execution" ? valeurCategorieLibre : undefined,
+      };
       await appelerApi(`/api/agents/${agentId}`, {
         method: "PATCH",
         body: JSON.stringify({
@@ -342,8 +401,7 @@ export default function PageModifierAgent() {
           sous_titre: sousTitre,
           placeholder_saisie: placeholderSaisie,
           actif,
-          matiere: matiereChoisie,
-          matiere_detail: matiereChoisie === "Autre" ? autreMatiereTexte.trim() : null,
+          ...champsCategorie,
           profil_utilisateur_schema: profilChamps
             .filter((c) => c.nom.trim())
             .map((c) => ({ nom: c.nom.trim(), description: c.description.trim() })),
@@ -657,45 +715,41 @@ export default function PageModifierAgent() {
             </div>
 
             <div>
-              <label className={labelClasse}>Matière</label>
+              <label className={labelClasse}>Catégorie / spécialité</label>
               <p className="mt-1 text-xs text-dj-texte-muet">
-                Une seule IA par matière — celles déjà prises par une autre IA
-                n&apos;apparaissent plus ici.
+                Choisie à la création, une seule à la fois — un bouton pour la
+                changer plutôt que la liste complète affichée en permanence.
               </p>
-              {matieresDisponibles === null && (
-                <p className="mt-2 text-sm text-dj-texte-muet">Chargement...</p>
-              )}
-              <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {matieresDisponibles
-                  // La matière actuelle de CET agent doit rester sélectionnable
-                  // même si /api/matieres la marque "prise" (c'est lui qui la
-                  // détient) -- sinon impossible de simplement enregistrer le
-                  // reste du formulaire sans perdre sa matière.
-                  ?.filter((m) => m.disponible || m.nom === matiereChoisie)
-                  .map(({ nom: m }) => (
-                    <label
-                      key={m}
-                      className="flex items-center gap-2 rounded-lg border border-dj-bordure bg-dj-surface-haute px-3 py-2 text-sm text-dj-texte"
-                    >
-                      <input
-                        type="radio"
-                        name="matiere"
-                        checked={matiereChoisie === m}
-                        onChange={() => setMatiereChoisie(m)}
-                        className="accent-dj-accent-1"
-                      />
-                      {m}
-                    </label>
-                  ))}
-              </div>
-              {matiereChoisie === "Autre" && (
-                <input
-                  value={autreMatiereTexte}
-                  onChange={(e) => setAutreMatiereTexte(e.target.value)}
-                  placeholder="Précise la matière..."
-                  className={`${champClasse} mt-2`}
+              <div className="mt-2">
+                <PopupCategorieSpecialite
+                  labelActuel={
+                    categorieActive
+                      ? `${LABELS_CATEGORIE[categorieActive]} — ${
+                          categorieActive === "matieres"
+                            ? matiereChoisie === "Autre"
+                              ? autreMatiereTexte || "Autre"
+                              : matiereChoisie
+                            : valeurCategorieLibre
+                        }`
+                      : "Aucune catégorie choisie"
+                  }
+                  matieresDisponibles={matieresDisponibles}
+                  matiereActuelle={matiereChoisie}
+                  onValider={(selection: SelectionCategorie) => {
+                    if (selection.categorie === "matieres") {
+                      setCategorieActive("matieres");
+                      setMatiereChoisie(selection.matiere);
+                      setAutreMatiereTexte(selection.matiereDetail || "");
+                      setValeurCategorieLibre("");
+                    } else {
+                      setCategorieActive(selection.categorie);
+                      setValeurCategorieLibre(selection.valeur);
+                      setMatiereChoisie(null);
+                      setAutreMatiereTexte("");
+                    }
+                  }}
                 />
-              )}
+              </div>
             </div>
 
             <div>
