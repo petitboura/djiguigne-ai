@@ -6,17 +6,20 @@
    utilitaires (SVG inline, styles calculés). Source de vérité réelle :
    assistant-etudiants/faces/vues/theme_djiguigne.py */
 :root {
-  --dj-fond: #0b0908;
-  --dj-surface: #161210;
-  --dj-surface-haute: #1e1813;
-  --dj-bordure: rgba(255, 255, 255, 0.08);
-  --dj-bordure-forte: rgba(232, 147, 74, 0.35);
+  /* Pivot thème clair (2026-08-08) : voir tailwind.config.ts pour le
+     contexte de la décision. Variables tenues en miroir des mêmes valeurs
+     que djiguigne-frontend/app/globals.css. */
+  --dj-fond: #f4f0e6;
+  --dj-surface: #fcf9f3;
+  --dj-surface-haute: #ffffff;
+  --dj-bordure: rgba(43, 33, 24, 0.1);
+  --dj-bordure-forte: rgba(193, 68, 14, 0.35);
   --dj-accent-1: #e8934a;
   --dj-accent-2: #c1440e;
-  --dj-texte: #f5ece0;
-  --dj-texte-muet: #a79a8c;
-  --dj-succes: #4ade80;
-  --dj-inactif: #6b6259;
+  --dj-texte: #2b2118;
+  --dj-texte-muet: #8a7a64;
+  --dj-succes: #16a34a;
+  --dj-inactif: #b0a79b;
 }
 
 * {
@@ -61,7 +64,9 @@ body {
   background: var(--dj-fond);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--dj-surface-haute);
+  /* Pivot thème clair : dj-surface-haute (blanc) était invisible sur un
+     fond clair, remplacé par une teinte visible dérivée de dj-texte. */
+  background: rgba(43, 33, 24, 0.18);
   border-radius: 999px;
   border: 2px solid var(--dj-fond);
 }

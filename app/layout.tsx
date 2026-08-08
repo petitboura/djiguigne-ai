@@ -1,13 +1,21 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Inter, JetBrains_Mono } from "next/font/google";
+import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 // Les 3 polices de la marque (voir theme_djiguigne.py). Chargées ici une
 // seule fois via next/font (auto-hébergées, zéro requête vers Google au
 // runtime) et exposées en variables CSS consommées par tailwind.config.ts.
-const bricolage = Bricolage_Grotesque({
+//
+// Pivot thème clair (2026-08-08) : Bricolage Grotesque remplacé par
+// Fraunces pour les titres -- serif à l'axe optique variable, tracé plus
+// organique/chaleureux, dans l'esprit "moins parfait" repéré chez Claude.
+// Variable CSS --font-bricolage conservée telle quelle pour ne rien casser
+// dans tailwind.config.ts (fontFamily.display la référence toujours).
+// Identique à djiguigne-frontend/app/layout.tsx.
+const bricolage = Fraunces({
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
   variable: "--font-bricolage",
   display: "swap",
 });
