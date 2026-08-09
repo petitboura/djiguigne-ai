@@ -181,7 +181,7 @@ export function PopupCategorieSpecialite({
                       type="button"
                       onClick={() => choisirMatiere("Autre")}
                       disabled={!autreMatiereTexte.trim()}
-                      className="rounded-full bg-dj-gradient px-4 py-2 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5 disabled:opacity-40"
+                      className="rounded-xl bg-dj-gradient px-4 py-2 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5 disabled:opacity-40"
                     >
                       Valider
                     </button>
@@ -222,7 +222,7 @@ export function PopupCategorieSpecialite({
                   type="button"
                   onClick={validerChampLibre}
                   disabled={!valeurLibre.trim()}
-                  className="rounded-full bg-dj-gradient px-4 py-2 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5 disabled:opacity-40"
+                  className="rounded-xl bg-dj-gradient px-4 py-2 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5 disabled:opacity-40"
                 >
                   Valider
                 </button>

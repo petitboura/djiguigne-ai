@@ -833,7 +833,7 @@ export default function PageModifierAgent() {
                   <button
                     type="button"
                     onClick={() => setPleinEcranSystemPrompt(false)}
-                    className="rounded-full border border-dj-bordure px-4 py-2 text-sm text-dj-texte transition-colors hover:border-dj-bordure-forte"
+                    className="rounded-xl border border-dj-bordure px-4 py-2 text-sm text-dj-texte transition-colors hover:border-dj-bordure-forte"
                   >
                     Fermer
                   </button>
