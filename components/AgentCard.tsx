@@ -6,16 +6,21 @@ import Link from "next/link";
 import Image from "next/image";
 import { appelerApi, appelerApiFichier } from "@/lib/api";
 import { RecadreurImage } from "@/components/RecadreurImage";
+import { IconeGenerique } from "@/components/icones/IconeGenerique";
 
-// Réutilisé par le feed (D.2), la recherche (D.2) et le portfolio créateur
-// (D.4) — un seul endroit à faire évoluer si l'apparence d'une carte agent
-// change. Les champs optionnels (image_vitrine_url, description) viennent
-// de GET /api/feed ; GET /api/search ne renvoie que id/nom/icone_page,
-// d'où leur caractère optionnel ici plutôt que requis.
+// Icône (08/08/2026, demande Bourama : "les icônes doivent être
+// monochromes, pas en couleur") -- icone_page (emoji) s'affichait encore
+// ici alors que djiguigne-frontend/components/AgentCard.tsx avait déjà
+// migré vers icone_url (image uploadée) + IconeGenerique (trait fin,
+// monochrome) le 2026-08-05. Ce dépôt (vitrine) n'avait jamais reçu la
+// même mise à jour -- portée ici, uniquement pour l'icône (la bannière
+// 16:9 image_vitrine_url ci-dessous n'est PAS touchée, contrairement à
+// djiguigne-frontend qui l'avait retirée -- pas demandé ici).
 export type AgentResume = {
   id: string;
   nom: string;
   icone_page?: string;
+  icone_url?: string | null;
   image_vitrine_url?: string | null;
   description?: string;
   // Ajouté le 2026-07-13 (Bourama : bouton on/off pour (dés)activer un
@@ -52,16 +57,17 @@ export function AgentCard({
 }) {
   const router = useRouter();
   const [donnees, setDonnees] = useState(agent);
-  const [edition, setEdition] = useState<"description" | "icone" | null>(null);
+  const [edition, setEdition] = useState<"description" | null>(null);
   const [brouillonDescription, setBrouillonDescription] = useState(donnees.description ?? "");
-  const [brouillonIcone, setBrouillonIcone] = useState(donnees.icone_page ?? "🤖");
   const [envoiDescription, setEnvoiDescription] = useState(false);
   const [envoiIcone, setEnvoiIcone] = useState(false);
   const [envoiImage, setEnvoiImage] = useState(false);
   const [envoiActif, setEnvoiActif] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
   const [fichierACadrer, setFichierACadrer] = useState<File | null>(null);
+  const [fichierIconeACadrer, setFichierIconeACadrer] = useState<File | null>(null);
   const inputImageRef = useRef<HTMLInputElement>(null);
+  const inputIconeRef = useRef<HTMLInputElement>(null);
 
   const estActif = donnees.actif ?? true;
 
@@ -104,21 +110,23 @@ export function AgentCard({
     }
   }
 
-  async function enregistrerIcone() {
-    const nouvelleIcone = brouillonIcone.trim() || "🤖";
+  async function envoyerIconeCadree(blob: Blob) {
+    setFichierIconeACadrer(null);
     setEnvoiIcone(true);
     setErreur(null);
     try {
+      const fichierCadre = new File([blob], "icone.jpg", { type: "image/jpeg" });
+      const upload = await appelerApiFichier("/api/uploads/image", fichierCadre);
       await appelerApi(`/api/agents/${agent.id}`, {
         method: "PATCH",
-        body: JSON.stringify({ icone_page: nouvelleIcone }),
+        body: JSON.stringify({ icone_url: upload.url }),
       });
-      setDonnees((d) => ({ ...d, icone_page: nouvelleIcone }));
-      setEdition(null);
+      setDonnees((d) => ({ ...d, icone_url: upload.url }));
     } catch (e) {
       setErreur(e instanceof Error ? e.message : "Erreur inconnue.");
     } finally {
       setEnvoiIcone(false);
+      if (inputIconeRef.current) inputIconeRef.current.value = "";
     }
   }
 
@@ -196,7 +204,13 @@ export function AgentCard({
             {envoiImage ? "Envoi…" : "Ajouter une image vitrine"}
           </button>
         ) : (
-          <span className="text-4xl">{donnees.icone_page ?? "🤖"}</span>
+          <span className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-dj-surface">
+            {donnees.icone_url ? (
+              <Image src={donnees.icone_url} alt="" width={64} height={64} className="h-full w-full object-cover" />
+            ) : (
+              <IconeGenerique className="h-8 w-8 text-dj-accent-1" />
+            )}
+          </span>
         )}
 
         {editable && (
@@ -234,69 +248,54 @@ export function AgentCard({
 
       <div className="flex flex-1 flex-col gap-1.5 p-4">
         <div className="flex items-center gap-2">
-          {editable && edition === "icone" ? (
-            <form
-              onSubmit={(e) => {
-                stopper(e);
-                enregistrerIcone();
-              }}
-              onClick={stopper}
-              className="flex items-center gap-1"
-            >
-              <input
-                autoFocus
-                value={brouillonIcone}
-                onChange={(e) => setBrouillonIcone(e.target.value)}
-                maxLength={4}
-                className="w-12 rounded-lg border border-dj-bordure bg-dj-surface-haute px-2 py-1 text-center text-lg outline-none focus:border-dj-accent-1"
-              />
-              <button type="submit" disabled={envoiIcone} className="text-xs text-dj-accent-1">
-                {envoiIcone ? "…" : "OK"}
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  stopper(e);
-                  setEdition(null);
-                }}
-                className="text-xs text-dj-texte-muet"
+          <button
+            type="button"
+            onClick={(e) => {
+              if (!editable) return;
+              stopper(e);
+              inputIconeRef.current?.click();
+            }}
+            disabled={envoiIcone}
+            title={editable ? "Changer l'icône" : undefined}
+            className={
+              editable
+                ? "relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-dj-bordure bg-dj-surface-haute transition-colors hover:border-dj-bordure-forte disabled:opacity-50"
+                : "relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-dj-surface-haute"
+            }
+          >
+            {donnees.icone_url ? (
+              <Image src={donnees.icone_url} alt="" fill className="object-cover" sizes="36px" />
+            ) : (
+              <IconeGenerique className="h-5 w-5 text-dj-accent-1" />
+            )}
+            {editable && (
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="absolute bottom-0 right-0 rounded-full bg-dj-fond/80 p-0.5 text-dj-texte-muet"
+                aria-hidden="true"
               >
-                Annuler
-              </button>
-            </form>
-          ) : (
-            <button
-              type="button"
-              onClick={(e) => {
-                if (!editable) return;
-                stopper(e);
-                setBrouillonIcone(donnees.icone_page ?? "🤖");
-                setEdition("icone");
+                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+              </svg>
+            )}
+          </button>
+          {editable && (
+            <input
+              ref={inputIconeRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) setFichierIconeACadrer(f);
               }}
-              className={
-                editable
-                  ? "flex items-center gap-1 rounded px-1 -mx-1 transition-colors hover:bg-dj-surface-haute"
-                  : "flex items-center gap-1"
-              }
-            >
-              <span className="text-lg leading-none">{donnees.icone_page ?? "🤖"}</span>
-              {editable && (
-                <svg
-                  width="10"
-                  height="10"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-dj-texte-muet"
-                  aria-hidden="true"
-                >
-                  <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                </svg>
-              )}
-            </button>
+              className="hidden"
+            />
           )}
           <h3 className="font-display text-base font-bold text-dj-texte">{donnees.nom}</h3>
         </div>
@@ -391,6 +390,18 @@ export function AgentCard({
           onAnnuler={() => {
             setFichierACadrer(null);
             if (inputImageRef.current) inputImageRef.current.value = "";
+          }}
+        />
+      )}
+
+      {fichierIconeACadrer && (
+        <RecadreurImage
+          source={fichierIconeACadrer}
+          aspect={1}
+          onValider={envoyerIconeCadree}
+          onAnnuler={() => {
+            setFichierIconeACadrer(null);
+            if (inputIconeRef.current) inputIconeRef.current.value = "";
           }}
         />
       )}
