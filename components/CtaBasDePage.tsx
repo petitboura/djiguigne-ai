@@ -14,7 +14,7 @@ export function CtaBasDePage({ locale, dict }: { locale: Locale; dict: Dictionar
     <div className="flex flex-col items-center gap-3 border-t border-dj-bordure px-5 py-14 sm:flex-row sm:justify-center">
       <Link
         href={`/${locale}/services`}
-        className="rounded-full bg-dj-gradient px-6 py-3 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5"
+        className="rounded-xl bg-dj-gradient px-6 py-3 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5"
       >
         {dict.home.heroCta}
       </Link>

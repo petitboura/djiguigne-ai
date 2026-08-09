@@ -72,7 +72,7 @@ export function AdministrateursAgent({ agentId }: { agentId: string }) {
           type="button"
           onClick={ajouter}
           disabled={ajout || !email.trim()}
-          className="self-start rounded-full bg-dj-gradient px-5 py-2 text-sm font-bold text-[#1A0D02] transition-transform hover:-translate-y-0.5 disabled:opacity-50"
+          className="self-start rounded-xl bg-dj-gradient px-5 py-2 text-sm font-bold text-[#1A0D02] transition-transform hover:-translate-y-0.5 disabled:opacity-50"
         >
           {ajout ? "Ajout…" : "Ajouter comme administrateur"}
         </button>

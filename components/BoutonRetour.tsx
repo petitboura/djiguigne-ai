@@ -28,7 +28,7 @@ export function BoutonRetour() {
     <button
       onClick={() => router.back()}
       aria-label="Retour"
-      className="flex h-9 items-center justify-center rounded-full border border-dj-bordure bg-dj-surface px-4 text-base text-dj-texte transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute"
+      className="flex h-9 items-center justify-center rounded-xl border border-dj-bordure bg-dj-surface px-4 text-base text-dj-texte transition-colors hover:border-dj-bordure-forte hover:bg-dj-surface-haute"
     >
       ←
     </button>

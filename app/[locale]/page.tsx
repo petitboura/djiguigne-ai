@@ -109,7 +109,7 @@ export default function HomePage({ params }: { params: { locale: Locale } }) {
         >
           <Link
             href={`/${locale}/services`}
-            className="rounded-full bg-dj-gradient px-6 py-3 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5"
+            className="rounded-xl bg-dj-gradient px-6 py-3 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5"
           >
             {dict.home.heroCta}
           </Link>

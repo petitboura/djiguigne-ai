@@ -40,7 +40,7 @@ export function CookieBanner({ locale, dict }: { locale: Locale; dict: Dictionar
         <button
           type="button"
           onClick={dismiss}
-          className="shrink-0 rounded-full bg-dj-gradient px-4 py-2 text-sm font-bold text-[#1A0D02]"
+          className="shrink-0 rounded-xl bg-dj-gradient px-4 py-2 text-sm font-bold text-[#1A0D02]"
         >
           {dict.cookieBanner.accept}
         </button>

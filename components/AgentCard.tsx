@@ -170,7 +170,7 @@ export function AgentCard({
                   inputImageRef.current?.click();
                 }}
                 disabled={envoiImage}
-                className="absolute bottom-2 left-2 z-10 rounded-full border border-dj-bordure bg-dj-fond/80 px-3 py-1 text-xs text-dj-texte transition-colors hover:border-dj-bordure-forte disabled:opacity-50"
+                className="absolute bottom-2 left-2 z-10 rounded-xl border border-dj-bordure bg-dj-fond/80 px-3 py-1 text-xs text-dj-texte transition-colors hover:border-dj-bordure-forte disabled:opacity-50"
               >
                 {envoiImage ? "Envoi…" : "Changer l'image"}
               </button>
@@ -237,8 +237,8 @@ export function AgentCard({
             title={estActif ? "IA publique : clique pour rendre privée" : "IA privée : clique pour rendre publique"}
             className={
               estActif
-                ? "absolute right-2 top-2 z-10 rounded-full bg-dj-gradient px-3 py-1 text-xs font-bold text-[#1A0D02] disabled:opacity-50"
-                : "absolute right-2 top-2 z-10 rounded-full border border-dj-bordure bg-dj-fond/80 px-3 py-1 text-xs text-dj-texte-muet disabled:opacity-50"
+                ? "absolute right-2 top-2 z-10 rounded-xl bg-dj-gradient px-3 py-1 text-xs font-bold text-[#1A0D02] disabled:opacity-50"
+                : "absolute right-2 top-2 z-10 rounded-xl border border-dj-bordure bg-dj-fond/80 px-3 py-1 text-xs text-dj-texte-muet disabled:opacity-50"
             }
           >
             {envoiActif ? "…" : estActif ? "Public" : "Privé"}
@@ -441,7 +441,7 @@ export function AgentCard({
                   stopper(e);
                   setEdition(null);
                 }}
-                className="rounded-full border border-dj-bordure px-4 py-2 text-sm text-dj-texte-muet transition-colors hover:border-dj-bordure-forte"
+                className="rounded-xl border border-dj-bordure px-4 py-2 text-sm text-dj-texte-muet transition-colors hover:border-dj-bordure-forte"
               >
                 Annuler
               </button>
@@ -452,7 +452,7 @@ export function AgentCard({
                   enregistrerDescription();
                 }}
                 disabled={envoiDescription}
-                className="rounded-full bg-dj-gradient px-4 py-2 text-sm font-bold text-[#1A0D02] disabled:opacity-50"
+                className="rounded-xl bg-dj-gradient px-4 py-2 text-sm font-bold text-[#1A0D02] disabled:opacity-50"
               >
                 {envoiDescription ? "Enregistrement…" : "Enregistrer"}
               </button>

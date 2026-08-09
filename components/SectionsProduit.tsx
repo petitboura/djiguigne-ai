@@ -391,7 +391,7 @@ export function SectionsProduit({
                             {agent.nom}
                           </span>
                           {tag && (
-                            <span className="inline-flex w-fit shrink-0 rounded-full border border-dj-bordure px-2.5 py-1 text-xs text-dj-texte-muet">
+                            <span className="inline-flex w-fit shrink-0 rounded-xl border border-dj-bordure px-2.5 py-1 text-xs text-dj-texte-muet">
                               {tag}
                             </span>
                           )}

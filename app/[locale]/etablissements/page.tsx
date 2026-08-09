@@ -99,7 +99,7 @@ export default function EtablissementsPage({ params }: { params: { locale: Local
 
         <Link
           href={`/${locale}/etablissements/inscription`}
-          className="mt-14 inline-block animate-dj-fade-up rounded-full bg-dj-gradient px-8 py-3 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5"
+          className="mt-14 inline-block animate-dj-fade-up rounded-xl bg-dj-gradient px-8 py-3 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5"
           style={{ animationDelay: "0.32s" }}
         >
           {t.cta}

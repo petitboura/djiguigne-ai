@@ -235,7 +235,7 @@ export function InscriptionEtablissements({
             <>
               <h1 className="font-display text-xl font-bold text-dj-texte">{t.stepAuthTitle}</h1>
 
-              <div className="mt-4 grid grid-cols-2 gap-2 rounded-full border border-dj-bordure bg-dj-surface-haute p-1">
+              <div className="mt-4 grid grid-cols-2 gap-2 rounded-xl border border-dj-bordure bg-dj-surface-haute p-1">
                 <button
                   type="button"
                   onClick={() => setMethode("email")}
@@ -293,7 +293,7 @@ export function InscriptionEtablissements({
                     <button
                       type="button"
                       onClick={() => setAfficherAuth(false)}
-                      className="rounded-full border border-dj-bordure px-4 py-2.5 text-sm font-medium text-dj-texte-muet transition-colors hover:border-dj-bordure-forte hover:text-dj-texte"
+                      className="rounded-xl border border-dj-bordure px-4 py-2.5 text-sm font-medium text-dj-texte-muet transition-colors hover:border-dj-bordure-forte hover:text-dj-texte"
                     >
                       {t.back}
                     </button>
@@ -302,7 +302,7 @@ export function InscriptionEtablissements({
                     <button
                       type="button"
                       onClick={() => setRole(null)}
-                      className="rounded-full border border-dj-bordure px-4 py-2.5 text-sm font-medium text-dj-texte-muet transition-colors hover:border-dj-bordure-forte hover:text-dj-texte"
+                      className="rounded-xl border border-dj-bordure px-4 py-2.5 text-sm font-medium text-dj-texte-muet transition-colors hover:border-dj-bordure-forte hover:text-dj-texte"
                     >
                       {t.back}
                     </button>
@@ -310,7 +310,7 @@ export function InscriptionEtablissements({
                   <button
                     type="submit"
                     disabled={enCours}
-                    className="flex-1 rounded-full bg-dj-gradient px-4 py-2.5 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0"
+                    className="flex-1 rounded-xl bg-dj-gradient px-4 py-2.5 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0"
                   >
                     {enCours ? t.submitButtonLoading : t.submitButton}
                   </button>
@@ -425,7 +425,7 @@ export function InscriptionEtablissements({
                 <button
                   type="submit"
                   disabled={enCours || !nomAffiche.trim()}
-                  className="w-full rounded-full bg-dj-gradient px-4 py-2.5 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0"
+                  className="w-full rounded-xl bg-dj-gradient px-4 py-2.5 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0"
                 >
                   {enCours ? t.profilSubmitButtonLoading : t.profilSubmitButton}
                 </button>
@@ -503,14 +503,14 @@ function EtapeRattachement({
         <button
           type="button"
           onClick={onRetour}
-          className="rounded-full border border-dj-bordure px-4 py-2.5 text-sm font-medium text-dj-texte-muet transition-colors hover:border-dj-bordure-forte hover:text-dj-texte"
+          className="rounded-xl border border-dj-bordure px-4 py-2.5 text-sm font-medium text-dj-texte-muet transition-colors hover:border-dj-bordure-forte hover:text-dj-texte"
         >
           {labelRetour}
         </button>
         <button
           type="button"
           onClick={onSuivant}
-          className="flex-1 rounded-full bg-dj-gradient px-4 py-2.5 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5"
+          className="flex-1 rounded-xl bg-dj-gradient px-4 py-2.5 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5"
         >
           {labelSuivant}
         </button>

@@ -70,7 +70,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           )}
           <Link
             href={`/${locale}/services`}
-            className="rounded-full bg-dj-gradient px-4 py-2 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5"
+            className="rounded-xl bg-dj-gradient px-4 py-2 text-sm font-bold text-[#1A0D02] shadow-[0_2px_14px_rgba(217,99,31,0.25)] transition-transform hover:-translate-y-0.5"
           >
             {dict.nav.cta}
           </Link>
@@ -114,7 +114,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             <Link
               href={`/${locale}/services`}
               onClick={() => setOpen(false)}
-              className="rounded-full bg-dj-gradient px-4 py-2 text-sm font-bold text-[#1A0D02]"
+              className="rounded-xl bg-dj-gradient px-4 py-2 text-sm font-bold text-[#1A0D02]"
             >
               {dict.nav.cta}
             </Link>
