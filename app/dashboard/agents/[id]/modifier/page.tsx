@@ -186,6 +186,7 @@ export default function PageModifierAgent() {
   const [texteLibre, setTexteLibre] = useState("");
   // Même correctif que la page de création (2026-07-12, Bourama).
   const [pleinEcranTexteLibre, setPleinEcranTexteLibre] = useState(false);
+  const [pleinEcranSystemPrompt, setPleinEcranSystemPrompt] = useState(false);
   const [actif, setActif] = useState(true);
   // Système "matière" (2026-07-29) : remplace le picker de catégorie ici
   // aussi, même logique que le formulaire de création -- indépendant de
@@ -796,7 +797,16 @@ export default function PageModifierAgent() {
           <section className="flex flex-col gap-4 rounded-2xl border border-dj-bordure bg-dj-surface p-6">
             <h2 className="font-display text-base font-bold text-dj-texte">Comportement</h2>
             <div>
-              <label className={labelClasse}>System prompt</label>
+              <div className="flex items-center justify-between">
+                <label className={labelClasse}>System prompt</label>
+                <button
+                  type="button"
+                  onClick={() => setPleinEcranSystemPrompt(true)}
+                  className="text-xs text-dj-accent-1 transition-colors hover:text-dj-accent-2"
+                >
+                  Plein écran ⤢
+                </button>
+              </div>
               <textarea
                 value={systemPrompt}
                 onChange={(e) => setSystemPrompt(e.target.value)}
@@ -808,6 +818,30 @@ export default function PageModifierAgent() {
                 modifier ici remplace directement ce qui avait été généré à la création.
               </p>
             </div>
+
+            {pleinEcranSystemPrompt && (
+              // Même pattern que "Connaissance libre" juste en dessous
+              // (pleinEcranTexteLibre) -- system prompt tout aussi long,
+              // même besoin d'espace pour l'éditer confortablement.
+              <div className="fixed inset-0 z-50 flex flex-col bg-dj-fond p-5">
+                <div className="flex items-center justify-between pb-3">
+                  <h2 className="font-display text-lg font-bold text-dj-texte">System prompt</h2>
+                  <button
+                    type="button"
+                    onClick={() => setPleinEcranSystemPrompt(false)}
+                    className="rounded-full border border-dj-bordure px-4 py-2 text-sm text-dj-texte transition-colors hover:border-dj-bordure-forte"
+                  >
+                    Fermer
+                  </button>
+                </div>
+                <textarea
+                  value={systemPrompt}
+                  onChange={(e) => setSystemPrompt(e.target.value)}
+                  autoFocus
+                  className={`${champClasse} flex-1 resize-none font-mono text-sm`}
+                />
+              </div>
+            )}
           </section>
           )}
 

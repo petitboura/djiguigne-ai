@@ -269,7 +269,7 @@ export async function lireDroitsAgent(agentId: string) {
 
 export async function modifierDroitsAgent(
   agentId: string,
-  payload: { outils_generation: string[]; serveurs: string[]; informer_utilisateurs: boolean }
+  payload: { outils_generation: string[]; serveurs: string[]; actions_locales: string[]; informer_utilisateurs: boolean }
 ) {
   return appelerApi(`/api/agents/${agentId}/droits`, {
     method: "PATCH",

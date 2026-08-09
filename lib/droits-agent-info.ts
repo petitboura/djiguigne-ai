@@ -145,3 +145,26 @@ export const GROUPES_SERVEURS: GroupeOutils[] = [
     ],
   },
 ];
+
+// Ajouté le 08/08/2026 (demande Bourama : "la barre de saisie a plusieurs
+// boutons qui sont conditionnels mais personne ne peut donner ou retirer
+// le droit depuis la section Droits, elle n'est pas affichée") --
+// categorie 4 (actions_locales), déjà renvoyée par le backend
+// (api/droits_agent.py) et déjà gérée par le chat (BarreDeSaisie.tsx,
+// outilAutorisePourAgent) depuis le 02/08/2026, mais jamais affichée dans
+// ce formulaire. Labels repris à l'identique de
+// djiguigne-frontend/lib/outils.ts (OUTILS_DISPONIBLES, entrées "ui_")
+// pour que le nom soit le même des deux côtés.
+export const GROUPES_ACTIONS_LOCALES: GroupeOutils[] = [
+  {
+    titre: "Boutons de la barre de saisie",
+    outils: [
+      { nom: "ui_localisation", label: "Joindre ma position", description: "Bouton qui permet à l'utilisateur de joindre sa position géographique au message." },
+      { nom: "ui_formule", label: "Insérer une formule / réaction chimique", description: "Clavier LaTeX pour écrire une formule mathématique ou une réaction chimique." },
+      { nom: "ui_editeur_maths", label: "Éditeur maths live (texte + formules)", description: "Éditeur combinant texte normal et formules mathématiques en direct." },
+      { nom: "ui_recherche", label: "Forcer une recherche web", description: "Bouton pour forcer l'IA à faire une recherche web avant de répondre." },
+      { nom: "ui_dessin", label: "Dessiner (géométrie, graphe, croquis)", description: "Zone de dessin (géométrie, graphe, croquis) à joindre au message." },
+      { nom: "ui_mode_vocal", label: "Mode vocal", description: "Mode conversation vocale (bientôt disponible)." },
+    ],
+  },
+];

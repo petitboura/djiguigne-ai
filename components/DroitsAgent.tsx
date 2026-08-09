@@ -2,14 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { lireDroitsAgent, modifierDroitsAgent } from "@/lib/api";
-import { GROUPES_GENERATION, GROUPES_SERVEURS, regrouperOutils } from "@/lib/droits-agent-info";
+import { GROUPES_GENERATION, GROUPES_SERVEURS, GROUPES_ACTIONS_LOCALES, regrouperOutils } from "@/lib/droits-agent-info";
 
 // Formulaire des droits d'un agent -- categories 1 (generation, par
-// outil), 2 et 3 (serveur externe, par serveur entier). Voir
-// api/droits_agent.py cote backend et migration_droits_agents.sql pour
-// le schema. Categories 4/5 (connexion OAuth du createur / de la
-// plateforme) pas couvertes ici, a construire separement sur le meme
-// pattern que connexions/notion.py.
+// outil), 2 et 3 (serveur externe, par serveur entier), et 4
+// (actions_locales -- boutons UI du chat, ex. clavier LaTeX/formule,
+// position, mode vocal ; ajoutee le 08/08/2026, meme donnee que
+// BarreDeSaisie.tsx cote chat). Voir api/droits_agent.py cote backend et
+// migration_droits_agents.sql pour le schema. Categorie 5 (connexion
+// OAuth de la plateforme) pas couverte ici, a construire separement sur
+// le meme pattern que connexions/notion.py.
 //
 // Principe important : les cases proposees viennent TOUJOURS de
 // registre_outils_plateforme en direct (jamais une liste figee ici) --
@@ -28,12 +30,14 @@ type OutilPlateforme = {
 type DroitsAgentReponse = {
   generation: OutilPlateforme[];
   serveurs: OutilPlateforme[];
+  actions_locales: OutilPlateforme[];
 };
 
 export function DroitsAgent({ agentId }: { agentId: string }) {
   const [droits, setDroits] = useState<DroitsAgentReponse | null>(null);
   const [genererCoches, setGenererCoches] = useState<Set<string>>(new Set());
   const [serveursCoches, setServeursCoches] = useState<Set<string>>(new Set());
+  const [localesCoches, setLocalesCoches] = useState<Set<string>>(new Set());
   const [informerUtilisateurs, setInformerUtilisateurs] = useState(true);
   const [enregistrement, setEnregistrement] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -45,6 +49,7 @@ export function DroitsAgent({ agentId }: { agentId: string }) {
         setDroits(reponse);
         setGenererCoches(new Set(reponse.generation.filter((o) => o.coche).map((o) => o.nom_outil)));
         setServeursCoches(new Set(reponse.serveurs.filter((o) => o.coche).map((o) => o.nom_serveur)));
+        setLocalesCoches(new Set(reponse.actions_locales.filter((o) => o.coche).map((o) => o.nom_outil)));
       })
       .catch((e) => setErreur(e.message || "Impossible de charger les droits de cet agent."));
   }, [agentId]);
@@ -67,6 +72,15 @@ export function DroitsAgent({ agentId }: { agentId: string }) {
     });
   }
 
+  function basculerLocale(nomAction: string) {
+    setLocalesCoches((precedent) => {
+      const suivant = new Set(precedent);
+      if (suivant.has(nomAction)) suivant.delete(nomAction);
+      else suivant.add(nomAction);
+      return suivant;
+    });
+  }
+
   async function enregistrer() {
     setEnregistrement(true);
     setErreur(null);
@@ -75,6 +89,7 @@ export function DroitsAgent({ agentId }: { agentId: string }) {
       const resultat = await modifierDroitsAgent(agentId, {
         outils_generation: Array.from(genererCoches),
         serveurs: Array.from(serveursCoches),
+        actions_locales: Array.from(localesCoches),
         informer_utilisateurs: informerUtilisateurs,
       });
       setMessageSucces(
@@ -107,6 +122,11 @@ export function DroitsAgent({ agentId }: { agentId: string }) {
     Array.from(serveursParNom.values()),
     GROUPES_SERVEURS,
     (s) => s.nom_serveur
+  );
+  const groupesActionsLocales = regrouperOutils(
+    droits.actions_locales,
+    GROUPES_ACTIONS_LOCALES,
+    (o) => o.nom_outil
   );
 
   return (
@@ -166,6 +186,42 @@ export function DroitsAgent({ agentId }: { agentId: string }) {
                     disabled={!item.disponible}
                     checked={serveursCoches.has(item.nom_serveur)}
                     onChange={() => basculerServeur(item.nom_serveur)}
+                  />
+                  <span>
+                    <span className="block font-medium">
+                      {outil.label}
+                      {!item.disponible && <span className="ml-1 text-xs text-neutral-400">(indisponible)</span>}
+                    </span>
+                    {outil.description && (
+                      <span className="block text-xs text-neutral-500">{outil.description}</span>
+                    )}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        ))}
+      </section>
+
+      <section className="space-y-4">
+        <h3 className="font-semibold">Boutons de la barre de saisie</h3>
+        {groupesActionsLocales.map((groupe) => (
+          <div key={groupe.titre}>
+            <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-500">
+              {groupe.titre}
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {groupe.items.map(({ outil, item }) => (
+                <label
+                  key={item.nom_outil}
+                  className={`flex items-start gap-2 text-sm ${!item.disponible ? "opacity-40" : ""}`}
+                >
+                  <input
+                    type="checkbox"
+                    className="mt-0.5"
+                    disabled={!item.disponible}
+                    checked={localesCoches.has(item.nom_outil)}
+                    onChange={() => basculerLocale(item.nom_outil)}
                   />
                   <span>
                     <span className="block font-medium">
