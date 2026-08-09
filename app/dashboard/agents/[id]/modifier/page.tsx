@@ -1360,7 +1360,7 @@ function Onglet({
       className={`border-b-2 px-1 pb-3 text-sm transition-colors ${
         actif
           ? "border-dj-accent-1 font-medium text-dj-texte"
-          : "border-transparent text-dj-texte/75 hover:text-dj-texte"
+          : "border-transparent text-dj-texte-muet hover:text-dj-texte"
       }`}
     >
       {children}
