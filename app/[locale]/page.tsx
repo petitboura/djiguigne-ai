@@ -114,6 +114,7 @@ export default function HomePage({ params }: { params: { locale: Locale } }) {
             {dict.home.heroCta}
           </Link>
           <BoutonDevenirCreateur
+            locale={locale}
             label={dict.home.heroCtaSecondary}
             explicationTitre={dict.home.heroCtaExplicationTitre}
             explicationCorps={dict.home.heroCtaExplicationCorps}

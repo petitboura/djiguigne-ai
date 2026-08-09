@@ -21,7 +21,31 @@ type Dictionary = ReturnType<typeof getDictionary>;
 // composant client -- qui embarquait sinon lib/dictionaries.ts (les deux
 // langues) dans le bundle JS envoyé au navigateur, alors qu'une seule
 // sert jamais pour une page donnée.
-export function FormulaireConnexion({ dict, locale }: { dict: Dictionary; locale: Locale }) {
+// "retour" (07/08/2026, demande Bourama) : redirige après connexion vers
+// la page d'origine (ex: /dashboard/agents/nouveau?matiere=... depuis
+// "Devenir créateur", voir BoutonDevenirCreateur.tsx) au lieu de toujours
+// revenir sur la vitrine. Lu côté serveur (page.tsx) et transmis en prop
+// plutôt qu'un useSearchParams() ici, pour ne pas avoir à envelopper ce
+// composant dans un Suspense. Whitelist stricte (chemin local
+// uniquement, "/..." et pas "//...") pour ne jamais rediriger vers un
+// domaine externe. Priorité la plus BASSE des 3 redirections possibles
+// (rôle établissement/enseignant/étudiant > retour > vitrine par défaut)
+// -- le rôle reste prioritaire, c'est un cas plus spécifique et déjà en
+// place avant cette prop.
+function retourValide(valeur: string | undefined): string | null {
+  if (valeur && valeur.startsWith("/") && !valeur.startsWith("//")) return valeur;
+  return null;
+}
+
+export function FormulaireConnexion({
+  dict,
+  locale,
+  retour,
+}: {
+  dict: Dictionary;
+  locale: Locale;
+  retour?: string;
+}) {
   const router = useRouter();
   const [methode, setMethode] = useState<MethodeConnexion>("email");
   const [email, setEmail] = useState("");
@@ -74,8 +98,9 @@ export function FormulaireConnexion({ dict, locale }: { dict: Dictionary; locale
 
     // Reste sur le vitrine après connexion — ne renvoie plus vers l'app
     // externe (voir discussion du 27/07 : "la connexion dans la vitrine
-    // reste dans la vitrine, il n'emmène nulle part").
-    router.push(`/${locale}`);
+    // reste dans la vitrine, il n'emmène nulle part"). Sauf si `retour`
+    // pointe explicitement ailleurs (ex. /dashboard/agents/nouveau).
+    router.push(retourValide(retour) ?? `/${locale}`);
   }
 
   return (
@@ -153,7 +178,10 @@ export function FormulaireConnexion({ dict, locale }: { dict: Dictionary; locale
 
         <p className="mt-5 text-center text-sm text-dj-texte-muet">
           {dict.auth.noAccount}{" "}
-          <Link href={`/${locale}/inscription`} className="text-dj-accent-1 hover:underline">
+          <Link
+            href={retour ? `/${locale}/inscription?retour=${encodeURIComponent(retour)}` : `/${locale}/inscription`}
+            className="text-dj-accent-1 hover:underline"
+          >
             {dict.auth.signupLink}
           </Link>
         </p>

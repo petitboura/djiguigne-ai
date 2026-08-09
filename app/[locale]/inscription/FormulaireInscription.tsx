@@ -16,7 +16,23 @@ type Dictionary = ReturnType<typeof getDictionary>;
 // Extrait de page.tsx le 01/08 (audit vitesse) : même principe que
 // FormulaireConnexion.tsx -- dictionnaire résolu côté serveur dans
 // page.tsx, reçu ici en prop plutôt que résolu dans ce composant client.
-export function FormulaireInscription({ dict, locale }: { dict: Dictionary; locale: Locale }) {
+// "retour" (07/08/2026, demande Bourama) : voir la docstring de
+// retourValide() dans FormulaireConnexion.tsx -- même comportement,
+// même whitelist.
+function retourValide(valeur: string | undefined): string | null {
+  if (valeur && valeur.startsWith("/") && !valeur.startsWith("//")) return valeur;
+  return null;
+}
+
+export function FormulaireInscription({
+  dict,
+  locale,
+  retour,
+}: {
+  dict: Dictionary;
+  locale: Locale;
+  retour?: string;
+}) {
   const router = useRouter();
   const [methode, setMethode] = useState<MethodeInscription>("email");
   const [email, setEmail] = useState("");
@@ -48,7 +64,7 @@ export function FormulaireInscription({ dict, locale }: { dict: Dictionary; loca
       return;
     }
 
-    router.push(`/${locale}`);
+    router.push(retourValide(retour) ?? `/${locale}`);
   }
 
   return (
@@ -129,7 +145,10 @@ export function FormulaireInscription({ dict, locale }: { dict: Dictionary; loca
 
         <p className="mt-5 text-center text-sm text-dj-texte-muet">
           {dict.auth.hasAccount}{" "}
-          <Link href={`/${locale}/connexion`} className="text-dj-accent-1 hover:underline">
+          <Link
+            href={retour ? `/${locale}/connexion?retour=${encodeURIComponent(retour)}` : `/${locale}/connexion`}
+            className="text-dj-accent-1 hover:underline"
+          >
             {dict.auth.loginLink}
           </Link>
         </p>

@@ -19,6 +19,7 @@ export function CtaBasDePage({ locale, dict }: { locale: Locale; dict: Dictionar
         {dict.home.heroCta}
       </Link>
       <BoutonDevenirCreateur
+        locale={locale}
         label={dict.home.heroCtaSecondary}
         explicationTitre={dict.home.heroCtaExplicationTitre}
         explicationCorps={dict.home.heroCtaExplicationCorps}

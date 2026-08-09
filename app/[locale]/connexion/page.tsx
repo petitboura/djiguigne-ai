@@ -7,8 +7,14 @@ import { FormulaireConnexion } from "./FormulaireConnexion";
 // (client, formulaire interactif) le reçoit en prop plutôt que
 // d'appeler getDictionary(locale) lui-même, ce qui embarquerait les DEUX
 // langues dans le bundle JS envoyé au navigateur.
-export default function PageConnexion({ params }: { params: { locale: Locale } }) {
+export default function PageConnexion({
+  params,
+  searchParams,
+}: {
+  params: { locale: Locale };
+  searchParams: { retour?: string };
+}) {
   const { locale } = params;
   const dict = getDictionary(locale);
-  return <FormulaireConnexion dict={dict} locale={locale} />;
+  return <FormulaireConnexion dict={dict} locale={locale} retour={searchParams.retour} />;
 }

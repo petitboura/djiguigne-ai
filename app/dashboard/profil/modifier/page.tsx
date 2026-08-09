@@ -12,6 +12,7 @@ import { BoutonAccueil } from "@/components/BoutonAccueil";
 import { ChampImage } from "@/components/ChampImage";
 import { IconeGenerique } from "@/components/icones/IconeGenerique";
 import { NotificationsPushToggle } from "@/components/NotificationsPushToggle";
+import { siteConfig } from "@/lib/site-config";
 
 // Formulaire d'édition de profil, déplacé depuis app/dashboard/page.tsx
 // le 2026-07-12 (Bourama : "Mon espace" doit maintenant ressembler au
@@ -51,7 +52,11 @@ export default function PageModifierProfil() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
-        router.push("/connexion");
+        // Même correction que app/dashboard/agents/nouveau/page.tsx
+        // (07/08/2026, Bourama) : "/connexion" (sans préfixe de locale)
+        // n'existe pas sur la vitrine, et aucun retour n'était transmis.
+        const retour = window.location.pathname + window.location.search;
+        router.push(`/${siteConfig.defaultLocale}/connexion?retour=${encodeURIComponent(retour)}`);
         return;
       }
       setSession(session);

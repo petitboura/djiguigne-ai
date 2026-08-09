@@ -14,6 +14,7 @@ import { IconeGenerique } from "@/components/icones/IconeGenerique";
 import { BoutonPartager } from "@/components/BoutonPartager";
 import { MATIERES } from "@/lib/matieres";
 import { DroitsAgentCreation } from "@/components/DroitsAgentCreation";
+import { siteConfig } from "@/lib/site-config";
 
 // Étape D.6 (pivot social) : formulaire de création d'agent, nouveau flow
 // (nom → icône → image vitrine → description →
@@ -148,7 +149,17 @@ function FormulaireCreerAgent() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
-        router.push("/connexion");
+        // Corrigé le 07/08/2026 (Bourama) : deux bugs ici. 1) "/connexion"
+        // (sans préfixe de locale) n'existe pas sur la vitrine -- seule la
+        // route "/${locale}/connexion" existe (voir app/[locale]/connexion),
+        // cette page étant hors du dossier [locale]. Repli sur la locale
+        // par défaut (siteConfig.defaultLocale) faute de mieux ici : cette
+        // page ne connaît pas la locale d'origine. 2) aucun `retour` n'était
+        // transmis -- tout ce qui venait d'être choisi via "Devenir
+        // créateur" (matiere=, metier=, etc., voir
+        // components/BoutonDevenirCreateur.tsx) était perdu après connexion.
+        const retour = window.location.pathname + window.location.search;
+        router.push(`/${siteConfig.defaultLocale}/connexion?retour=${encodeURIComponent(retour)}`);
         return;
       }
       setSession(session);

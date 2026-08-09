@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { MATIERES } from "@/lib/matieres";
+import { supabase } from "@/lib/supabase";
+import { CompteRequisModal } from "@/components/CompteRequisModal";
+import type { Locale } from "@/lib/site-config";
 
 // Demande de Bourama (2026-07-27) : "Devenir créateur" ne doit plus se
 // contenter d'un lien vers /about -- le clic doit ouvrir un flow direct
@@ -47,6 +50,7 @@ const PARAM_PAR_SECTION: Partial<Record<CleSection, string>> = {
 type Etape = "ferme" | "explication" | "categorie" | "matiere" | "champLibre";
 
 export function BoutonDevenirCreateur({
+  locale,
   label,
   explicationTitre,
   explicationCorps,
@@ -58,6 +62,7 @@ export function BoutonDevenirCreateur({
   validerLabel,
   categoriePreselectionnee,
 }: {
+  locale: Locale;
   label: string;
   explicationTitre: string;
   explicationCorps: string;
@@ -76,8 +81,24 @@ export function BoutonDevenirCreateur({
   const [etape, setEtape] = useState<Etape>("ferme");
   const [categorieChoisie, setCategorieChoisie] = useState<CleSection | null>(null);
   const [valeurLibre, setValeurLibre] = useState("");
+  // "Crée un compte" (07/08/2026, demande Bourama) -- même correction et
+  // même motif que components/BoutonDevenirCreateur.tsx côté app (voir sa
+  // docstring) : avant, ce bouton ouvrait tout le flow même pour un
+  // visiteur non connecté, qui ne l'apprenait qu'à la toute fin.
+  const [compteRequis, setCompteRequis] = useState(false);
 
   useEffect(() => setMonte(true), []);
+
+  async function gererClicBouton() {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      setCompteRequis(true);
+      return;
+    }
+    setEtape("explication");
+  }
 
   function fermer() {
     setEtape("ferme");
@@ -120,11 +141,19 @@ export function BoutonDevenirCreateur({
     <>
       <button
         type="button"
-        onClick={() => setEtape("explication")}
+        onClick={gererClicBouton}
         className="rounded-full border border-dj-bordure px-6 py-3 text-sm font-semibold text-dj-texte transition-colors hover:border-dj-bordure-forte"
       >
         {label}
       </button>
+
+      {compteRequis && (
+        <CompteRequisModal
+          locale={locale}
+          texte="Crée un compte pour créer ton IA."
+          onFerme={() => setCompteRequis(false)}
+        />
+      )}
 
       {monte &&
         etape === "explication" &&

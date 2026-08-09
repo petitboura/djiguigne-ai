@@ -339,6 +339,7 @@ export function SectionsProduit({
               <div className="flex flex-col items-start gap-3">
                 <p className="text-sm text-dj-texte-muet">{strings.vide}</p>
                 <BoutonDevenirCreateur
+                  locale={locale}
                   label={strings.devenirCreateurLabel}
                   explicationTitre={strings.devenirCreateurExplicationTitre}
                   explicationCorps={strings.devenirCreateurExplicationCorps}

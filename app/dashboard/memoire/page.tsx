@@ -7,6 +7,7 @@ import { appelerApi } from "@/lib/api";
 import { TopBar } from "@/components/TopBar";
 import { BoutonRetour } from "@/components/BoutonRetour";
 import { BoutonAccueil } from "@/components/BoutonAccueil";
+import { siteConfig } from "@/lib/site-config";
 
 // Ajouté le 2026-07-21 (demande Bourama : l'utilisateur final doit pouvoir
 // voir/modifier/effacer ce que la plateforme retient de lui d'une session
@@ -30,7 +31,11 @@ export default function PageMaMemoire() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
-        router.push("/connexion");
+        // Même correction que app/dashboard/agents/nouveau/page.tsx
+        // (07/08/2026, Bourama) : "/connexion" (sans préfixe de locale)
+        // n'existe pas sur la vitrine, et aucun retour n'était transmis.
+        const retour = window.location.pathname + window.location.search;
+        router.push(`/${siteConfig.defaultLocale}/connexion?retour=${encodeURIComponent(retour)}`);
         return;
       }
       setSession(session);

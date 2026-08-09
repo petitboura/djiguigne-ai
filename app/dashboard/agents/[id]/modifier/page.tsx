@@ -276,7 +276,11 @@ export default function PageModifierAgent() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
-        router.push("/connexion");
+        // Même correction que app/dashboard/agents/nouveau/page.tsx
+        // (07/08/2026, Bourama) : "/connexion" (sans préfixe de locale)
+        // n'existe pas sur la vitrine, et aucun retour n'était transmis.
+        const retour = window.location.pathname + window.location.search;
+        router.push(`/${siteConfig.defaultLocale}/connexion?retour=${encodeURIComponent(retour)}`);
         return;
       }
       setSession(session);
