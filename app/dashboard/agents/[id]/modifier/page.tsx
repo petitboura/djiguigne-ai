@@ -1235,7 +1235,7 @@ export default function PageModifierAgent() {
 
         {sectionActive === "maj" && <SectionMiseAJour agentId={agentId} />}
 
-        {(sectionActive === "moi" || sectionActive === "article") && (
+        {sectionActive === "moi" && (
           <section className="mt-6 flex flex-col gap-4">
             <button
               type="button"
@@ -1244,12 +1244,23 @@ export default function PageModifierAgent() {
             >
               ← Retour aux sections
             </button>
-            <h2 className="font-display text-lg font-bold text-dj-texte">
-              {sectionActive === "moi" ? "Moi" : "Article"}
-            </h2>
+            <h2 className="font-display text-lg font-bold text-dj-texte">Moi</h2>
             <p className="text-sm text-dj-texte-muet">
               Contenu à venir — dis-moi ce que tu veux mettre ici.
             </p>
+          </section>
+        )}
+
+        {sectionActive === "article" && (
+          <section className="mt-6 flex flex-col gap-4">
+            <button
+              type="button"
+              onClick={() => setSectionActive("vitrine")}
+              className="flex items-center gap-1.5 self-start text-sm text-dj-texte-muet transition-colors hover:text-dj-texte"
+            >
+              ← Retour aux sections
+            </button>
+            <SectionArticle agentId={agentId} />
           </section>
         )}
           </div>
@@ -1374,6 +1385,152 @@ function SectionMiseAJour({ agentId }: { agentId: string }) {
         </div>
       )}
     </section>
+  );
+}
+
+type ArticleAgent = {
+  id: number;
+  titre: string | null;
+  contenu: string;
+  image_couverture_url: string | null;
+  created_at?: string | null;
+};
+
+// Onglet "Article" (placeholder depuis le 27/07, contenu défini le
+// 09/08 avec Bourama) : publie un article POUR CETTE IA précise --
+// réutilise le même système que les articles publiés côté app
+// (djiguigne-frontend, api/posts.py, type="article"), avec `agent_id`
+// toujours égal à l'IA en cours d'édition (pas de sélecteur nécessaire
+// ici, contrairement à l'app où le créateur choisit parmi plusieurs IA :
+// cette page est déjà scopée à une seule). L'article publié apparaît
+// ensuite à la fois sur le profil du créateur ET sur la page publique de
+// cette IA (côté app, voir ArticlesAgent.tsx).
+function SectionArticle({ agentId }: { agentId: string }) {
+  const champClasseLocal =
+    "mt-1 w-full rounded-xl border border-dj-bordure bg-dj-surface-haute px-3 py-2 text-sm text-dj-texte placeholder:text-dj-inactif focus:border-dj-bordure-forte focus:outline-none";
+  const labelClasseLocal = "text-xs font-medium text-dj-texte-muet";
+
+  const [articles, setArticles] = useState<ArticleAgent[] | null>(null);
+  const [titre, setTitre] = useState("");
+  const [contenu, setContenu] = useState("");
+  const [couverture, setCouverture] = useState("");
+  const [envoi, setEnvoi] = useState(false);
+  const [erreur, setErreur] = useState<string | null>(null);
+
+  function chargerArticles() {
+    appelerApi(`/api/posts?type=article&agent_id=${agentId}`)
+      .then((r: ArticleAgent[]) => setArticles(r))
+      .catch(() => setArticles([]));
+  }
+
+  useEffect(() => {
+    chargerArticles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [agentId]);
+
+  async function publier(e: React.FormEvent) {
+    e.preventDefault();
+    if (!titre.trim() || !contenu.trim()) return;
+
+    setEnvoi(true);
+    setErreur(null);
+    try {
+      await appelerApi("/api/posts", {
+        method: "POST",
+        body: JSON.stringify({
+          type: "article",
+          titre,
+          contenu,
+          image_couverture_url: couverture || undefined,
+          agent_id: agentId,
+        }),
+      });
+      setTitre("");
+      setContenu("");
+      setCouverture("");
+      chargerArticles();
+    } catch (e) {
+      setErreur(e instanceof Error ? e.message : "Erreur inconnue.");
+    } finally {
+      setEnvoi(false);
+    }
+  }
+
+  async function supprimer(id: number) {
+    try {
+      await appelerApi(`/api/posts/${id}`, { method: "DELETE" });
+      setArticles((prev) => (prev ? prev.filter((a) => a.id !== id) : prev));
+    } catch (e) {
+      setErreur(e instanceof Error ? e.message : "Erreur inconnue.");
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-8">
+      <section className="flex flex-col gap-4 rounded-2xl border border-dj-bordure bg-dj-surface p-6">
+        <h2 className="font-display text-lg font-bold text-dj-texte">Publier un article</h2>
+        <p className="text-xs text-dj-texte-muet">
+          Écrit pour cette IA — affiché sur sa page publique et sur ton profil créateur.
+        </p>
+
+        <form onSubmit={publier} className="flex flex-col gap-4">
+          <div>
+            <label className={labelClasseLocal}>Titre</label>
+            <input
+              value={titre}
+              onChange={(e) => setTitre(e.target.value)}
+              placeholder="Titre de l'article"
+              className={champClasseLocal}
+            />
+          </div>
+
+          <ChampImage valeur={couverture} onChange={setCouverture} label="Image de couverture (optionnelle)" />
+
+          <div>
+            <label className={labelClasseLocal}>Contenu</label>
+            <textarea
+              value={contenu}
+              onChange={(e) => setContenu(e.target.value)}
+              rows={10}
+              className={`${champClasseLocal} resize-y`}
+            />
+          </div>
+
+          {erreur && <p className="text-sm text-[#F87171]">{erreur}</p>}
+
+          <button
+            type="submit"
+            disabled={envoi || !titre.trim() || !contenu.trim()}
+            className="self-start rounded-xl bg-dj-gradient px-6 py-2.5 text-sm font-bold text-[#1A0D02] transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {envoi ? "Publication…" : "Publier l'article"}
+          </button>
+        </form>
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <h2 className="font-display text-base font-bold text-dj-texte">Articles publiés</h2>
+        {articles === null && <p className="text-sm text-dj-texte-muet">Chargement…</p>}
+        {articles !== null && articles.length === 0 && (
+          <p className="text-sm text-dj-texte-muet">Aucun article publié pour cette IA pour l&apos;instant.</p>
+        )}
+        {articles?.map((a) => (
+          <div key={a.id} className="rounded-2xl border border-dj-bordure bg-dj-surface p-5">
+            <div className="flex items-start justify-between gap-3">
+              <h3 className="font-display text-base font-bold text-dj-texte">{a.titre}</h3>
+              <button
+                type="button"
+                onClick={() => supprimer(a.id)}
+                className="shrink-0 text-xs text-dj-texte-muet transition-colors hover:text-[#F87171]"
+              >
+                Supprimer
+              </button>
+            </div>
+            <p className="mt-1.5 whitespace-pre-wrap text-sm text-dj-texte-muet">{a.contenu}</p>
+          </div>
+        ))}
+      </section>
+    </div>
   );
 }
 
