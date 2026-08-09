@@ -7,18 +7,31 @@ import { getPost, getPosts } from "@/lib/posts";
 import { JsonLd } from "@/components/JsonLd";
 import { BoutonPartager } from "@/components/BoutonPartager";
 
-export function generateStaticParams() {
-  return siteConfig.locales.flatMap((locale) =>
-    getPosts(locale).map((post) => ({ locale, slug: post.slug }))
+// Les articles viennent de Supabase (table `articles_vitrine`), modifiable
+// depuis le dashboard sans toucher au code. `dynamicParams` (true par
+// défaut) permet à un article ajouté après le build d'être rendu à la
+// demande -- sans lui, un nouveau slug donnerait 404 jusqu'au prochain
+// déploiement. `revalidate` régénère ensuite la page périodiquement pour
+// refléter les modifications/suppressions sans redéploiement manuel.
+export const revalidate = 60;
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const tousLesPosts = await Promise.all(
+    siteConfig.locales.map(async (locale) => {
+      const posts = await getPosts(locale);
+      return posts.map((post) => ({ locale, slug: post.slug }));
+    })
   );
+  return tousLesPosts.flat();
 }
 
-export function generateMetadata({
+export async function generateMetadata({
   params,
 }: {
   params: { locale: Locale; slug: string };
-}): Metadata {
-  const post = getPost(params.locale, params.slug);
+}): Promise<Metadata> {
+  const post = await getPost(params.locale, params.slug);
   if (!post) return {};
   // Next.js REMPLACE tout l'objet openGraph du layout parent dès qu'une
   // page en redéfinit un (pas de fusion profonde) -- sans siteName/locale/
@@ -50,14 +63,14 @@ export function generateMetadata({
   };
 }
 
-export default function BlogPostPage({
+export default async function BlogPostPage({
   params,
 }: {
   params: { locale: Locale; slug: string };
 }) {
   const { locale, slug } = params;
   const dict = getDictionary(locale);
-  const post = getPost(locale, slug);
+  const post = await getPost(locale, slug);
   if (!post) notFound();
 
   const paragraphs = post.body.split("\n\n");

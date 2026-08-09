@@ -3,7 +3,12 @@ import { siteConfig } from "@/lib/site-config";
 import { getPosts } from "@/lib/posts";
 import { casUsage } from "@/lib/cas-usage";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+// Les articles viennent de Supabase (table `articles_vitrine`) : cette
+// régénération périodique fait apparaître/disparaître les URLs d'articles
+// dans le sitemap sans redéploiement manuel.
+export const revalidate = 60;
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPaths = ["", "/about", "/services", "/contact", "/blog", "/glossaire", "/cas-usage"];
   const legalPaths = ["/legal/mentions-legales", "/legal/confidentialite", "/legal/cookies"];
 
@@ -18,7 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: path === "" ? 1 : 0.6,
       });
     }
-    for (const post of getPosts(locale)) {
+    for (const post of await getPosts(locale)) {
       entries.push({
         url: `${siteConfig.url}/${locale}/blog/${post.slug}`,
         lastModified: new Date(post.date),

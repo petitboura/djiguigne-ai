@@ -4,6 +4,12 @@ import { getDictionary } from "@/lib/dictionaries";
 import type { Locale } from "@/lib/site-config";
 import { getPosts } from "@/lib/posts";
 
+// Les articles viennent de Supabase (table `articles_vitrine`), modifiable
+// depuis le dashboard sans toucher au code. Cette page se régénère toute
+// seule au maximum toutes les 60s (ISR) pour refléter les changements sans
+// redéploiement manuel.
+export const revalidate = 60;
+
 export function generateMetadata({ params }: { params: { locale: Locale } }): Metadata {
   const dict = getDictionary(params.locale);
   return {
@@ -13,10 +19,10 @@ export function generateMetadata({ params }: { params: { locale: Locale } }): Me
   };
 }
 
-export default function BlogIndexPage({ params }: { params: { locale: Locale } }) {
+export default async function BlogIndexPage({ params }: { params: { locale: Locale } }) {
   const { locale } = params;
   const dict = getDictionary(locale);
-  const posts = getPosts(locale);
+  const posts = await getPosts(locale);
 
   return (
     <section className="mx-auto max-w-2xl px-5 py-16">
