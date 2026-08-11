@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { appelerApi } from "@/lib/api";
 import { formaterDate } from "@/lib/formaterDate";
 import { BoutonPartager } from "@/components/BoutonPartager";
+import { Skeleton } from "@/components/Skeleton";
 
 // Ajouté le 2026-07-15 (Bourama) : section "Mises à jour" sur la page
 // publique d'un agent -- ce que le créateur a changé, avec date,
@@ -58,7 +59,12 @@ export function MisesAJourAgent({ agentId, nomAgent }: { agentId: string; nomAge
   // aucune erreur, le lien fonctionne, juste aucune cible à atteindre.
   return (
     <div id="mises-a-jour" className="flex flex-col gap-4">
-      {maj === null && <p className="text-sm text-dj-texte-muet">Chargement…</p>}
+      {maj === null && (
+        <div className="flex flex-col gap-2" aria-hidden>
+          <Skeleton className="h-14 rounded-xl border border-dj-bordure" />
+          <Skeleton className="h-14 rounded-xl border border-dj-bordure" style={{ animationDelay: "100ms" }} />
+        </div>
+      )}
       {maj !== null && maj.length === 0 && (
         <p className="text-sm text-dj-texte-muet">Aucune mise à jour pour l&apos;instant.</p>
       )}
@@ -202,7 +208,12 @@ function ItemMiseAJour({
             <p className="text-sm text-dj-texte-muet">Connecte-toi pour commenter.</p>
           )}
 
-          {commentaires === null && <p className="text-sm text-dj-texte-muet">Chargement…</p>}
+          {commentaires === null && (
+            <div className="flex flex-col gap-2" aria-hidden>
+              <Skeleton className="h-14 rounded-xl border border-dj-bordure" />
+              <Skeleton className="h-14 rounded-xl border border-dj-bordure" style={{ animationDelay: "100ms" }} />
+            </div>
+          )}
           {commentaires?.length === 0 && (
             <p className="text-sm text-dj-texte-muet">Aucun commentaire pour l'instant.</p>
           )}

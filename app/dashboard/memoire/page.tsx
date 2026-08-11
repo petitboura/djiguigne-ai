@@ -8,6 +8,7 @@ import { TopBar } from "@/components/TopBar";
 import { BoutonRetour } from "@/components/BoutonRetour";
 import { BoutonAccueil } from "@/components/BoutonAccueil";
 import { siteConfig } from "@/lib/site-config";
+import { Skeleton } from "@/components/Skeleton";
 
 // Ajouté le 2026-07-21 (demande Bourama : l'utilisateur final doit pouvoir
 // voir/modifier/effacer ce que la plateforme retient de lui d'une session
@@ -107,7 +108,13 @@ export default function PageMaMemoire() {
           </p>
         </div>
 
-        {chargement && <p className="text-sm text-dj-texte-muet">Chargement…</p>}
+        {chargement && (
+          <div className="flex flex-col gap-2" aria-hidden>
+            <Skeleton className="h-3.5 w-full rounded" />
+            <Skeleton className="h-3.5 w-11/12 rounded" style={{ animationDelay: "100ms" }} />
+            <Skeleton className="h-3.5 w-2/3 rounded" style={{ animationDelay: "200ms" }} />
+          </div>
+        )}
 
         {!chargement && (
           <div className="flex flex-col gap-4 rounded-2xl border border-dj-bordure bg-dj-surface p-6">

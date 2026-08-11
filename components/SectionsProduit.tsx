@@ -8,6 +8,7 @@ import Image from "next/image";
 import { siteConfig, type Locale } from "@/lib/site-config";
 import { IconeGenerique } from "@/components/icones/IconeGenerique";
 import { LienVersApp } from "@/components/LienVersApp";
+import { Skeleton } from "@/components/Skeleton";
 
 // Ajouté le 2026-07-31 (Bourama : "il y a 3-4 sections mais rien
 // là-dessus" -- les boutons de la page Produit étaient une maquette non
@@ -332,7 +333,11 @@ export function SectionsProduit({
           {/* Résultats */}
           <div className="w-full flex-1">
             {chargement ? (
-              <p className="text-sm text-dj-texte-muet">{strings.chargement}</p>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3" aria-hidden>
+                <Skeleton className="h-32 rounded-xl border border-dj-bordure" />
+                <Skeleton className="h-32 rounded-xl border border-dj-bordure" style={{ animationDelay: "100ms" }} />
+                <Skeleton className="h-32 rounded-xl border border-dj-bordure" style={{ animationDelay: "200ms" }} />
+              </div>
             ) : erreur ? (
               <p className="text-sm text-dj-texte-muet">{erreur}</p>
             ) : !agentsSectionOuverte || agentsSectionOuverte.length === 0 ? (

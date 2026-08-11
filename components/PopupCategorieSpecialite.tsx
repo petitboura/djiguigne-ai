@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { Skeleton } from "@/components/Skeleton";
 
 // Ajouté le 08/08/2026 (Bourama : la section "Matière" affichait la liste
 // complète de spécialités en permanence après création, alors que ça ne
@@ -141,7 +142,11 @@ export function PopupCategorieSpecialite({
             >
               <h2 className="font-display text-lg font-bold text-dj-texte">{LABELS_CATEGORIE.matieres}</h2>
               {matieresDisponibles === null && (
-                <p className="mt-3 text-sm text-dj-texte-muet">Chargement...</p>
+                <div className="mt-3 space-y-1.5" aria-hidden>
+                  <Skeleton className="h-3 w-3/4 rounded" />
+                  <Skeleton className="h-3 w-1/2 rounded" style={{ animationDelay: "120ms" }} />
+                  <Skeleton className="h-3 w-2/3 rounded" style={{ animationDelay: "240ms" }} />
+                </div>
               )}
               {!autreMatiereActive ? (
                 <div className="mt-4 flex flex-col gap-2">

@@ -17,6 +17,7 @@ import { ProactiviteAgent } from "@/components/ProactiviteAgent";
 import { AdministrateursAgent } from "@/components/AdministrateursAgent";
 import { LienVersApp } from "@/components/LienVersApp";
 import { PopupCategorieSpecialite, LABELS_CATEGORIE, type CleSection, type SelectionCategorie } from "@/components/PopupCategorieSpecialite";
+import { Skeleton } from "@/components/Skeleton";
 
 // Étape "modifier un agent" (2026-07-12, demande de Bourama : "on ne peut
 // pas modifier ces agents créés" — gros morceau manquant depuis le début
@@ -503,7 +504,11 @@ export default function PageModifierAgent() {
     return (
       <div className="min-h-screen">
         <TopBar />
-        <p className="px-5 py-10 text-dj-texte-muet">Chargement...</p>
+        <div className="flex flex-col gap-2 px-5 py-10" aria-hidden>
+          <Skeleton className="h-14 rounded-xl border border-dj-bordure" />
+          <Skeleton className="h-14 rounded-xl border border-dj-bordure" style={{ animationDelay: "100ms" }} />
+          <Skeleton className="h-14 rounded-xl border border-dj-bordure" style={{ animationDelay: "200ms" }} />
+        </div>
       </div>
     );
   }
@@ -626,7 +631,10 @@ export default function PageModifierAgent() {
             <div className="my-1 hidden h-px w-full bg-dj-bordure md:block" />
 
             {mesAgents === null && (
-              <p className="px-3 py-3 text-sm text-dj-texte-muet">Chargement...</p>
+              <div className="flex flex-col gap-1.5 px-3 py-3" aria-hidden>
+                <Skeleton className="h-8 rounded-lg" />
+                <Skeleton className="h-8 rounded-lg" style={{ animationDelay: "100ms" }} />
+              </div>
             )}
             {mesAgents?.map((a) => (
               <Link
@@ -1022,7 +1030,12 @@ export default function PageModifierAgent() {
         <section className="mt-6 flex flex-col gap-4">
           <h2 className="font-display text-lg font-bold text-dj-texte">Documents PDF indexés</h2>
 
-          {documents === null && <p className="text-sm text-dj-texte-muet">Chargement...</p>}
+          {documents === null && (
+            <div className="flex flex-col gap-2" aria-hidden>
+              <Skeleton className="h-[52px] rounded-xl border border-dj-bordure" />
+              <Skeleton className="h-[52px] rounded-xl border border-dj-bordure" style={{ animationDelay: "100ms" }} />
+            </div>
+          )}
           {documents?.length === 0 && (
             <p className="text-sm text-dj-texte-muet">Aucun PDF indexé pour cette IA.</p>
           )}
@@ -1122,7 +1135,12 @@ export default function PageModifierAgent() {
             ))}
           </div>
 
-          {fichiersBiblio === null && <p className="text-sm text-dj-texte-muet">Chargement...</p>}
+          {fichiersBiblio === null && (
+            <div className="flex flex-col gap-2" aria-hidden>
+              <Skeleton className="h-[52px] rounded-xl border border-dj-bordure" />
+              <Skeleton className="h-[52px] rounded-xl border border-dj-bordure" style={{ animationDelay: "100ms" }} />
+            </div>
+          )}
           {fichiersBiblio?.length === 0 && (
             <p className="text-sm text-dj-texte-muet">Aucun fichier dans la bibliothèque.</p>
           )}

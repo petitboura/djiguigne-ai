@@ -15,6 +15,7 @@ import { BoutonPartager } from "@/components/BoutonPartager";
 import { MATIERES } from "@/lib/matieres";
 import { DroitsAgentCreation } from "@/components/DroitsAgentCreation";
 import { siteConfig } from "@/lib/site-config";
+import { Skeleton } from "@/components/Skeleton";
 
 // Étape D.6 (pivot social) : formulaire de création d'agent, nouveau flow
 // (nom → icône → image vitrine → description →
@@ -398,7 +399,11 @@ function FormulaireCreerAgent() {
                 Une seule IA par matière — celles déjà prises n&apos;apparaissent plus ici.
               </p>
               {matieresDisponibles === null && (
-                <p className="mt-2 text-sm text-dj-texte-muet">Chargement...</p>
+                <div className="mt-2 space-y-1.5" aria-hidden>
+                  <Skeleton className="h-3 w-3/4 rounded" />
+                  <Skeleton className="h-3 w-1/2 rounded" style={{ animationDelay: "120ms" }} />
+                  <Skeleton className="h-3 w-2/3 rounded" style={{ animationDelay: "240ms" }} />
+                </div>
               )}
               {matieresDisponibles && matieresDisponibles.every((m) => !m.disponible) && (
                 <p className="mt-2 text-sm text-dj-texte-muet">

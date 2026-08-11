@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { appelerApi } from "@/lib/api";
+import { Skeleton } from "@/components/Skeleton";
 
 // Section "Administrateurs" (2026-08-05, demande Bourama : "juste tu
 // entres son email et c'est fait, pas de confirmation pour l'instant").
@@ -82,7 +83,12 @@ export function AdministrateursAgent({ agentId }: { agentId: string }) {
       <div className="rounded-xl border border-dj-bordure bg-dj-surface p-4">
         <p className="mb-2 text-xs font-medium text-dj-texte-muet">Administrateurs actuels</p>
         {erreurChargement && <p className="text-sm text-[#F87171]">{erreurChargement}</p>}
-        {!erreurChargement && !administrateurs && <p className="text-sm text-dj-texte-muet">Chargement…</p>}
+        {!erreurChargement && !administrateurs && (
+          <div className="flex flex-col gap-1.5" aria-hidden>
+            <Skeleton className="h-9 rounded-lg" />
+            <Skeleton className="h-9 rounded-lg" style={{ animationDelay: "100ms" }} />
+          </div>
+        )}
         {administrateurs && administrateurs.length === 0 && (
           <p className="text-sm text-dj-texte-muet">Personne d&apos;autre que toi pour l&apos;instant.</p>
         )}
