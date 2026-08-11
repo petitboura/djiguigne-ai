@@ -1528,7 +1528,12 @@ function SectionArticle({ agentId }: { agentId: string }) {
 
       <section className="flex flex-col gap-4">
         <h2 className="font-display text-base font-bold text-dj-texte">Articles publiés</h2>
-        {articles === null && <p className="text-sm text-dj-texte-muet">Chargement…</p>}
+        {articles === null && (
+          <div className="flex flex-col gap-2" aria-hidden>
+            <Skeleton className="h-14 rounded-xl border border-dj-bordure" />
+            <Skeleton className="h-14 rounded-xl border border-dj-bordure" style={{ animationDelay: "100ms" }} />
+          </div>
+        )}
         {articles !== null && articles.length === 0 && (
           <p className="text-sm text-dj-texte-muet">Aucun article publié pour cette IA pour l&apos;instant.</p>
         )}
